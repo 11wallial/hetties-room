@@ -1658,49 +1658,6 @@ function Floor() {
         <line key={xx} x1={xx} y1="1080" x2={xx + (i % 2 === 0 ? 14 : -10)} y2="1280" stroke="#2a1408" strokeWidth="0.5" opacity="0.4" />
       ))}
 
-      {/* slippers — fluffy pink */}
-      <g transform="translate(80 1190)">
-        <ellipse cx="32" cy="20" rx="34" ry="8" fill="#1a0a06" opacity="0.5" />
-        <path d="M 4 20 Q 0 8 14 4 Q 32 0 50 4 Q 64 8 60 20 Q 56 26 32 26 Q 8 26 4 20 Z" fill="#e89a96" />
-        <path d="M 4 20 Q 0 14 12 12 Q 32 8 50 12 Q 60 16 60 20" stroke="#a85060" strokeWidth="0.6" fill="none" opacity="0.7" />
-        {/* pom-pom */}
-        <circle cx="22" cy="10" r="5" fill="#fdf0e8" opacity="0.95" />
-        <circle cx="22" cy="10" r="5" fill="#f8d8c8" opacity="0.5" />
-      </g>
-      <g transform="translate(120 1196) rotate(8)">
-        <ellipse cx="32" cy="20" rx="34" ry="8" fill="#1a0a06" opacity="0.5" />
-        <path d="M 4 20 Q 0 8 14 4 Q 32 0 50 4 Q 64 8 60 20 Q 56 26 32 26 Q 8 26 4 20 Z" fill="#e89a96" />
-        <circle cx="42" cy="10" r="5" fill="#fdf0e8" opacity="0.95" />
-        <circle cx="42" cy="10" r="5" fill="#f8d8c8" opacity="0.5" />
-      </g>
-
-      {/* small dog bed for Murphy on right */}
-      <g transform="translate(520 1180)">
-        <ellipse cx="70" cy="44" rx="80" ry="14" fill="#1a0a06" opacity="0.4" />
-        <path d="M 0 40 Q -4 14 30 8 Q 70 4 110 8 Q 144 14 140 40 Q 138 54 70 56 Q 4 54 0 40 Z" fill="#7a4828" />
-        <path d="M 12 40 Q 8 22 36 18 Q 70 14 104 18 Q 132 22 128 40" stroke="#5a3018" strokeWidth="1" fill="none" opacity="0.6" />
-        {/* cushion inside */}
-        <ellipse cx="70" cy="40" rx="60" ry="14" fill="#dccab0" opacity="0.85" />
-        <ellipse cx="70" cy="38" rx="56" ry="11" fill="#f4ead8" opacity="0.55" />
-        {/* paw print on bed */}
-        <g opacity="0.4" fill="#9a7a5a">
-          <ellipse cx="70" cy="42" rx="3" ry="2.4" />
-          <ellipse cx="64" cy="38" rx="1.4" ry="1.2" />
-          <ellipse cx="68" cy="36" rx="1.4" ry="1.2" />
-          <ellipse cx="72" cy="36" rx="1.4" ry="1.2" />
-          <ellipse cx="76" cy="38" rx="1.4" ry="1.2" />
-        </g>
-        {/* squeaky toy */}
-        <g transform="translate(36 30)">
-          <ellipse cx="6" cy="8" rx="10" ry="2" fill="#1a0a06" opacity="0.4" />
-          <ellipse cx="6" cy="4" rx="9" ry="6" fill="#fbe2ba" />
-          <ellipse cx="2" cy="2" rx="2" ry="3" fill="#fbe2ba" />
-          <ellipse cx="0.5" cy="2" rx="0.6" ry="0.6" fill="#0a0605" />
-          <path d="M -2 4 Q -4 4 -4 6" stroke="#5a3424" strokeWidth="0.5" fill="none" />
-          <ellipse cx="9" cy="6" rx="3" ry="1" fill="#c75a4a" opacity="0.6" />
-        </g>
-      </g>
-
       {/* FOREGROUND BIG POTTED PLANT — far right corner */}
       <g transform="translate(620 1060)" style={{ transformOrigin: '70px 200px', animation: 'leafSwayB 13s ease-in-out infinite' }}>
         {/* drop shadow */}

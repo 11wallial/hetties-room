@@ -284,6 +284,9 @@ export function Scene({ now, daysRemaining = 0 }: SceneProps) {
         {/* MALVERN HILLS */}
         <MalvernHills seed={seed} />
 
+        {/* Birds drifting */}
+        <Birds />
+
         {/* atmospheric haze */}
         <rect x="60" y="80" width="600" height="380" fill="url(#hazeGrad)" pointerEvents="none" />
 
@@ -316,6 +319,15 @@ export function Scene({ now, daysRemaining = 0 }: SceneProps) {
       {/* ============= POLAROIDS ON WALL (around window edges) ============= */}
       <PolaroidWall />
 
+      {/* ============= LEFT WALL: shelf with books + plants ============= */}
+      <LeftWallShelf />
+
+      {/* ============= RIGHT WALL: dried flower wreath + posters ============= */}
+      <RightWallDecor />
+
+      {/* ============= POSTER ABOVE DESK on left ============= */}
+      <WallPoster />
+
       {/* ============= WALL CALENDAR / COUNTDOWN CHALKBOARD ============= */}
       <WallChalkboard daysRemaining={daysRemaining} />
 
@@ -324,6 +336,12 @@ export function Scene({ now, daysRemaining = 0 }: SceneProps) {
 
       {/* ============= HANGING PLANT (top corners) ============= */}
       <HangingPlant />
+
+      {/* ============= MACRAME HANGING PLANT TOP-RIGHT ============= */}
+      <MacramePlant />
+
+      {/* ============= SUN CATCHER hanging inside window ============= */}
+      <SunCatcher />
 
       {/* ============= WARM AMBIENT GLOW ============= */}
       <rect width="720" height="1280" fill="url(#warmGlow)" pointerEvents="none" />
@@ -395,29 +413,94 @@ function Stars() {
 }
 
 function MalvernHills({ seed }: { seed: number }) {
-  const sheep = (seed % 3) + 2;
+  const sheep = (seed % 3) + 3;
   return (
     <g>
+      {/* DEEP DISTANT ridge — barely visible, hazy */}
+      <path
+        d="M 60 410 L 60 320 L 100 312 L 140 304 L 180 296 L 230 286 L 280 274 L 330 262 L 380 254 L 430 250 L 480 254 L 530 262 L 580 274 L 620 286 L 660 296 L 660 410 Z"
+        fill="url(#hillFar)" opacity="0.45"
+      />
+
       {/* Far ridge — Worcestershire Beacon profile */}
       <path
         d="M 60 460 L 60 360 L 110 340 L 160 326 L 200 320 L 240 308 L 280 286 L 320 264 L 360 242 L 390 226 L 420 230 L 450 246 L 480 262 L 520 278 L 560 294 L 600 310 L 640 330 L 660 344 L 660 460 Z"
         fill="url(#hillFar)" opacity="0.78"
       />
+
+      {/* DISTANT VILLAGE — Great Malvern silhouette with church spire */}
+      <g opacity="0.65">
+        {/* houses cluster */}
+        <g transform="translate(160 410)">
+          <rect x="0" y="0" width="14" height="18" fill="#3a4e3a" />
+          <path d="M -2 0 L 7 -8 L 16 0 Z" fill="#2a3a2a" />
+          <rect x="14" y="4" width="10" height="14" fill="#3a4858" />
+          <path d="M 13 4 L 19 -2 L 25 4 Z" fill="#2a3a48" />
+          <rect x="24" y="-2" width="12" height="20" fill="#5a4040" />
+          <path d="M 23 -2 L 30 -10 L 37 -2 Z" fill="#3a2828" />
+          {/* CHURCH with spire */}
+          <rect x="40" y="-4" width="12" height="22" fill="#5a5040" />
+          <path d="M 39 -4 L 46 -16 L 53 -4 Z" fill="#3a3328" />
+          <path d="M 44 -4 L 46 -28 L 48 -4 Z" fill="#3a3328" />
+          <path d="M 46 -28 L 47 -32 L 45 -32 Z" fill="#3a3328" />
+          {/* row continues */}
+          <rect x="56" y="2" width="10" height="16" fill="#4a3438" />
+          <path d="M 55 2 L 61 -4 L 67 2 Z" fill="#2a1d24" />
+          <rect x="66" y="-1" width="14" height="19" fill="#3a4858" />
+          <path d="M 65 -1 L 73 -8 L 81 -1 Z" fill="#2a3340" />
+        </g>
+        {/* tiny lit windows */}
+        <g fill="#ffe8a8" opacity="0.65">
+          <rect x="164" y="416" width="1.6" height="2" />
+          <rect x="170" y="416" width="1.6" height="2" />
+          <rect x="178" y="416" width="1.4" height="2" />
+          <rect x="186" y="412" width="1.6" height="2" />
+          <rect x="200" y="408" width="1.4" height="2" />
+          <rect x="218" y="416" width="1.4" height="2" />
+          <rect x="232" y="412" width="1.6" height="2" />
+        </g>
+        {/* chimney smoke */}
+        <path d="M 188 392 q -2 -8 0 -16 q 3 -8 -1 -14" stroke="#9a8a78" strokeWidth="1.4" fill="none" strokeLinecap="round" opacity="0.55"
+          style={{ animation: 'steamRise 7s ease-out infinite' }} />
+      </g>
+
       {/* Mid ridge */}
       <path
         d="M 60 490 L 60 388 L 100 376 L 140 362 L 180 348 L 230 336 L 270 328 L 310 318 L 350 306 L 390 296 L 430 304 L 470 318 L 510 338 L 550 358 L 590 376 L 630 392 L 660 404 L 660 490 Z"
         fill="url(#hillMid)"
       />
+
+      {/* Mist rolling across mid hills */}
+      <g opacity="0.32">
+        <ellipse cx="200" cy="430" rx="120" ry="16" fill="#fff8e0" />
+        <ellipse cx="450" cy="450" rx="140" ry="14" fill="#fff8e0" />
+        <ellipse cx="320" cy="468" rx="180" ry="10" fill="#fff8e0" />
+      </g>
+
       {/* Near hill */}
       <path
         d="M 60 580 L 60 440 L 110 430 L 160 422 L 210 418 L 260 410 L 310 402 L 360 390 L 400 382 L 430 388 L 470 402 L 510 420 L 550 438 L 590 452 L 630 464 L 660 472 L 660 580 Z"
         fill="url(#hillNear)"
       />
+
       {/* Hedgerow line */}
       <path
         d="M 60 510 Q 120 502 180 508 Q 260 514 340 508 Q 420 502 500 510 Q 580 518 660 512"
         fill="none" stroke="#2a3a22" strokeWidth="3" opacity="0.45"
       />
+
+      {/* COTTAGE in mid-distance with smoke chimney */}
+      <g transform="translate(440 500)" opacity="0.85">
+        <rect x="0" y="0" width="22" height="14" fill="#7a4a3a" />
+        <path d="M -2 0 L 11 -10 L 24 0 Z" fill="#3a2418" />
+        <rect x="4" y="6" width="4" height="6" fill="#fce4a8" opacity="0.7" />
+        <rect x="14" y="6" width="4" height="6" fill="#fce4a8" opacity="0.7" />
+        <rect x="2" y="0" width="3" height="-8" fill="#3a2418" transform="translate(0 8)" />
+        <rect x="3" y="-12" width="3" height="6" fill="#3a2418" />
+        <path d="M 4.5 -12 q -2 -8 0 -14 q 2 -6 0 -10" stroke="#9a8a78" strokeWidth="1.4" fill="none" strokeLinecap="round" opacity="0.55"
+          style={{ animation: 'steamRise 6s ease-out 1s infinite' }} />
+      </g>
+
       {/* Foreground TREES — silhouettes for depth */}
       <g>
         {/* big oak left */}
@@ -435,7 +518,12 @@ function MalvernHills({ seed }: { seed: number }) {
           <path d="M 0 -22 L -14 8 L 14 8 Z" fill="#1a2818" />
           <path d="M 0 -10 L -12 18 L 12 18 Z" fill="#1a2818" />
         </g>
+        {/* small bushes */}
+        <ellipse cx="280" cy="572" rx="14" ry="6" fill="#1a2818" opacity="0.85" />
+        <ellipse cx="380" cy="572" rx="11" ry="5" fill="#22321e" opacity="0.85" />
+        <ellipse cx="490" cy="572" rx="13" ry="5" fill="#1a2818" opacity="0.85" />
       </g>
+
       {/* fence posts in mid-distance */}
       <g opacity="0.45">
         {[180, 240, 300, 380, 440, 500].map((x, i) => (
@@ -446,6 +534,7 @@ function MalvernHills({ seed }: { seed: number }) {
         <line x1="180" y1="518" x2="500" y2="518" stroke="#3a2418" strokeWidth="0.8" />
         <line x1="180" y1="524" x2="500" y2="524" stroke="#3a2418" strokeWidth="0.8" />
       </g>
+
       {/* Trees on ridge */}
       {[120, 180, 260, 340, 420, 500, 580, 640].map((x, i) => (
         <g key={i} transform={`translate(${x + (i % 2) * 4} ${488 + (i % 3) * 4})`}>
@@ -453,20 +542,46 @@ function MalvernHills({ seed }: { seed: number }) {
           <ellipse cx="0" cy="-2" rx="2" ry="4" fill="#3a4e2a" opacity="0.85" />
         </g>
       ))}
+
       {/* Sheep */}
       {Array.from({ length: sheep }).map((_, i) => (
-        <g key={i} transform={`translate(${200 + i * 90} ${478 - (i % 2) * 8})`}>
+        <g key={i} transform={`translate(${200 + i * 70} ${478 - (i % 2) * 8})`}>
           <ellipse cx="0" cy="0" rx="3.5" ry="2.4" fill="#f4ead8" opacity="0.9" />
           <circle cx="-2.6" cy="-0.6" r="1.2" fill="#3a2418" opacity="0.7" />
           <line x1="-2" y1="2" x2="-2" y2="3.5" stroke="#3a2418" strokeWidth="0.5" />
           <line x1="2" y1="2" x2="2" y2="3.5" stroke="#3a2418" strokeWidth="0.5" />
         </g>
       ))}
+
       {/* Path winding */}
       <path d="M 320 580 Q 360 530 380 480 Q 400 430 380 400" stroke="#c89c70" strokeWidth="3" fill="none" opacity="0.4" />
       <path d="M 320 580 Q 360 530 380 480 Q 400 430 380 400" stroke="#fde0b8" strokeWidth="1.4" fill="none" opacity="0.3" />
+      {/* tiny walker on the path */}
+      <g transform="translate(370 470)">
+        <ellipse cx="0" cy="2" rx="1.6" ry="0.6" fill="#1a0a06" opacity="0.55" />
+        <rect x="-1" y="-3" width="2" height="4" fill="#5a3424" opacity="0.85" />
+        <circle cx="0" cy="-5" r="1.2" fill="#c08a72" opacity="0.85" />
+      </g>
+
       {/* Dry stone wall */}
       <path d="M 60 532 Q 130 538 200 535 Q 280 530 360 540" stroke="#8a8678" strokeWidth="2" fill="none" opacity="0.4" />
+
+      {/* Reservoir glint (small lake) */}
+      <ellipse cx="540" cy="500" rx="36" ry="4" fill="#a8c0d8" opacity="0.55" />
+      <path d="M 510 500 q 6 -2 12 0 q 6 -2 12 0" stroke="#fff8e0" strokeWidth="0.4" fill="none" opacity="0.6" />
+    </g>
+  );
+}
+
+/* Birds drifting through sky */
+function Birds() {
+  return (
+    <g pointerEvents="none">
+      <g style={{ animation: 'birdFlyA 50s linear infinite' }}>
+        <path d="M 0 0 q 4 -4 8 0 q 4 -4 8 0" stroke="#3a2418" strokeWidth="1.2" fill="none" strokeLinecap="round" opacity="0.7" />
+        <path d="M 16 4 q 3 -3 6 0 q 3 -3 6 0" stroke="#3a2418" strokeWidth="1" fill="none" strokeLinecap="round" opacity="0.6" />
+        <path d="M 8 -8 q 3 -3 6 0 q 3 -3 6 0" stroke="#3a2418" strokeWidth="0.8" fill="none" strokeLinecap="round" opacity="0.5" />
+      </g>
     </g>
   );
 }
@@ -544,28 +659,96 @@ function WindowSill() {
       {/* shadow under sill */}
       <rect x="36" y="620" width="648" height="6" fill="#000" opacity="0.45" />
 
-      {/* small potted plant on left of sill */}
-      <g style={{ transformOrigin: '110px 600px', animation: 'leafSwayA 9s ease-in-out infinite' }}>
-        <path d="M 88 596 L 132 596 L 128 622 L 92 622 Z" fill="#7a3e22" />
-        <ellipse cx="110" cy="596" rx="22" ry="4" fill="#5a2a14" />
-        <path d="M 92 594 Q 82 564 92 539" stroke="#5a7e4a" strokeWidth="2" fill="none" />
-        <ellipse cx="86" cy="554" rx="6" ry="13" fill="url(#leafGrad)" transform="rotate(-30 86 554)" />
-        <ellipse cx="94" cy="546" rx="5" ry="12" fill="#7a9c5e" transform="rotate(-15 94 546)" />
-        <path d="M 128 594 Q 138 564 130 539" stroke="#5a7e4a" strokeWidth="2" fill="none" />
-        <ellipse cx="132" cy="556" rx="6" ry="14" fill="url(#leafGrad)" transform="rotate(25 132 556)" />
-        <ellipse cx="138" cy="566" rx="5" ry="12" fill="#7a9c5e" transform="rotate(35 138 566)" />
-        <path d="M 110 594 Q 112 572 110 552" stroke="#5a7e4a" strokeWidth="2" fill="none" />
-        <ellipse cx="108" cy="556" rx="6" ry="14" fill="#8aae6a" />
-        <ellipse cx="114" cy="566" rx="5" ry="11" fill="#7a9c5e" transform="rotate(15 114 566)" />
+      {/* small leafy plant on left of sill */}
+      <g style={{ transformOrigin: '78px 600px', animation: 'leafSwayA 9s ease-in-out infinite' }}>
+        <path d="M 60 596 L 96 596 L 92 622 L 64 622 Z" fill="#7a3e22" />
+        <ellipse cx="78" cy="596" rx="18" ry="3.5" fill="#5a2a14" />
+        <path d="M 64 594 Q 56 568 64 542" stroke="#5a7e4a" strokeWidth="2" fill="none" />
+        <ellipse cx="58" cy="554" rx="5" ry="12" fill="url(#leafGrad)" transform="rotate(-30 58 554)" />
+        <ellipse cx="66" cy="548" rx="4" ry="11" fill="#7a9c5e" transform="rotate(-15 66 548)" />
+        <path d="M 90 594 Q 96 568 92 542" stroke="#5a7e4a" strokeWidth="2" fill="none" />
+        <ellipse cx="92" cy="556" rx="5" ry="13" fill="url(#leafGrad)" transform="rotate(25 92 556)" />
+        <path d="M 78 594 Q 80 572 78 552" stroke="#5a7e4a" strokeWidth="2" fill="none" />
+        <ellipse cx="76" cy="558" rx="5" ry="13" fill="#8aae6a" />
+      </g>
+
+      {/* SUCCULENT in tiny pot on left-mid sill */}
+      <g style={{ transformOrigin: '128px 600px', animation: 'leafSwayB 11s ease-in-out infinite' }}>
+        <path d="M 116 600 L 142 600 L 140 620 L 118 620 Z" fill="#a04a3a" />
+        <ellipse cx="129" cy="600" rx="13" ry="3" fill="#7a2a18" />
+        <ellipse cx="129" cy="594" rx="9" ry="5" fill="#6a8a4e" />
+        <ellipse cx="124" cy="589" rx="4" ry="6" fill="#7a9c5e" />
+        <ellipse cx="134" cy="588" rx="4" ry="6" fill="#8aae6a" />
+        <ellipse cx="129" cy="585" rx="3" ry="5" fill="#9abe7a" />
+      </g>
+
+      {/* TRAILING POTHOS on right sill */}
+      <g style={{ transformOrigin: '160px 600px', animation: 'leafSwayA 13s ease-in-out infinite' }}>
+        <path d="M 154 600 L 174 600 L 172 620 L 156 620 Z" fill="#5a3424" />
+        <ellipse cx="164" cy="600" rx="10" ry="2.4" fill="#3a2018" />
+        {/* trailing vine going down off the sill */}
+        <path d="M 158 612 Q 152 640 156 670 Q 162 700 156 730" stroke="#5a7e4a" strokeWidth="1.4" fill="none" />
+        <ellipse cx="154" cy="630" rx="3.5" ry="6" fill="#9abe7a" transform="rotate(-30 154 630)" />
+        <ellipse cx="158" cy="650" rx="3" ry="5" fill="#8aae6a" transform="rotate(-15 158 650)" />
+        <ellipse cx="153" cy="670" rx="3.2" ry="5" fill="#7a9c5e" transform="rotate(20 153 670)" />
+        <ellipse cx="158" cy="694" rx="3" ry="4.5" fill="#8aae6a" transform="rotate(-10 158 694)" />
+        <ellipse cx="155" cy="715" rx="3" ry="4.4" fill="#7a9c5e" transform="rotate(15 155 715)" />
+        <path d="M 168 612 Q 174 632 170 654" stroke="#5a7e4a" strokeWidth="1.2" fill="none" />
+        <ellipse cx="172" cy="628" rx="3" ry="5" fill="#9abe7a" transform="rotate(20 172 628)" />
+        <ellipse cx="170" cy="646" rx="3" ry="4.5" fill="#8aae6a" transform="rotate(30 170 646)" />
+        {/* leaves still up */}
+        <ellipse cx="156" cy="588" rx="6" ry="9" fill="#9abe7a" transform="rotate(-30 156 588)" />
+        <ellipse cx="172" cy="586" rx="6" ry="9" fill="#8aae6a" transform="rotate(20 172 586)" />
+      </g>
+
+      {/* Crystal cluster — small geode/quartz */}
+      <g transform="translate(192 600)">
+        <ellipse cx="8" cy="20" rx="14" ry="3" fill="#1a0a06" opacity="0.4" />
+        <path d="M -2 18 L 4 4 L 8 16 L 12 6 L 18 18 Z" fill="#a8b0d0" opacity="0.85" />
+        <path d="M 4 4 L 8 16 L 12 6 Z" fill="#cdd5e8" opacity="0.7" />
+        <path d="M 2 10 L 5 6 M 14 8 L 16 14" stroke="#fff" strokeWidth="0.4" opacity="0.7" />
       </g>
 
       {/* Book on right of sill */}
-      <g transform="translate(60 580)">
-        <rect width="62" height="14" fill="#8a3838" rx="1" />
-        <rect width="62" height="3" fill="#6a2828" />
-        <line x1="2" y1="2" x2="60" y2="2" stroke="#5a1a1a" strokeWidth="0.4" />
-        <line x1="2" y1="11" x2="60" y2="11" stroke="#5a1a1a" strokeWidth="0.4" />
-        <text x="31" y="10" textAnchor="middle" fontSize="6" fill="#fff8e0" fontFamily="serif">poetry</text>
+      <g transform="translate(220 580)">
+        <rect width="58" height="14" fill="#8a3838" rx="1" />
+        <rect width="58" height="3" fill="#6a2828" />
+        <line x1="2" y1="2" x2="56" y2="2" stroke="#5a1a1a" strokeWidth="0.4" />
+        <text x="29" y="10" textAnchor="middle" fontSize="6" fill="#fff8e0" fontFamily="serif">poetry</text>
+      </g>
+
+      {/* tiny bird figurine */}
+      <g transform="translate(298 588)">
+        <ellipse cx="6" cy="14" rx="10" ry="2.4" fill="#1a0a06" opacity="0.4" />
+        <ellipse cx="6" cy="10" rx="7" ry="5" fill="#9abe7a" />
+        <ellipse cx="2" cy="7" rx="3.4" ry="3" fill="#9abe7a" />
+        <ellipse cx="0" cy="7" rx="0.6" ry="0.6" fill="#0a0605" />
+        <path d="M -2 8 L -5 8" stroke="#c97844" strokeWidth="0.8" />
+        <path d="M 8 12 q 2 -1 4 0" stroke="#5a7e4a" strokeWidth="0.5" fill="none" />
+      </g>
+
+      {/* small candle in jar */}
+      <g transform="translate(580 580)">
+        <rect x="0" y="6" width="22" height="22" rx="2" fill="#fbf1e0" opacity="0.85" />
+        <rect x="0" y="6" width="22" height="22" rx="2" fill="none" stroke="#a08470" strokeWidth="0.5" opacity="0.6" />
+        <rect x="2" y="22" width="18" height="4" fill="#f4ead8" opacity="0.85" />
+        <line x1="11" y1="6" x2="11" y2="2" stroke="#1a1410" strokeWidth="0.6" />
+        <ellipse cx="11" cy="0" rx="2" ry="3.5" fill="#ffce8a"
+          style={{ animation: 'flicker 3.5s ease-in-out infinite' }} />
+        <ellipse cx="11" cy="1" rx="0.7" ry="2" fill="#fff8e0" />
+      </g>
+
+      {/* MUG SUCCULENT (a plant in a mug) on right sill */}
+      <g style={{ transformOrigin: '628px 600px', animation: 'leafSwayB 12s ease-in-out infinite' }}>
+        <path d="M 614 596 L 642 596 L 640 622 L 616 622 Z" fill="#fbf1e0" />
+        <ellipse cx="628" cy="596" rx="14" ry="3" fill="#3a2418" />
+        <ellipse cx="628" cy="596" rx="11" ry="2" fill="#7a4828" />
+        <ellipse cx="628" cy="588" rx="8" ry="6" fill="#6a8a4e" />
+        <ellipse cx="624" cy="582" rx="4" ry="6" fill="#7a9c5e" transform="rotate(-15 624 582)" />
+        <ellipse cx="632" cy="580" rx="4" ry="6" fill="#8aae6a" transform="rotate(15 632 580)" />
+        <ellipse cx="628" cy="576" rx="3" ry="4" fill="#9abe7a" />
+        {/* mug handle */}
+        <path d="M 642 600 Q 650 600 650 612 Q 650 620 644 620" stroke="#a08470" strokeWidth="2" fill="none" />
       </g>
     </g>
   );
@@ -800,6 +983,128 @@ function PolaroidWall() {
   );
 }
 
+/* Floating wood shelf on LEFT WALL — placed ABOVE the lamp, in clear wall space */
+function LeftWallShelf() {
+  return (
+    <g transform="translate(72 720)">
+      {/* shelf */}
+      <rect x="0" y="0" width="160" height="3" fill="#1a0a06" opacity="0.5" />
+      <rect x="0" y="-10" width="160" height="10" fill="#3a2418" />
+      <rect x="0" y="-10" width="160" height="2" fill="#7a4830" opacity="0.7" />
+
+      {/* tiny framed photo */}
+      <g transform="translate(2 -42) rotate(-4)">
+        <rect width="22" height="28" fill="#1a0e08" />
+        <rect x="2" y="2" width="18" height="24" fill="#fbf1e0" />
+        <ellipse cx="11" cy="11" rx="5" ry="5" fill="#c97844" />
+        <ellipse cx="11" cy="10" rx="2.4" ry="1.6" fill="#fff" />
+        <path d="M 3 20 Q 11 18 19 20 L 19 24 L 3 24 Z" fill="#5a7e4a" opacity="0.6" />
+      </g>
+
+      {/* Tea tin (small) */}
+      <g transform="translate(28 -36)">
+        <rect width="18" height="26" fill="#9a4030" rx="1" />
+        <rect width="18" height="5" fill="#6a2818" />
+        <text x="9" y="18" textAnchor="middle" fontSize="5" fill="#fff8e0" fontFamily="serif" fontStyle="italic">tea</text>
+      </g>
+
+      {/* Stack of small books leaning */}
+      <g transform="translate(50 -36)">
+        <rect width="5" height="26" fill="#3a4858" />
+        <rect x="5" width="5" height="26" fill="#a04a4a" />
+        <rect x="10" width="5" height="26" fill="#7a6843" />
+      </g>
+
+      {/* tiny vase with single flower */}
+      <g transform="translate(72 -38)">
+        <path d="M 0 18 L 12 18 L 10 28 L 2 28 Z" fill="#fbf1e0" opacity="0.85" />
+        <ellipse cx="6" cy="18" rx="6" ry="1.6" fill="#3a2418" />
+        <line x1="6" y1="18" x2="6" y2="2" stroke="#5a7e4a" strokeWidth="0.8" />
+        <ellipse cx="6" cy="0" rx="3.4" ry="3" fill="#ec88a8" />
+        <circle cx="6" cy="0" r="1.2" fill="#fbe2ba" />
+      </g>
+
+      {/* small succulent in mug */}
+      <g transform="translate(94 -28)" style={{ transformOrigin: '8px 18px', animation: 'leafSwayB 13s ease-in-out infinite' }}>
+        <path d="M 0 12 L 16 12 L 14 28 L 2 28 Z" fill="#fbf1e0" />
+        <path d="M 16 14 q 6 0 6 6 q 0 6 -4 6" stroke="#a08470" strokeWidth="1.4" fill="none" />
+        <ellipse cx="8" cy="12" rx="8" ry="2" fill="#3a2418" />
+        <ellipse cx="8" cy="6" rx="6" ry="4" fill="#6a8a4e" />
+        <ellipse cx="4" cy="3" rx="3" ry="4" fill="#7a9c5e" />
+        <ellipse cx="11" cy="3" rx="3" ry="4" fill="#8aae6a" />
+        <ellipse cx="8" cy="0" rx="2.4" ry="3" fill="#9abe7a" />
+      </g>
+
+      {/* tiny crystal */}
+      <g transform="translate(122 -22)">
+        <ellipse cx="6" cy="20" rx="8" ry="1.4" fill="#1a0e08" opacity="0.4" />
+        <path d="M 0 18 L 4 6 L 8 16 L 12 6 L 16 18 Z" fill="#bccae0" opacity="0.85" />
+        <path d="M 4 6 L 8 16 L 12 6 Z" fill="#dde8f0" opacity="0.7" />
+      </g>
+
+      {/* postcard leaning */}
+      <g transform="translate(140 -34) rotate(6)">
+        <rect width="20" height="28" fill="#fef8e0" />
+        <rect width="20" height="9" fill="#9ec3df" />
+        <text x="10" y="22" textAnchor="middle" fontSize="5" fill="#5a3424" fontFamily="Caveat, cursive">love u</text>
+      </g>
+    </g>
+  );
+}
+
+/* Right wall: dried flower wreath + small home sign */
+function RightWallDecor() {
+  return (
+    <g>
+      {/* dried flower wreath, hanging from top */}
+      <g transform="translate(580 660)" style={{ transformOrigin: '0 0', animation: 'leafSwayB 14s ease-in-out infinite' }}>
+        {/* hanging string */}
+        <line x1="0" y1="-12" x2="0" y2="0" stroke="#3a2418" strokeWidth="0.6" opacity="0.6" />
+        {/* wreath base — circle of stems */}
+        <circle cx="0" cy="20" r="22" fill="none" stroke="#7a4828" strokeWidth="3" opacity="0.85" />
+        <circle cx="0" cy="20" r="22" fill="none" stroke="#5a3018" strokeWidth="1.4" opacity="0.5" />
+        {/* dried sprigs around */}
+        {Array.from({ length: 12 }).map((_, i) => {
+          const a = (i / 12) * Math.PI * 2;
+          const x = Math.cos(a) * 22;
+          const y = 20 + Math.sin(a) * 22;
+          const colors = ['#c97844', '#9abe7a', '#a85970', '#fbe2ba', '#ec88a8', '#7a9c5e'];
+          return (
+            <g key={i} transform={`translate(${x} ${y}) rotate(${(a * 180 / Math.PI) + 90})`}>
+              <ellipse cx="0" cy="-3" rx="2.4" ry="4" fill={colors[i % colors.length]} opacity="0.85" />
+              <ellipse cx="0" cy="-1" rx="1.4" ry="2.4" fill={colors[(i + 2) % colors.length]} opacity="0.7" />
+            </g>
+          );
+        })}
+        {/* small heart ribbon at top */}
+        <path d="M 0 -2 q -3 -3 -5 0 q -2 3 5 8 q 7 -5 5 -8 q -2 -3 -5 0 Z" fill="#c75a4a" opacity="0.85" />
+      </g>
+    </g>
+  );
+}
+
+/* Wall poster — typography "home" or pressed flowers */
+function WallPoster() {
+  return (
+    <g transform="translate(212 800) rotate(-2)">
+      {/* frame */}
+      <rect width="58" height="76" fill="#3a2418" />
+      <rect x="2" y="2" width="54" height="72" fill="#fef8e0" />
+      {/* pressed flowers inside */}
+      <g transform="translate(29 32)">
+        <ellipse cx="0" cy="0" rx="4" ry="6" fill="#c97844" opacity="0.85" transform="rotate(-15 0 0)" />
+        <ellipse cx="-6" cy="-10" rx="3" ry="5" fill="#a85970" opacity="0.85" transform="rotate(-30)" />
+        <ellipse cx="8" cy="-6" rx="3" ry="5" fill="#9abe7a" opacity="0.85" transform="rotate(20)" />
+        <ellipse cx="0" cy="14" rx="3" ry="6" fill="#7a9c5e" opacity="0.85" />
+        <line x1="0" y1="0" x2="0" y2="14" stroke="#5a7e4a" strokeWidth="0.6" />
+        <line x1="-6" y1="-10" x2="0" y2="0" stroke="#5a7e4a" strokeWidth="0.5" />
+        <line x1="8" y1="-6" x2="0" y2="0" stroke="#5a7e4a" strokeWidth="0.5" />
+      </g>
+      <text x="29" y="64" textAnchor="middle" fontSize="9" fill="#5a3424" fontFamily="Caveat, cursive">malvern</text>
+    </g>
+  );
+}
+
 function WallChalkboard({ daysRemaining }: { daysRemaining: number }) {
   // small chalkboard hanging on right wall side, between sill and desk
   return (
@@ -890,6 +1195,83 @@ function Bunting() {
   );
 }
 
+/* Macrame hanging plant in upper-right of room */
+function MacramePlant() {
+  return (
+    <g transform="translate(630 0)" style={{ transformOrigin: '0 100px', animation: 'leafSwayB 12s ease-in-out infinite' }}>
+      {/* macrame ropes */}
+      <line x1="0" y1="0" x2="-12" y2="120" stroke="#dccab0" strokeWidth="1" opacity="0.85" />
+      <line x1="0" y1="0" x2="12" y2="120" stroke="#dccab0" strokeWidth="1" opacity="0.85" />
+      <line x1="0" y1="0" x2="0" y2="118" stroke="#dccab0" strokeWidth="1" opacity="0.85" />
+      {/* knots in macrame */}
+      <g fill="#dccab0">
+        <circle cx="-8" cy="40" r="2" />
+        <circle cx="8" cy="40" r="2" />
+        <circle cx="0" cy="40" r="2" />
+        <circle cx="-10" cy="80" r="2" />
+        <circle cx="10" cy="80" r="2" />
+        <circle cx="0" cy="80" r="2" />
+        <circle cx="-12" cy="116" r="2.4" />
+        <circle cx="12" cy="116" r="2.4" />
+        <circle cx="0" cy="116" r="2.4" />
+      </g>
+      {/* twined diamonds */}
+      <path d="M -8 50 L 0 60 L 8 50 M -8 70 L 0 60 L 8 70" stroke="#dccab0" strokeWidth="0.8" fill="none" opacity="0.7" />
+      <path d="M -10 90 L 0 100 L 10 90 M -10 110 L 0 100 L 10 110" stroke="#dccab0" strokeWidth="0.8" fill="none" opacity="0.7" />
+
+      {/* pot */}
+      <ellipse cx="0" cy="120" rx="20" ry="4" fill="#3a2418" opacity="0.55" />
+      <path d="M -22 120 L 22 120 L 18 144 L -18 144 Z" fill="#7a4828" />
+      <ellipse cx="0" cy="120" rx="22" ry="5" fill="#5a3018" />
+
+      {/* string of pearls plant — trailing */}
+      <g>
+        <path d="M -14 124 Q -22 160 -28 196 Q -32 220 -28 232" stroke="#5a7e4a" strokeWidth="1.2" fill="none" opacity="0.85" />
+        {[130, 140, 152, 164, 176, 188, 200, 212, 222, 232].map((y, i) => (
+          <circle key={i} cx={-16 - i * 1.2} cy={y} r={2.8 - i * 0.1} fill="#9abe7a" />
+        ))}
+        <path d="M 14 124 Q 22 158 28 192 Q 30 214 26 226" stroke="#5a7e4a" strokeWidth="1.2" fill="none" opacity="0.85" />
+        {[130, 140, 152, 164, 176, 188, 200, 212, 222].map((y, i) => (
+          <circle key={i} cx={16 + i * 1.4} cy={y} r={2.8 - i * 0.1} fill="#8aae6a" />
+        ))}
+        <path d="M 0 124 Q 4 156 -2 188" stroke="#5a7e4a" strokeWidth="1.2" fill="none" opacity="0.85" />
+        {[130, 142, 154, 166, 178].map((y, i) => (
+          <circle key={i} cx={2 - i * 0.6} cy={y} r={2.6 - i * 0.1} fill="#9abe7a" />
+        ))}
+      </g>
+    </g>
+  );
+}
+
+/* Sun catcher hanging inside the window — crystal that catches light */
+function SunCatcher() {
+  return (
+    <g transform="translate(560 80)" style={{ transformOrigin: '0 0', animation: 'leafSwayB 16s ease-in-out infinite' }}>
+      {/* string */}
+      <line x1="0" y1="0" x2="0" y2="120" stroke="#3a2418" strokeWidth="0.5" opacity="0.55" />
+      {/* small beads on string */}
+      <circle cx="0" cy="40" r="2.4" fill="#a08470" opacity="0.7" />
+      <circle cx="0" cy="60" r="3" fill="#9abe7a" opacity="0.7" />
+      <circle cx="0" cy="80" r="2.4" fill="#c75a4a" opacity="0.7" />
+      {/* crystal prism */}
+      <g style={{ transformOrigin: '0 105px', animation: 'spin 22s linear infinite' }}>
+        <path d="M -10 110 L 0 90 L 10 110 L 0 130 Z" fill="#d8e8f0" opacity="0.7" />
+        <path d="M -10 110 L 0 90 L 0 130 Z" fill="#a8b8c8" opacity="0.7" />
+        <path d="M 0 90 L 10 110 L 0 130 Z" fill="#f4fcff" opacity="0.85" />
+        {/* facet shines */}
+        <path d="M -6 108 L -2 96 M 4 96 L 8 108 M -2 124 L -6 116" stroke="#fff8e0" strokeWidth="0.4" opacity="0.85" />
+      </g>
+      {/* tiny rainbow casts on sill */}
+      <g opacity="0.65" style={{ animation: 'fairyPulse 5s ease-in-out infinite' }}>
+        <ellipse cx="-50" cy="500" rx="3" ry="1.4" fill="#c75a4a" opacity="0.5" />
+        <ellipse cx="-44" cy="500" rx="3" ry="1.4" fill="#fcd092" opacity="0.5" />
+        <ellipse cx="-38" cy="500" rx="3" ry="1.4" fill="#9abe7a" opacity="0.5" />
+        <ellipse cx="-32" cy="500" rx="3" ry="1.4" fill="#a8c0d8" opacity="0.5" />
+      </g>
+    </g>
+  );
+}
+
 function HangingPlant() {
   return (
     <g transform="translate(36 0)" style={{ transformOrigin: '36px 80px', animation: 'leafSwayA 11s ease-in-out infinite' }}>
@@ -975,6 +1357,57 @@ function Floor() {
           <ellipse cx="72" cy="36" rx="1.4" ry="1.2" />
           <ellipse cx="76" cy="38" rx="1.4" ry="1.2" />
         </g>
+        {/* squeaky toy */}
+        <g transform="translate(36 30)">
+          <ellipse cx="6" cy="8" rx="10" ry="2" fill="#1a0a06" opacity="0.4" />
+          <ellipse cx="6" cy="4" rx="9" ry="6" fill="#fbe2ba" />
+          <ellipse cx="2" cy="2" rx="2" ry="3" fill="#fbe2ba" />
+          <ellipse cx="0.5" cy="2" rx="0.6" ry="0.6" fill="#0a0605" />
+          <path d="M -2 4 Q -4 4 -4 6" stroke="#5a3424" strokeWidth="0.5" fill="none" />
+          <ellipse cx="9" cy="6" rx="3" ry="1" fill="#c75a4a" opacity="0.6" />
+        </g>
+      </g>
+
+      {/* FOREGROUND BIG POTTED PLANT — far right corner */}
+      <g transform="translate(620 1060)" style={{ transformOrigin: '70px 200px', animation: 'leafSwayB 13s ease-in-out infinite' }}>
+        {/* drop shadow */}
+        <ellipse cx="70" cy="200" rx="70" ry="10" fill="#1a0a06" opacity="0.5" />
+        {/* terracotta pot */}
+        <path d="M 14 100 L 126 100 L 116 196 L 24 196 Z" fill="#a04a3a" />
+        <path d="M 14 100 L 126 100 L 122 110 L 18 110 Z" fill="#7a2818" opacity="0.65" />
+        <ellipse cx="70" cy="100" rx="56" ry="8" fill="#5a1d18" />
+        <ellipse cx="70" cy="100" rx="50" ry="6" fill="#3a0e08" opacity="0.8" />
+        {/* pot rim */}
+        <rect x="14" y="100" width="112" height="3" fill="#7a2818" />
+        {/* big leaves coming up — like a fiddle leaf or large monstera */}
+        {/* main stem */}
+        <path d="M 56 100 Q 50 80 56 60 Q 64 40 60 0" stroke="#5a7e4a" strokeWidth="2.4" fill="none" />
+        <path d="M 70 100 Q 76 80 70 60 Q 64 40 70 10" stroke="#5a7e4a" strokeWidth="2" fill="none" />
+        <path d="M 86 100 Q 88 70 84 40" stroke="#5a7e4a" strokeWidth="1.8" fill="none" />
+        {/* big leaves */}
+        <path d="M 56 -4 Q 36 -10 28 6 Q 24 24 38 24 Q 56 22 60 6 Q 60 0 56 -4 Z" fill="#5a8a4a" />
+        <path d="M 56 -4 Q 60 6 60 6 Q 56 12 50 16" stroke="#3a5a30" strokeWidth="0.8" fill="none" />
+        <path d="M 70 6 Q 92 0 96 18 Q 96 36 80 38 Q 66 32 68 14 Q 68 8 70 6 Z" fill="#6a9c5a" />
+        <path d="M 70 6 Q 78 24 80 38" stroke="#3a5a30" strokeWidth="0.8" fill="none" />
+        <path d="M 60 30 Q 38 26 32 44 Q 32 60 50 58 Q 64 54 64 36 Q 64 32 60 30 Z" fill="#7aae5e" />
+        <path d="M 60 30 Q 56 44 50 58" stroke="#3a5a30" strokeWidth="0.8" fill="none" />
+        <path d="M 84 36 Q 104 30 110 48 Q 110 62 92 62 Q 80 56 80 42 Q 80 36 84 36 Z" fill="#5a8a4a" />
+        <path d="M 84 36 Q 90 50 92 62" stroke="#3a5a30" strokeWidth="0.8" fill="none" />
+        <path d="M 56 60 Q 36 56 32 76 Q 36 90 52 88 Q 64 80 60 64 Q 58 60 56 60 Z" fill="#6a9c5a" />
+      </g>
+
+      {/* Knit basket of yarn */}
+      <g transform="translate(20 1212)">
+        <ellipse cx="22" cy="46" rx="26" ry="6" fill="#1a0a06" opacity="0.5" />
+        <path d="M 0 24 Q 0 8 22 8 Q 44 8 44 24 L 42 46 Q 42 50 22 50 Q 2 50 2 46 Z" fill="#9a7a5a" />
+        <path d="M 0 24 Q 0 14 22 14 Q 44 14 44 24" stroke="#5a3424" strokeWidth="0.6" fill="none" opacity="0.7" />
+        <ellipse cx="22" cy="24" rx="22" ry="6" fill="#7a5828" />
+        {/* yarn ball inside */}
+        <circle cx="22" cy="22" r="11" fill="#c75a4a" />
+        <path d="M 14 22 q 4 -2 8 0 q 4 2 8 0 M 12 26 q 4 -2 10 0 q 4 2 8 -2 M 14 18 q 4 2 8 0 q 4 -2 8 2" stroke="#9a3a30" strokeWidth="0.5" fill="none" opacity="0.75" />
+        {/* knitting needles */}
+        <line x1="32" y1="8" x2="44" y2="-6" stroke="#fbf1e0" strokeWidth="1" />
+        <circle cx="44" cy="-6" r="1.4" fill="#fbf1e0" />
       </g>
     </g>
   );
@@ -1063,6 +1496,77 @@ function Desk() {
         <rect x="6" y="24" width="18" height="2" fill="#3a2418" />
         <circle cx="74" cy="13" r="0.9" fill="#7afca8" style={{ animation: 'fairyPulse 3s ease-in-out infinite' }} />
       </g>
+
+      {/* PHONE face down (right side of desk) */}
+      <g transform="translate(626 854) rotate(8)">
+        <rect width="40" height="74" rx="6" fill="#1a1410" />
+        <rect x="2" y="2" width="36" height="70" rx="5" fill="#2a1f1a" />
+        {/* camera bump */}
+        <rect x="6" y="6" width="14" height="14" rx="3" fill="#0a0605" />
+        <circle cx="10" cy="10" r="1.6" fill="#3a2418" />
+        <circle cx="16" cy="10" r="1.6" fill="#3a2418" />
+        <circle cx="10" cy="16" r="1.4" fill="#3a2418" />
+      </g>
+
+      {/* sticky notes pad */}
+      <g transform="translate(40 894) rotate(-4)">
+        <rect width="30" height="30" fill="#fbe2ba" />
+        <rect width="30" height="30" fill="#fbe2ba" transform="translate(2 2)" opacity="0.85" />
+        <text x="15" y="14" textAnchor="middle" fontSize="6" fill="#5a3424" fontFamily="Caveat, cursive">tea ☕</text>
+        <text x="15" y="22" textAnchor="middle" fontSize="6" fill="#5a3424" fontFamily="Caveat, cursive">walk</text>
+        <text x="15" y="29" textAnchor="middle" fontSize="6" fill="#5a3424" fontFamily="Caveat, cursive">x ♡</text>
+      </g>
+
+      {/* JAR OF PENS */}
+      <g transform="translate(220 838)">
+        <ellipse cx="14" cy="34" rx="16" ry="3" fill="#1a0a06" opacity="0.4" />
+        <path d="M 0 4 Q 0 0 4 0 L 24 0 Q 28 0 28 4 L 28 32 Q 28 36 24 36 L 4 36 Q 0 36 0 32 Z" fill="#fbf1e0" opacity="0.85" />
+        <ellipse cx="14" cy="4" rx="13" ry="2.6" fill="#3a2418" opacity="0.4" />
+        {/* pens sticking up */}
+        <rect x="6" y="-12" width="3" height="22" fill="#c75a4a" rx="1" />
+        <rect x="6" y="-12" width="3" height="3" fill="#3a2418" />
+        <rect x="11" y="-16" width="3" height="26" fill="#3a4858" rx="1" />
+        <rect x="11" y="-16" width="3" height="3" fill="#fcd092" />
+        <rect x="16" y="-10" width="3" height="20" fill="#5a7e4a" rx="1" />
+        <rect x="20" y="-14" width="3" height="24" fill="#9a4030" rx="1" />
+        {/* paintbrush */}
+        <rect x="3" y="-18" width="2.4" height="28" fill="#7a4828" />
+        <path d="M 4 -18 L 5.5 -22 L 7 -18 Z" fill="#3a2418" />
+      </g>
+
+      {/* WASHI TAPE roll */}
+      <g transform="translate(440 884)">
+        <ellipse cx="14" cy="18" rx="14" ry="2.4" fill="#1a0a06" opacity="0.4" />
+        <ellipse cx="14" cy="14" rx="14" ry="3" fill="#ec88a8" />
+        <ellipse cx="14" cy="14" rx="6" ry="1.4" fill="#1a0a06" />
+        <path d="M 0 14 q 4 -1 8 0 q 4 -1 8 0 q 4 -1 8 0" stroke="#fff8e0" strokeWidth="0.6" fill="none" opacity="0.7" />
+      </g>
+
+      {/* POLAROID CAMERA on right of desk */}
+      <g transform="translate(560 858) rotate(-4)">
+        <rect width="48" height="36" rx="3" fill="#fef8e0" />
+        <rect x="2" y="2" width="44" height="32" rx="2" fill="#fdf0d0" />
+        <circle cx="24" cy="18" r="9" fill="#1a1410" />
+        <circle cx="24" cy="18" r="6" fill="#3a2418" />
+        <circle cx="24" cy="18" r="3" fill="#0a0605" />
+        <circle cx="24" cy="18" r="1.5" fill="#5a3424" />
+        <rect x="38" y="6" width="6" height="3" fill="#3a2418" rx="0.5" />
+        <rect x="38" y="11" width="6" height="2" fill="#5a3424" />
+        <rect x="6" y="6" width="6" height="3" fill="#c75a4a" rx="0.5" />
+      </g>
+
+      {/* GLASSES (reading glasses) */}
+      <g transform="translate(360 894)">
+        <circle cx="6" cy="6" r="6" fill="none" stroke="#1a1410" strokeWidth="1.4" />
+        <circle cx="22" cy="6" r="6" fill="none" stroke="#1a1410" strokeWidth="1.4" />
+        <line x1="12" y1="6" x2="16" y2="6" stroke="#1a1410" strokeWidth="1.4" />
+      </g>
+
+      {/* COASTER under mug */}
+      <g transform="translate(36 894)">
+        <ellipse cx="30" cy="6" rx="32" ry="6" fill="#9a7a5a" opacity="0.6" />
+        <ellipse cx="30" cy="6" rx="28" ry="4" fill="#fbf1e0" opacity="0.85" />
+      </g>
     </g>
   );
 }
@@ -1108,16 +1612,11 @@ function Hettie() {
         <path d="M 304 882 Q 360 888 416 882" stroke="#9a7a5a" strokeWidth="0.5" fill="none" opacity="0.5" />
       </g>
 
-      {/* RIGHT ARM (her right, viewer's left) — propped up holding head */}
+      {/* RIGHT ARM upper part — going down from shoulder to elbow on desk */}
       <g>
-        <path d="M 250 808 Q 218 836 212 880 Q 210 902 232 902 L 270 902 Q 280 870 286 836 Q 286 818 270 810 Z" fill="url(#hoodieGrad)" />
-        {/* sleeve cuff */}
-        <ellipse cx="240" cy="900" rx="32" ry="6" fill="#dccab0" opacity="0.85" />
-        {/* HAND propping up head — going UP */}
-        <g transform="translate(258 776)">
-          <path d="M 0 0 Q -10 -22 8 -34 Q 28 -38 38 -26 Q 44 -10 36 8 Q 24 20 12 22 Q 0 18 0 0 Z" fill="url(#skinGrad)" />
-          <path d="M 22 -26 Q 28 -32 34 -28 M 26 -14 Q 32 -18 36 -10 M 18 -2 Q 26 -2 30 4" stroke="#c08a72" strokeWidth="0.6" fill="none" opacity="0.6" />
-        </g>
+        <path d="M 268 800 Q 252 836 250 894 L 282 902 Q 290 866 294 836 Q 294 818 286 808 Z" fill="url(#hoodieGrad)" />
+        <path d="M 270 820 Q 268 850 268 890" stroke="#a08470" strokeWidth="1" fill="none" opacity="0.5" />
+        <ellipse cx="266" cy="894" rx="22" ry="6" fill="#dccab0" opacity="0.85" />
       </g>
 
       {/* LEFT ARM resting forward — toward notebook on desk */}
@@ -1180,20 +1679,34 @@ function Hettie() {
         <path d="M 418 706 Q 424 714 422 728 Q 416 736 408 728" fill="url(#skinGrad)" />
         <path d="M 420 712 Q 422 720 418 728" stroke="#c08a72" strokeWidth="0.4" fill="none" opacity="0.6" />
 
-        {/* HAIR — front bangs and crown */}
+        {/* HAIR — crown + CURTAIN BANGS (trendy, parted in middle, swept outward) */}
         <g style={{ transformOrigin: '362px 670px', animation: 'hairSway 9s ease-in-out infinite' }}>
+          {/* crown / top of head hair */}
           <path d="M 302 668 Q 292 654 304 634 Q 326 612 362 612 Q 398 612 420 634 Q 432 654 422 670 Q 398 656 362 656 Q 326 656 302 668 Z" fill="url(#hairBase)" />
-          {/* messy bangs across forehead */}
-          <path d="M 314 666 Q 336 678 362 672 Q 388 678 410 666 Q 414 674 406 682 Q 384 692 362 686 Q 340 692 318 682 Q 312 674 314 666 Z" fill="url(#hairBase)" />
-          {/* loose strands */}
-          <path d="M 322 674 Q 326 692 332 706" stroke="#9a3818" strokeWidth="1.2" fill="none" opacity="0.7" />
-          <path d="M 358 676 Q 356 690 362 700" stroke="#9a3818" strokeWidth="1" fill="none" opacity="0.65" />
-          <path d="M 392 674 Q 396 690 390 704" stroke="#9a3818" strokeWidth="1.1" fill="none" opacity="0.7" />
+
+          {/* CURTAIN BANGS — left side: starts at center top, sweeps down-left outward across forehead */}
+          <path d="M 360 656 Q 350 660 340 668 Q 326 678 314 692 Q 308 700 308 712 Q 312 720 318 716 Q 326 706 332 694 Q 340 678 354 668 Q 358 662 360 656 Z" fill="url(#hairBase)" />
+          {/* CURTAIN BANGS — right side: mirrored */}
+          <path d="M 364 656 Q 374 660 384 668 Q 398 678 410 692 Q 416 700 416 712 Q 412 720 406 716 Q 398 706 392 694 Q 384 678 370 668 Q 366 662 364 656 Z" fill="url(#hairBase)" />
+
+          {/* fine wispy front strands across the part — like baby hairs / softening the part */}
+          <path d="M 348 658 Q 350 666 346 674" stroke="#c95a28" strokeWidth="0.7" fill="none" opacity="0.7" />
+          <path d="M 376 658 Q 374 666 378 674" stroke="#c95a28" strokeWidth="0.7" fill="none" opacity="0.7" />
+
+          {/* shadow under the bangs (so we don't look bald above eyes) */}
+          <path d="M 320 690 Q 362 686 404 690 Q 406 696 400 700 Q 362 696 324 700 Q 318 696 320 690 Z" fill="#5a1a08" opacity="0.35" />
+
+          {/* loose tendrils framing the face */}
+          <path d="M 314 696 Q 308 712 312 728" stroke="url(#hairCurl)" strokeWidth="2.2" fill="none" strokeLinecap="round" opacity="0.85" />
+          <path d="M 410 696 Q 416 712 412 728" stroke="url(#hairCurl)" strokeWidth="2.2" fill="none" strokeLinecap="round" opacity="0.85" />
 
           {/* crown highlight */}
           <path d="M 318 622 Q 362 610 406 622" stroke="url(#hairShine)" strokeWidth="6" fill="none" opacity="0.85" />
           <path d="M 308 638 Q 332 632 358 634" stroke="#ffd078" strokeWidth="1.4" fill="none" opacity="0.6" strokeLinecap="round" />
           <path d="M 372 634 Q 396 632 416 638" stroke="#ffb060" strokeWidth="1.2" fill="none" opacity="0.55" strokeLinecap="round" />
+          {/* fringe shine */}
+          <path d="M 322 670 Q 318 690 318 706" stroke="#ffb070" strokeWidth="1.1" fill="none" opacity="0.55" strokeLinecap="round" />
+          <path d="M 402 670 Q 406 690 406 706" stroke="#ffb070" strokeWidth="1.1" fill="none" opacity="0.55" strokeLinecap="round" />
 
           {/* curl peeking by ear */}
           <path d="M 290 700 Q 288 712 292 720 Q 298 728 304 720" stroke="url(#hairCurl)" strokeWidth="3.4" fill="none" strokeLinecap="round" />
@@ -1206,14 +1719,14 @@ function Hettie() {
         <path d="M 320 712 Q 322 710 326 711 M 346 712 Q 344 710 340 711" stroke="#2a1408" strokeWidth="0.9" fill="none" strokeLinecap="round" opacity="0.55" />
         {/* eyelashes */}
         <path d="M 322 712 L 320 708 M 327 715 L 326 711 M 332 716 L 332 712 M 338 715 L 339 711 M 343 712 L 345 708" stroke="#2a1408" strokeWidth="0.6" strokeLinecap="round" />
-        {/* eyebrow */}
-        <path d="M 318 700 Q 332 694 346 700" stroke="#7a1e08" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+        {/* eyebrow — subtle, well-separated, positioned UNDER the bangs */}
+        <path d="M 322 706 Q 332 702 344 706" stroke="#9a3818" strokeWidth="1.4" fill="none" strokeLinecap="round" opacity="0.85" />
 
         {/* right eye */}
         <path d="M 378 712 Q 390 720 404 712" stroke="#2a1408" strokeWidth="1.8" fill="none" strokeLinecap="round" />
         <path d="M 378 712 Q 380 710 384 711 M 404 712 Q 402 710 398 711" stroke="#2a1408" strokeWidth="0.9" fill="none" strokeLinecap="round" opacity="0.55" />
         <path d="M 380 712 L 378 708 M 385 715 L 384 711 M 390 716 L 390 712 M 396 715 L 397 711 M 401 712 L 403 708" stroke="#2a1408" strokeWidth="0.6" strokeLinecap="round" />
-        <path d="M 376 700 Q 390 694 404 700" stroke="#7a1e08" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+        <path d="M 380 706 Q 390 702 402 706" stroke="#9a3818" strokeWidth="1.4" fill="none" strokeLinecap="round" opacity="0.85" />
 
         {/* nose */}
         <path d="M 362 720 Q 358 734 360 740 Q 364 744 368 742 Q 370 738 366 728" fill="none" stroke="#c08a72" strokeWidth="0.8" opacity="0.7" />
@@ -1260,6 +1773,34 @@ function Hettie() {
       {/* small necklace hint */}
       <path d="M 346 770 Q 362 776 380 770" stroke="#fcd092" strokeWidth="0.7" fill="none" opacity="0.7" />
       <circle cx="362" cy="776" r="1.4" fill="#fcd092" />
+
+      {/* FOREARM going UP from elbow at desk to chin/cheek — drawn IN FRONT of hair so visible */}
+      <g>
+        <path d="M 254 894 Q 240 868 246 836 Q 256 802 280 778 Q 296 768 308 776 Q 314 790 308 808 Q 296 836 280 856 Q 268 884 264 900 Z" fill="url(#hoodieGrad)" />
+        <path d="M 254 880 Q 268 850 286 822" stroke="#a08470" strokeWidth="0.8" fill="none" opacity="0.55" />
+        {/* subtle shadow inside arm */}
+        <path d="M 250 894 Q 244 870 250 838 Q 260 808 280 786" stroke="#1a0a06" strokeWidth="0.6" fill="none" opacity="0.3" />
+        {/* sleeve cuff at wrist */}
+        <ellipse cx="304" cy="780" rx="14" ry="5" fill="#dccab0" opacity="0.9" transform="rotate(-30 304 780)" />
+
+        {/* HAND under the chin — palm propping up cheek/jaw */}
+        <g transform="translate(298 752)">
+          {/* palm + side of hand */}
+          <path d="M 0 6 Q -6 -8 6 -16 Q 22 -18 32 -10 Q 38 4 30 14 Q 22 22 10 22 Q 0 18 0 6 Z" fill="url(#skinGrad)" />
+          {/* fingers visible curled up against the cheek */}
+          <path d="M 6 -12 Q 6 -22 12 -22 Q 18 -22 18 -14" fill="url(#skinGrad)" />
+          <path d="M 14 -10 Q 14 -22 20 -22 Q 26 -20 26 -12" fill="url(#skinGrad)" />
+          <path d="M 22 -8 Q 22 -18 28 -16 Q 32 -12 30 -6" fill="url(#skinGrad)" />
+          {/* knuckle creases / finger detail */}
+          <path d="M 8 -14 Q 12 -18 16 -14 M 16 -12 Q 20 -16 24 -12 M 24 -10 Q 28 -14 30 -8" stroke="#c08a72" strokeWidth="0.5" fill="none" opacity="0.7" />
+          {/* palm shading */}
+          <path d="M 4 4 Q 14 10 24 8" stroke="#c08a72" strokeWidth="0.5" fill="none" opacity="0.55" />
+          {/* shadow under chin from hand */}
+          <path d="M 4 -8 Q 14 -10 24 -8" stroke="#a85040" strokeWidth="0.6" fill="none" opacity="0.4" />
+          {/* tiny gold ring */}
+          <ellipse cx="20" cy="-18" rx="3" ry="1.2" fill="#fcd092" />
+        </g>
+      </g>
     </g>
   );
 }

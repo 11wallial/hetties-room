@@ -146,7 +146,7 @@ function App() {
   return (
     <div className="stage">
       <div className="scene-frame fade-in">
-        <Scene now={now} daysRemaining={daysRemaining} onTapMurphy={handleTapMurphy} />
+        <Scene now={now} daysRemaining={daysRemaining} daysSince={daysSince} totalDays={totalDays} onTapMurphy={handleTapMurphy} />
         <div className="hearts-layer">
           {hearts.map((h) => (
             <span key={h.id} className="heart" style={{ left: `${h.x}%`, animationDelay: `${h.delay}ms` }}>💛</span>

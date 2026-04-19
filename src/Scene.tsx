@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import './Scene.css';
 
-interface SceneProps { now: Date; daysRemaining?: number; onTapMurphy?: () => void }
+interface SceneProps { now: Date; daysRemaining?: number; daysSince?: number; totalDays?: number; onTapMurphy?: () => void }
 
 function getSkyPalette(hour: number) {
   const anchors: { h: number; sky: [string, string, string]; sun: string; sunY: number; haze: string; tint: string; }[] = [
@@ -35,7 +35,7 @@ function getSkyPalette(hour: number) {
   };
 }
 
-export function Scene({ now, daysRemaining = 0, onTapMurphy }: SceneProps) {
+export function Scene({ now, daysRemaining = 0, daysSince = 0, totalDays = 49, onTapMurphy }: SceneProps) {
   const hour = now.getHours() + now.getMinutes() / 60;
   const palette = useMemo(() => getSkyPalette(hour), [Math.floor(hour * 12) / 12]);
   const isNight = hour < 6 || hour > 20;
@@ -271,7 +271,7 @@ export function Scene({ now, daysRemaining = 0, onTapMurphy }: SceneProps) {
         {isNight && <Aurora />}
         {isNight && <ShootingStar seed={seed} />}
 
-        {/* drifting clouds */}
+        {/* drifting clouds — multiple layers with variety */}
         <g opacity="0.92" style={{ animation: 'cloudDriftA 110s linear infinite' }}>
           <Cloud cx={120} cy={170} scale={1.2} fill="#ffe5b8" opacity={0.55} />
           <Cloud cx={420} cy={140} scale={0.85} fill="#ffd8a8" opacity={0.5} />
@@ -281,6 +281,19 @@ export function Scene({ now, daysRemaining = 0, onTapMurphy }: SceneProps) {
           <Cloud cx={200} cy={250} scale={0.9} fill="#fff0d0" opacity={0.45} />
           <Cloud cx={520} cy={280} scale={1} fill="#ffd8a0" opacity={0.45} />
           <Cloud cx={800} cy={240} scale={0.8} fill="#fff0d0" opacity={0.4} />
+        </g>
+        {/* CIRRUS wispy clouds — high up */}
+        <g opacity="0.55" style={{ animation: 'cloudDriftA 200s linear infinite' }}>
+          <CirrusCloud cx={300} cy={110} />
+          <CirrusCloud cx={500} cy={130} />
+        </g>
+        {/* god rays from sun through clouds */}
+        <g opacity="0.16" pointerEvents="none">
+          <path d="M 360 240 L 200 580 L 220 580 L 360 240 Z" fill="#fff0c0" />
+          <path d="M 360 240 L 280 580 L 296 580 L 360 240 Z" fill="#fff0c0" />
+          <path d="M 360 240 L 360 580 L 378 580 L 360 240 Z" fill="#fff0c0" />
+          <path d="M 360 240 L 440 580 L 460 580 L 360 240 Z" fill="#fff0c0" />
+          <path d="M 360 240 L 520 580 L 540 580 L 360 240 Z" fill="#fff0c0" />
         </g>
 
         {/* MALVERN HILLS */}
@@ -333,6 +346,9 @@ export function Scene({ now, daysRemaining = 0, onTapMurphy }: SceneProps) {
       {/* ============= WALL CALENDAR / COUNTDOWN CHALKBOARD ============= */}
       <WallChalkboard daysRemaining={daysRemaining} />
 
+      {/* ============= PAPER WALL CALENDAR with Xs for days passed ============= */}
+      <WallCalendar daysSince={daysSince} totalDays={totalDays} />
+
       {/* ============= WALL CLOCK ============= */}
       <WallClock now={now} />
 
@@ -368,6 +384,9 @@ export function Scene({ now, daysRemaining = 0, onTapMurphy }: SceneProps) {
       {/* ============= HETTIE ============= */}
       <Hettie />
 
+      {/* ============= LOVE LETTER on desk ============= */}
+      <LoveLetter />
+
       {/* ============= STEAM FROM MUG ============= */}
       <Steam />
 
@@ -395,6 +414,15 @@ function Cloud({ cx, cy, scale, fill, opacity = 0.6 }: { cx: number; cy: number;
       <ellipse cx="-30" cy="-6" rx="32" ry="14" fill={fill} />
       <ellipse cx="20" cy="-10" rx="36" ry="16" fill={fill} />
       <ellipse cx="50" cy="-2" rx="28" ry="12" fill={fill} />
+    </g>
+  );
+}
+
+function CirrusCloud({ cx, cy }: { cx: number; cy: number }) {
+  return (
+    <g transform={`translate(${cx} ${cy})`}>
+      <path d="M -40 0 q 20 -6 40 0 q 20 -4 40 0" stroke="#fff8e0" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.7" />
+      <path d="M -30 6 q 14 -3 28 0" stroke="#fff8e0" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.6" />
     </g>
   );
 }
@@ -830,22 +858,24 @@ function MurphyOnSill({ alert: _alert, onTap }: { alert: boolean; onTap?: () => 
         {/* tongue */}
         <ellipse cx="256" cy="520" rx="3" ry="1.6" fill="#c95a4a" opacity="0.55" />
 
-        {/* EYES — large puppy eyes facing forward */}
-        {/* left eye (further from viewer, smaller) */}
-        <g>
-          <ellipse cx="200" cy="470" rx="6" ry="4.5" fill="#fff8e0" opacity="0.35" />
-          <ellipse cx="200" cy="471" rx="4.5" ry="3.6" fill="#1a0e08" />
-          <ellipse cx="200" cy="471" rx="3.4" ry="2.6" fill="url(#murphyEye)" />
-          <circle cx="201.5" cy="469.5" r="1.4" fill="#fff8e0" />
-          <circle cx="199.5" cy="472" r="0.6" fill="#fff" opacity="0.7" />
-        </g>
-        {/* right eye (closer to viewer, larger) */}
-        <g>
-          <ellipse cx="234" cy="468" rx="7" ry="5" fill="#fff8e0" opacity="0.35" />
-          <ellipse cx="234" cy="469" rx="5.4" ry="4" fill="#1a0e08" />
-          <ellipse cx="234" cy="469" rx="4.4" ry="3.2" fill="url(#murphyEye)" />
-          <circle cx="236" cy="467" r="1.7" fill="#fff8e0" />
-          <circle cx="233" cy="470.5" r="0.7" fill="#fff" opacity="0.7" />
+        {/* EYES — large puppy eyes facing forward, with subtle blink */}
+        <g style={{ transformOrigin: '218px 470px', animation: 'eyeBreathDog 11s ease-in-out infinite' }}>
+          {/* left eye (further from viewer, smaller) */}
+          <g>
+            <ellipse cx="200" cy="470" rx="6" ry="4.5" fill="#fff8e0" opacity="0.35" />
+            <ellipse cx="200" cy="471" rx="4.5" ry="3.6" fill="#1a0e08" />
+            <ellipse cx="200" cy="471" rx="3.4" ry="2.6" fill="url(#murphyEye)" />
+            <circle cx="201.5" cy="469.5" r="1.4" fill="#fff8e0" />
+            <circle cx="199.5" cy="472" r="0.6" fill="#fff" opacity="0.7" />
+          </g>
+          {/* right eye (closer to viewer, larger) */}
+          <g>
+            <ellipse cx="234" cy="468" rx="7" ry="5" fill="#fff8e0" opacity="0.35" />
+            <ellipse cx="234" cy="469" rx="5.4" ry="4" fill="#1a0e08" />
+            <ellipse cx="234" cy="469" rx="4.4" ry="3.2" fill="url(#murphyEye)" />
+            <circle cx="236" cy="467" r="1.7" fill="#fff8e0" />
+            <circle cx="233" cy="470.5" r="0.7" fill="#fff" opacity="0.7" />
+          </g>
         </g>
 
         {/* eyebrows */}
@@ -1173,6 +1203,72 @@ function WallPoster() {
         <line x1="8" y1="-6" x2="0" y2="0" stroke="#5a7e4a" strokeWidth="0.5" />
       </g>
       <text x="29" y="64" textAnchor="middle" fontSize="9" fill="#5a3424" fontFamily="Caveat, cursive">malvern</text>
+    </g>
+  );
+}
+
+/* Wall calendar — paper grid with X marks for days passed */
+function WallCalendar({ daysSince, totalDays }: { daysSince: number; totalDays: number }) {
+  const cols = 7;
+  const rows = Math.ceil(totalDays / cols);
+  const cell = 12;
+  const w = cols * cell + 8;
+  const h = rows * cell + 32;
+  return (
+    <g transform="translate(56 808) rotate(-3)">
+      {/* push-pin */}
+      <circle cx={w / 2} cy="-4" r="2.4" fill="#c75a4a" />
+      <circle cx={w / 2} cy="-4" r="0.8" fill="#fff8e0" opacity="0.7" />
+
+      {/* paper */}
+      <rect width={w} height={h} fill="#fef8e0" rx="2" />
+      <rect width={w} height="14" fill="#9ec3df" />
+      <text x={w / 2} y="11" textAnchor="middle" fontSize="8" fill="#3a2418" fontFamily="Caveat, cursive" fontWeight="500">apr · may · jun</text>
+
+      {/* days grid */}
+      <g transform="translate(4 18)">
+        {Array.from({ length: totalDays }).map((_, i) => {
+          const c = i % cols;
+          const r = Math.floor(i / cols);
+          const x = c * cell;
+          const y = r * cell;
+          const passed = i < daysSince;
+          const home = i === totalDays - 1;
+          return (
+            <g key={i}>
+              <rect x={x} y={y} width={cell - 1} height={cell - 1} fill={home ? '#c97844' : 'none'} stroke="#9a7a5a" strokeWidth="0.4" opacity="0.6" />
+              {passed && (
+                <g>
+                  <line x1={x + 1} y1={y + 1} x2={x + cell - 2} y2={y + cell - 2} stroke="#9a3030" strokeWidth="1" strokeLinecap="round" />
+                  <line x1={x + cell - 2} y1={y + 1} x2={x + 1} y2={y + cell - 2} stroke="#9a3030" strokeWidth="1" strokeLinecap="round" />
+                </g>
+              )}
+              {home && (
+                <path d={`M ${x + 5} ${y + 4} q -2 -2 -3.5 0 q -1.5 2 3.5 6 q 5 -4 3.5 -6 q -1.5 -2 -3.5 0 Z`} fill="#fff4d8" />
+              )}
+            </g>
+          );
+        })}
+      </g>
+    </g>
+  );
+}
+
+/* Love letter / envelope on the desk */
+function LoveLetter() {
+  return (
+    <g transform="translate(530 922) rotate(-6)">
+      {/* envelope */}
+      <rect width="80" height="50" fill="#fef8e0" rx="2" />
+      <path d="M 0 0 L 40 28 L 80 0" stroke="#9a7a5a" strokeWidth="0.6" fill="none" />
+      <path d="M 0 50 L 30 26 M 80 50 L 50 26" stroke="#9a7a5a" strokeWidth="0.5" fill="none" opacity="0.5" />
+      {/* heart wax seal */}
+      <g transform="translate(40 26)">
+        <circle r="6" fill="#c75a4a" />
+        <path d="M 0 -3 q -3 -3 -5 0 q -2 3 5 6 q 7 -3 5 -6 q -2 -3 -5 0 Z" fill="#9a3030" />
+      </g>
+      {/* tiny address line */}
+      <text x="40" y="44" textAnchor="middle" fontSize="6" fill="#5a3424" fontFamily="Caveat, cursive">to my hettie</text>
     </g>
   );
 }
@@ -1525,7 +1621,7 @@ function Desk() {
         <path d="M 86 14 q -3 -3 -5 0 q -2 3 5 8 q 7 -5 5 -8 q -2 -3 -5 0 Z" fill="#c75a4a" opacity="0.7" />
       </g>
 
-      {/* coffee mug */}
+      {/* coffee/tea mug with tea tag */}
       <g transform="translate(40 838)">
         <path d="M 0 0 L 50 0 L 46 64 L 4 64 Z" fill="url(#mugBody)" />
         <ellipse cx="25" cy="0" rx="25" ry="5" fill="#3a1d10" />
@@ -1533,6 +1629,10 @@ function Desk() {
         <path d="M 50 8 Q 64 8 64 30 Q 64 44 54 44" stroke="#9a7a5a" strokeWidth="4" fill="none" />
         {/* heart on mug */}
         <path d="M 18 16 q -4 -4 -8 0 q -4 4 8 12 q 12 -8 8 -12 q -4 -4 -8 0 Z" fill="#c75a4a" opacity="0.85" />
+        {/* tea tag string + tag dangling */}
+        <line x1="32" y1="0" x2="44" y2="22" stroke="#fbf1e0" strokeWidth="0.5" opacity="0.85" />
+        <rect x="40" y="22" width="10" height="8" fill="#fef8e0" />
+        <text x="45" y="28" textAnchor="middle" fontSize="4" fill="#5a3424" fontFamily="serif">TEA</text>
       </g>
 
       {/* pen */}
@@ -1684,6 +1784,20 @@ function Hettie() {
         {[260, 275, 290, 305, 320, 335, 350, 365, 380, 395, 410, 425, 440, 455, 470, 485].map(x => (
           <path key={x} d={`M ${x} 820 Q ${x + 0.5} 855 ${x} 900`} stroke="#a08470" strokeWidth="0.4" fill="none" opacity="0.35" />
         ))}
+        {/* CABLE KNIT detail — central twist pattern down the front */}
+        {[820, 836, 852, 868, 884].map(y => (
+          <g key={y}>
+            <path d={`M 350 ${y} q 4 4 8 0 q 4 -4 8 0`} stroke="#a08470" strokeWidth="0.7" fill="none" opacity="0.6" />
+            <path d={`M 350 ${y + 4} q 4 4 8 0 q 4 -4 8 0`} stroke="#a08470" strokeWidth="0.7" fill="none" opacity="0.5" />
+          </g>
+        ))}
+        {/* side cable */}
+        {[820, 836, 852, 868, 884].map(y => (
+          <g key={`l${y}`}>
+            <path d={`M 280 ${y} q 3 3 6 0`} stroke="#a08470" strokeWidth="0.6" fill="none" opacity="0.5" />
+            <path d={`M 444 ${y} q 3 3 6 0`} stroke="#a08470" strokeWidth="0.6" fill="none" opacity="0.5" />
+          </g>
+        ))}
         {/* horizontal knit ridge */}
         <path d="M 246 858 Q 360 866 478 858" stroke="#a08470" strokeWidth="0.5" fill="none" opacity="0.4" />
         <path d="M 248 882 Q 360 890 476 882" stroke="#a08470" strokeWidth="0.4" fill="none" opacity="0.4" />
@@ -1804,29 +1918,34 @@ function Hettie() {
           <path d="M 432 700 Q 434 712 430 720 Q 424 728 418 720" stroke="url(#hairCurl)" strokeWidth="3.4" fill="none" strokeLinecap="round" />
         </g>
 
-        {/* EYES — soft closed/peaceful, looking down at notebook */}
-        {/* left eye */}
-        <path d="M 320 712 Q 332 720 346 712" stroke="#2a1408" strokeWidth="1.8" fill="none" strokeLinecap="round" />
-        <path d="M 320 712 Q 322 710 326 711 M 346 712 Q 344 710 340 711" stroke="#2a1408" strokeWidth="0.9" fill="none" strokeLinecap="round" opacity="0.55" />
-        {/* eyelashes */}
-        <path d="M 322 712 L 320 708 M 327 715 L 326 711 M 332 716 L 332 712 M 338 715 L 339 711 M 343 712 L 345 708" stroke="#2a1408" strokeWidth="0.6" strokeLinecap="round" />
-        {/* eyebrow — subtle, well-separated, positioned UNDER the bangs */}
-        <path d="M 322 706 Q 332 702 344 706" stroke="#9a3818" strokeWidth="1.4" fill="none" strokeLinecap="round" opacity="0.85" />
+        {/* EYES — soft closed/peaceful, with subtle blink/breath */}
+        <g style={{ transformOrigin: '362px 712px', animation: 'eyeBreath 14s ease-in-out infinite' }}>
+          {/* left eye */}
+          <path d="M 320 712 Q 332 720 346 712" stroke="#2a1408" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+          <path d="M 320 712 Q 322 710 326 711 M 346 712 Q 344 710 340 711" stroke="#2a1408" strokeWidth="0.9" fill="none" strokeLinecap="round" opacity="0.55" />
+          {/* eyelashes */}
+          <path d="M 322 712 L 320 708 M 327 715 L 326 711 M 332 716 L 332 712 M 338 715 L 339 711 M 343 712 L 345 708" stroke="#2a1408" strokeWidth="0.6" strokeLinecap="round" />
 
-        {/* right eye */}
-        <path d="M 378 712 Q 390 720 404 712" stroke="#2a1408" strokeWidth="1.8" fill="none" strokeLinecap="round" />
-        <path d="M 378 712 Q 380 710 384 711 M 404 712 Q 402 710 398 711" stroke="#2a1408" strokeWidth="0.9" fill="none" strokeLinecap="round" opacity="0.55" />
-        <path d="M 380 712 L 378 708 M 385 715 L 384 711 M 390 716 L 390 712 M 396 715 L 397 711 M 401 712 L 403 708" stroke="#2a1408" strokeWidth="0.6" strokeLinecap="round" />
+          {/* right eye */}
+          <path d="M 378 712 Q 390 720 404 712" stroke="#2a1408" strokeWidth="1.8" fill="none" strokeLinecap="round" />
+          <path d="M 378 712 Q 380 710 384 711 M 404 712 Q 402 710 398 711" stroke="#2a1408" strokeWidth="0.9" fill="none" strokeLinecap="round" opacity="0.55" />
+          <path d="M 380 712 L 378 708 M 385 715 L 384 711 M 390 716 L 390 712 M 396 715 L 397 711 M 401 712 L 403 708" stroke="#2a1408" strokeWidth="0.6" strokeLinecap="round" />
+        </g>
+
+        {/* eyebrows (don't blink) */}
+        <path d="M 322 706 Q 332 702 344 706" stroke="#9a3818" strokeWidth="1.4" fill="none" strokeLinecap="round" opacity="0.85" />
         <path d="M 380 706 Q 390 702 402 706" stroke="#9a3818" strokeWidth="1.4" fill="none" strokeLinecap="round" opacity="0.85" />
 
         {/* nose */}
         <path d="M 362 720 Q 358 734 360 740 Q 364 744 368 742 Q 370 738 366 728" fill="none" stroke="#c08a72" strokeWidth="0.8" opacity="0.7" />
         <ellipse cx="363" cy="742" rx="2.2" ry="1" fill="#c08a72" opacity="0.55" />
 
-        {/* lips — soft smile */}
-        <path d="M 348 752 Q 362 758 376 752" stroke="#a8483a" strokeWidth="1.5" fill="none" strokeLinecap="round" />
-        <path d="M 346 752 Q 362 760 378 752 Q 362 754 346 752 Z" fill="#d87060" opacity="0.55" />
-        <path d="M 360 753 Q 363 752 364 753" stroke="#fde2cc" strokeWidth="0.6" fill="none" opacity="0.7" />
+        {/* lips — soft little smile */}
+        <path d="M 346 752 Q 354 760 362 758 Q 370 760 378 752" stroke="#a8483a" strokeWidth="1.5" fill="none" strokeLinecap="round" />
+        <path d="M 346 752 Q 354 762 362 760 Q 370 762 378 752 Q 362 754 346 752 Z" fill="#d87060" opacity="0.55" />
+        <path d="M 360 754 Q 363 753 366 754" stroke="#fde2cc" strokeWidth="0.6" fill="none" opacity="0.7" />
+        {/* lip highlight */}
+        <path d="M 354 754 Q 362 752 370 754" stroke="#fde2cc" strokeWidth="0.4" fill="none" opacity="0.6" />
 
         {/* freckles */}
         {[
@@ -1897,13 +2016,19 @@ function Hettie() {
 }
 
 function Lamp() {
-  // angled desk lamp (Pixar-style)
+  // angled desk lamp (Pixar-style) with dramatic warm cone
   return (
     <g>
-      {/* glow pool on desk */}
-      <ellipse cx="200" cy="900" rx="180" ry="26" fill="url(#lampGlow)" opacity="0.85" pointerEvents="none" />
-      {/* light cone (subtle, downward to right) */}
-      <path d="M 180 740 L 80 902 L 320 902 L 220 740 Z" fill="url(#lampCone)" opacity="0.5" pointerEvents="none" />
+      {/* DRAMATIC LIGHT CONE — wider, brighter, with soft scatter */}
+      <path d="M 152 720 L 56 902 L 332 902 L 232 720 Z" fill="url(#lampCone)" opacity="0.7" pointerEvents="none"
+        style={{ animation: 'flicker 5s ease-in-out infinite' }} />
+      {/* secondary glow circle on desk surface */}
+      <ellipse cx="200" cy="894" rx="200" ry="30" fill="url(#lampGlow)" opacity="0.9" pointerEvents="none" />
+      <ellipse cx="200" cy="892" rx="160" ry="22" fill="#ffe6a8" opacity="0.55" pointerEvents="none" />
+      <ellipse cx="200" cy="890" rx="120" ry="14" fill="#fff8e0" opacity="0.45" pointerEvents="none" />
+      {/* glow on lamp shade itself */}
+      <circle cx="158" cy="660" r="22" fill="#ffe6a8" opacity="0.45" pointerEvents="none"
+        style={{ animation: 'flicker 4s ease-in-out infinite' }} />
 
       {/* lamp shape */}
       <g transform="translate(176 736)">

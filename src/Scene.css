@@ -117,6 +117,16 @@
   95%, 97% { transform: scaleY(0.1); }
 }
 
+@keyframes eyeBreath {
+  0%, 88%, 96%, 100% { transform: scaleY(1); }
+  92%, 94% { transform: scaleY(0.05); }
+}
+
+@keyframes eyeBreathDog {
+  0%, 84%, 92%, 100% { transform: scaleY(1); }
+  88%, 90% { transform: scaleY(0.1); }
+}
+
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }

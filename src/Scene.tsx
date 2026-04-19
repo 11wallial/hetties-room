@@ -317,6 +317,9 @@ export function Scene({ now, daysRemaining = 0, daysSince = 0, totalDays = 49, o
         {/* Birds drifting */}
         <Birds />
 
+        {/* Solo bird arcing past the window with flapping wings */}
+        <WindowBird />
+
         {/* Hot air balloon — rare, drifts across once in a while */}
         <HotAirBalloon />
 
@@ -348,6 +351,12 @@ export function Scene({ now, daysRemaining = 0, daysSince = 0, totalDays = 49, o
 
       {/* ============= CURTAINS ============= */}
       <Curtains />
+
+      {/* ============= CLIMBER / TRAILING PLANTS (around window + corners) ============= */}
+      <TrailingIvy side="left" />
+      <TrailingIvy side="right" />
+      <CornerClimber side="left" />
+      <CornerClimber side="right" />
 
       {/* ============= FAIRY LIGHTS ============= */}
       <FairyLights isNight={isNight} />
@@ -563,7 +572,7 @@ function MalvernHills({ seed }: { seed: number }) {
           <rect x="232" y="412" width="1.6" height="2" />
         </g>
         {/* chimney smoke */}
-        <path d="M 188 392 q -2 -8 0 -16 q 3 -8 -1 -14" stroke="#9a8a78" strokeWidth="1.4" fill="none" strokeLinecap="round" opacity="0.55"
+        <path className="steam-wisp" d="M 188 392 q -2 -8 0 -16 q 3 -8 -1 -14" stroke="#9a8a78" strokeWidth="1.4" fill="none" strokeLinecap="round" opacity="0.55"
           style={{ animation: 'steamRise 7s ease-out infinite' }} />
       </g>
 
@@ -600,7 +609,7 @@ function MalvernHills({ seed }: { seed: number }) {
         <rect x="14" y="6" width="4" height="6" fill="#fce4a8" opacity="0.7" />
         <rect x="2" y="0" width="3" height="-8" fill="#3a2418" transform="translate(0 8)" />
         <rect x="3" y="-12" width="3" height="6" fill="#3a2418" />
-        <path d="M 4.5 -12 q -2 -8 0 -14 q 2 -6 0 -10" stroke="#9a8a78" strokeWidth="1.4" fill="none" strokeLinecap="round" opacity="0.55"
+        <path className="steam-wisp" d="M 4.5 -12 q -2 -8 0 -14 q 2 -6 0 -10" stroke="#9a8a78" strokeWidth="1.4" fill="none" strokeLinecap="round" opacity="0.55"
           style={{ animation: 'steamRise 6s ease-out 1s infinite' }} />
       </g>
 
@@ -707,25 +716,31 @@ function Contrail() {
   );
 }
 
-/* Butterfly drifting near the window — adds a sweet moment of life */
+/* Butterfly drifting near the window — adds a sweet moment of life.
+   Cycles every ~28s so there's always a good chance of catching one. */
 function Butterfly() {
   return (
-    <g pointerEvents="none" style={{ animation: 'mothFlight 70s ease-in-out infinite' }}>
-      <g style={{ transformOrigin: '0 0', animation: 'wingFlap 0.4s ease-in-out infinite' }}>
-        <ellipse cx="-4" cy="-2" rx="5" ry="3.5" fill="#ec88a8" opacity="0.85" />
-        <ellipse cx="-4" cy="2" rx="4" ry="3" fill="#c75a4a" opacity="0.8" />
-        <ellipse cx="4" cy="-2" rx="5" ry="3.5" fill="#ec88a8" opacity="0.85" />
-        <ellipse cx="4" cy="2" rx="4" ry="3" fill="#c75a4a" opacity="0.8" />
+    <g pointerEvents="none" style={{ animation: 'mothFlight 28s ease-in-out infinite' }}>
+      <g style={{ transformOrigin: '0 0', animation: 'wingFlap 0.34s ease-in-out infinite' }}>
+        {/* upper wings */}
+        <ellipse cx="-5" cy="-2.5" rx="6" ry="4.4" fill="#f09ab8" opacity="0.9" />
+        <ellipse cx="5"  cy="-2.5" rx="6" ry="4.4" fill="#f09ab8" opacity="0.9" />
+        {/* lower wings */}
+        <ellipse cx="-4.5" cy="2.4" rx="4.5" ry="3.4" fill="#c75a4a" opacity="0.85" />
+        <ellipse cx="4.5"  cy="2.4" rx="4.5" ry="3.4" fill="#c75a4a" opacity="0.85" />
+        {/* inner wing spots — a little detail to sell it close up */}
+        <circle cx="-5" cy="-2.5" r="1" fill="#fff4d8" opacity="0.6" />
+        <circle cx="5"  cy="-2.5" r="1" fill="#fff4d8" opacity="0.6" />
         {/* body */}
-        <ellipse cx="0" cy="0" rx="0.8" ry="3" fill="#3a2418" />
+        <ellipse cx="0" cy="0" rx="0.9" ry="3.6" fill="#2a1810" />
         {/* antennae */}
-        <path d="M 0 -2 L -2 -5 M 0 -2 L 2 -5" stroke="#3a2418" strokeWidth="0.4" fill="none" />
+        <path d="M 0 -2.6 L -2.4 -6 M 0 -2.6 L 2.4 -6" stroke="#2a1810" strokeWidth="0.45" fill="none" strokeLinecap="round" />
       </g>
     </g>
   );
 }
 
-/* Birds drifting through sky */
+/* Birds drifting through sky — distant flock of three Vs */
 function Birds() {
   return (
     <g pointerEvents="none">
@@ -734,6 +749,29 @@ function Birds() {
         <path d="M 16 4 q 3 -3 6 0 q 3 -3 6 0" stroke="#3a2418" strokeWidth="1" fill="none" strokeLinecap="round" opacity="0.6" />
         <path d="M 8 -8 q 3 -3 6 0 q 3 -3 6 0" stroke="#3a2418" strokeWidth="0.8" fill="none" strokeLinecap="round" opacity="0.5" />
       </g>
+    </g>
+  );
+}
+
+/* Solo bird arcing past the window with visible flapping wings.
+   Big enough to notice without being cartoonish. */
+function WindowBird() {
+  return (
+    <g pointerEvents="none" style={{ animation: 'birdPastWindow 22s ease-in-out infinite' }}>
+      {/* body */}
+      <ellipse cx="0" cy="0" rx="4.5" ry="2.2" fill="#2a1810" />
+      <circle cx="5" cy="-0.5" r="2.2" fill="#2a1810" />
+      {/* beak */}
+      <path d="M 7 -0.5 L 9.5 -1 L 7 0.2 Z" fill="#c9873a" />
+      {/* tiny eye */}
+      <circle cx="5.5" cy="-1" r="0.45" fill="#fff4d8" />
+      {/* wings — flapping */}
+      <g style={{ transformOrigin: '0 0', animation: 'birdWing 0.38s ease-in-out infinite' }}>
+        <path d="M -2 -1 Q -8 -7 -14 -3 Q -10 -1 -3 0 Z" fill="#3a2418" />
+        <path d="M 2 -1 Q 8 -7 14 -3 Q 10 -1 3 0 Z" fill="#3a2418" />
+      </g>
+      {/* tail */}
+      <path d="M -4 0 L -8 1 L -8 -1 Z" fill="#2a1810" />
     </g>
   );
 }
@@ -1486,6 +1524,100 @@ function WindChime() {
   );
 }
 
+/* Trailing ivy draping from the top of the window frame down both sides —
+   adds a soft, cottagey "grown-in" feeling. */
+function TrailingIvy({ side }: { side: 'left' | 'right' }) {
+  const isLeft = side === 'left';
+  // Anchor above the curtain rod, just inside the window frame
+  const anchorX = isLeft ? 76 : 644;
+  const sway = isLeft ? 'ivySwayL' : 'ivySwayR';
+
+  // Each trailing stem is an array of {x, y} offsets from anchor where leaves grow
+  const leaves = [
+    { yy: 56, xx: isLeft ? -2 : 2,  size: 9, tilt: isLeft ? -28 : 28,  shade: '#7a9c5e' },
+    { yy: 92, xx: isLeft ? 6  : -6, size: 11, tilt: isLeft ? 22 : -22, shade: '#8aae6a' },
+    { yy: 130, xx: isLeft ? -4 : 4, size: 10, tilt: isLeft ? -18 : 18, shade: '#9abe7a' },
+    { yy: 166, xx: isLeft ? 8 : -8, size: 12, tilt: isLeft ? 28 : -28, shade: '#7aa860' },
+    { yy: 202, xx: isLeft ? -6 : 6, size: 10, tilt: isLeft ? -22 : 22, shade: '#8aae6a' },
+    { yy: 236, xx: isLeft ? 4  : -4, size: 9, tilt: isLeft ? 20 : -20, shade: '#6a8e4e' },
+    { yy: 272, xx: isLeft ? -8 : 8, size: 11, tilt: isLeft ? -18 : 18, shade: '#7aa860' },
+    { yy: 308, xx: isLeft ? 2  : -2, size: 9,  tilt: isLeft ? 24 : -24, shade: '#9abe7a' },
+  ];
+
+  return (
+    <g
+      style={{ transformOrigin: `${anchorX}px 82px`, animation: `${sway} 9s ease-in-out infinite` }}
+      pointerEvents="none"
+    >
+      {/* main vine — a gentle S-curve hanging down, staying close to the inner frame edge */}
+      <path
+        d={isLeft
+          ? `M ${anchorX},82 C ${anchorX - 2},140 ${anchorX + 6},200 ${anchorX - 2},268 C ${anchorX - 4},300 ${anchorX + 2},330 ${anchorX - 2},360`
+          : `M ${anchorX},82 C ${anchorX + 2},140 ${anchorX - 6},200 ${anchorX + 2},268 C ${anchorX + 4},300 ${anchorX - 2},330 ${anchorX + 2},360`}
+        stroke="#4a6a38" strokeWidth="1.2" fill="none" strokeLinecap="round" opacity="0.9"
+      />
+      {/* leaves along the vine */}
+      {leaves.map((lf, i) => (
+        <g key={i} transform={`translate(${anchorX + lf.xx}, ${82 + lf.yy}) rotate(${lf.tilt})`}>
+          <ellipse cx="0" cy="0" rx={lf.size * 0.42} ry={lf.size} fill={lf.shade} />
+          <path d={`M 0 ${-lf.size * 0.9} L 0 ${lf.size * 0.9}`} stroke="#3a5028" strokeWidth="0.4" opacity="0.5" />
+          {/* highlight */}
+          <ellipse cx={-lf.size * 0.12} cy={-lf.size * 0.3} rx={lf.size * 0.22} ry={lf.size * 0.45}
+            fill="#b8d898" opacity="0.35" />
+        </g>
+      ))}
+      {/* tendrils — short curly bits */}
+      <path
+        d={isLeft
+          ? `M ${anchorX - 2},360 q -4,8 2,14 q 6,-2 4,-10`
+          : `M ${anchorX + 2},360 q 4,8 -2,14 q -6,-2 -4,-10`}
+        stroke="#4a6a38" strokeWidth="0.9" fill="none" strokeLinecap="round" opacity="0.7"
+      />
+    </g>
+  );
+}
+
+/* Climbing vine creeping up the room corner — sparser, reaches up toward the ceiling. */
+function CornerClimber({ side }: { side: 'left' | 'right' }) {
+  const isLeft = side === 'left';
+  const xBase = isLeft ? 10 : 710;
+  const sway = isLeft ? 'ivySwayL' : 'ivySwayR';
+
+  const leaves = [
+    { y: 1070, size: 8, tilt: isLeft ? 20 : -20, shade: '#7aa860' },
+    { y: 1020, size: 10, tilt: isLeft ? -15 : 15, shade: '#8aae6a' },
+    { y: 970,  size: 9,  tilt: isLeft ? 18 : -18, shade: '#9abe7a' },
+    { y: 920,  size: 11, tilt: isLeft ? -12 : 12, shade: '#7aa860' },
+    { y: 870,  size: 8,  tilt: isLeft ? 22 : -22, shade: '#8aae6a' },
+  ];
+
+  return (
+    <g
+      style={{ transformOrigin: `${xBase}px 1080px`, animation: `${sway} 13s ease-in-out infinite` }}
+      pointerEvents="none"
+      opacity="0.85"
+    >
+      {/* climbing stem */}
+      <path
+        d={isLeft
+          ? `M ${xBase},1080 Q ${xBase + 8},1000 ${xBase + 4},920 Q ${xBase + 10},870 ${xBase + 6},840`
+          : `M ${xBase},1080 Q ${xBase - 8},1000 ${xBase - 4},920 Q ${xBase - 10},870 ${xBase - 6},840`}
+        stroke="#4a6a38" strokeWidth="1.1" fill="none" strokeLinecap="round" opacity="0.85"
+      />
+      {leaves.map((lf, i) => {
+        const offX = isLeft ? 4 + (i % 2) * 4 : -4 - (i % 2) * 4;
+        return (
+          <g key={i} transform={`translate(${xBase + offX}, ${lf.y}) rotate(${lf.tilt})`}>
+            <ellipse cx="0" cy="0" rx={lf.size * 0.45} ry={lf.size} fill={lf.shade} />
+            <ellipse cx={-lf.size * 0.12} cy={-lf.size * 0.3} rx={lf.size * 0.22} ry={lf.size * 0.45}
+              fill="#b8d898" opacity="0.35" />
+          </g>
+        );
+      })}
+    </g>
+  );
+}
+
 function HangingPlant() {
   return (
     <g transform="translate(36 0)" style={{ transformOrigin: '36px 80px', animation: 'leafSwayA 11s ease-in-out infinite' }}>
@@ -2212,11 +2344,11 @@ function Steam() {
   // mug at translate(40 838) with width 50, so steam centered around x ~70
   return (
     <g pointerEvents="none">
-      <path d="M 60 836 Q 56 816 62 798 Q 68 780 60 762" stroke="#fff8e8" strokeWidth="2.4" fill="none" strokeLinecap="round" opacity="0.6"
+      <path className="steam-wisp" d="M 60 836 Q 56 816 62 798 Q 68 780 60 762" stroke="#fff8e8" strokeWidth="2.4" fill="none" strokeLinecap="round" opacity="0.6"
         style={{ animation: 'steamRise 4s ease-out infinite' }} />
-      <path d="M 72 836 Q 76 816 70 798 Q 64 780 72 762" stroke="#fff8e8" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.5"
+      <path className="steam-wisp" d="M 72 836 Q 76 816 70 798 Q 64 780 72 762" stroke="#fff8e8" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.5"
         style={{ animation: 'steamRise2 4.5s ease-out 0.8s infinite' }} />
-      <path d="M 82 832 Q 86 816 80 798 Q 74 780 82 762" stroke="#fff8e8" strokeWidth="1.6" fill="none" strokeLinecap="round" opacity="0.4"
+      <path className="steam-wisp" d="M 82 832 Q 86 816 80 798 Q 74 780 82 762" stroke="#fff8e8" strokeWidth="1.6" fill="none" strokeLinecap="round" opacity="0.4"
         style={{ animation: 'steamRise 5s ease-out 1.5s infinite' }} />
     </g>
   );

@@ -179,15 +179,21 @@ function App() {
             </div>
           </div>
           <div className="overlay-mid">
-            <div className="countdown-card">
-              <div className="label">until you're home</div>
-              <div className="days">
+            <div className="countdown-card" role="status" aria-live="polite" aria-label={`${daysRemaining} days until home`}>
+              <div className="countdown-label">until you're home</div>
+              <div className="countdown-number">
                 <span className="num">{daysRemaining}</span>
-                <span className="unit">days</span>
+                <span className="unit">day{daysRemaining === 1 ? '' : 's'}</span>
               </div>
-              <div className="sub">{weekText}</div>
-              <div className="progress-track"><div className="progress-fill" style={{ width: `${progress}%` }} /></div>
-              <div className="progress-meta">day {daysSince} of {totalDays} · home thurs 4 june</div>
+              <div className="countdown-sub">{weekText}</div>
+              <div className="countdown-progress">
+                <div className="progress-track"><div className="progress-fill" style={{ width: `${progress}%` }} /></div>
+                <div className="progress-meta">
+                  <span>day {daysSince} of {totalDays}</span>
+                  <span className="progress-sep" aria-hidden>·</span>
+                  <span>home thu 4 jun</span>
+                </div>
+              </div>
             </div>
           </div>
           <div className="overlay-bottom">

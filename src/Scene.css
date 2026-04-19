@@ -27,15 +27,23 @@
   50% { transform: translateX(-1.5px) skewY(0.4deg); }
 }
 
+/* Steam — scale + translate around each path's own centre so it rises instead
+   of flying off to SVG origin. Needs transform-box: fill-box on the paths. */
 @keyframes steamRise {
-  0% { opacity: 0; transform: translateY(0) translateX(0) scale(0.7); }
-  20% { opacity: 0.6; }
-  100% { opacity: 0; transform: translateY(-44px) translateX(-6px) scale(1.6); }
+  0%   { opacity: 0;   transform: translateY(0)    translateX(0)  scale(0.7); }
+  20%  { opacity: 0.6; }
+  100% { opacity: 0;   transform: translateY(-44px) translateX(-6px) scale(1.3); }
 }
 @keyframes steamRise2 {
-  0% { opacity: 0; transform: translateY(0) translateX(0) scale(0.7); }
-  25% { opacity: 0.5; }
-  100% { opacity: 0; transform: translateY(-46px) translateX(5px) scale(1.7); }
+  0%   { opacity: 0;   transform: translateY(0)    translateX(0) scale(0.7); }
+  25%  { opacity: 0.5; }
+  100% { opacity: 0;   transform: translateY(-46px) translateX(5px) scale(1.4); }
+}
+
+/* Anchor transforms to each steam path's own bounding box */
+.steam-wisp {
+  transform-box: fill-box;
+  transform-origin: center;
 }
 
 @keyframes dustFloat {
@@ -140,17 +148,43 @@
 }
 
 @keyframes mothFlight {
-  0% { transform: translate(60px, 380px) rotate(-10deg); opacity: 0; }
-  10% { opacity: 0.8; }
-  30% { transform: translate(220px, 320px) rotate(15deg); opacity: 0.85; }
-  60% { transform: translate(380px, 360px) rotate(-15deg); opacity: 0.85; }
-  90% { opacity: 0.85; }
-  100% { transform: translate(620px, 280px) rotate(10deg); opacity: 0; }
+  0%   { transform: translate(60px, 380px) scale(0.9) rotate(-10deg); opacity: 0; }
+  8%   { opacity: 0.9; }
+  25%  { transform: translate(200px, 300px) scale(1.2) rotate(18deg); opacity: 0.95; }
+  50%  { transform: translate(360px, 360px) scale(1.1) rotate(-20deg); opacity: 0.95; }
+  75%  { transform: translate(510px, 300px) scale(1.15) rotate(15deg); opacity: 0.9; }
+  95%  { opacity: 0.9; }
+  100% { transform: translate(680px, 260px) scale(0.9) rotate(-10deg); opacity: 0; }
 }
 
 @keyframes wingFlap {
   0%, 100% { transform: scaleX(1); }
   50% { transform: scaleX(0.4); }
+}
+
+/* Solo bird arcing past the window with flapping wings */
+@keyframes birdPastWindow {
+  0%   { transform: translate(-30px, 330px) scale(0.9); opacity: 0; }
+  6%   { opacity: 0.95; }
+  25%  { transform: translate(180px, 220px) scale(1.0); }
+  50%  { transform: translate(360px, 170px) scale(1.05); }
+  75%  { transform: translate(540px, 210px) scale(1.0); opacity: 0.95; }
+  94%  { opacity: 0.95; }
+  100% { transform: translate(740px, 290px) scale(0.9); opacity: 0; }
+}
+@keyframes birdWing {
+  0%, 100% { transform: scaleY(1); }
+  50%      { transform: scaleY(0.25); }
+}
+
+/* Gentle sway for climbing plants either side of the window */
+@keyframes ivySwayL {
+  0%, 100% { transform: rotate(-0.8deg); }
+  50%      { transform: rotate(0.8deg); }
+}
+@keyframes ivySwayR {
+  0%, 100% { transform: rotate(0.8deg); }
+  50%      { transform: rotate(-0.8deg); }
 }
 
 @keyframes balloonDrift {

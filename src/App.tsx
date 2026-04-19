@@ -35,6 +35,7 @@ function App() {
     return d;
   })();
   const [now, setNow] = useState(initialNow);
+  const [hearts, setHearts] = useState<{ id: number; x: number; delay: number }[]>([]);
   const [audioOn, setAudioOn] = useState(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const stopAudioRef = useRef<(() => void) | null>(null);
@@ -130,10 +131,27 @@ function App() {
     }
   };
 
+  const handleTapMurphy = () => {
+    const newHearts = Array.from({ length: 4 }, (_, i) => ({
+      id: Date.now() + i,
+      x: 24 + Math.random() * 16,
+      delay: i * 140,
+    }));
+    setHearts((prev) => [...prev, ...newHearts]);
+    setTimeout(() => {
+      setHearts((prev) => prev.filter((h) => !newHearts.find((nh) => nh.id === h.id)));
+    }, 3500);
+  };
+
   return (
     <div className="stage">
       <div className="scene-frame fade-in">
-        <Scene now={now} daysRemaining={daysRemaining} />
+        <Scene now={now} daysRemaining={daysRemaining} onTapMurphy={handleTapMurphy} />
+        <div className="hearts-layer">
+          {hearts.map((h) => (
+            <span key={h.id} className="heart" style={{ left: `${h.x}%`, animationDelay: `${h.delay}ms` }}>💛</span>
+          ))}
+        </div>
         <div className="overlay-ui">
           <div className="overlay-top">
             <div className="title-stamp">

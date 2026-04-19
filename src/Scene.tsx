@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import './Scene.css';
 
-interface SceneProps { now: Date; daysRemaining?: number }
+interface SceneProps { now: Date; daysRemaining?: number; onTapMurphy?: () => void }
 
 function getSkyPalette(hour: number) {
   const anchors: { h: number; sky: [string, string, string]; sun: string; sunY: number; haze: string; tint: string; }[] = [
@@ -35,7 +35,7 @@ function getSkyPalette(hour: number) {
   };
 }
 
-export function Scene({ now, daysRemaining = 0 }: SceneProps) {
+export function Scene({ now, daysRemaining = 0, onTapMurphy }: SceneProps) {
   const hour = now.getHours() + now.getMinutes() / 60;
   const palette = useMemo(() => getSkyPalette(hour), [Math.floor(hour * 12) / 12]);
   const isNight = hour < 6 || hour > 20;
@@ -268,6 +268,8 @@ export function Scene({ now, daysRemaining = 0 }: SceneProps) {
         </g>
 
         {isNight && <Stars />}
+        {isNight && <Aurora />}
+        {isNight && <ShootingStar seed={seed} />}
 
         {/* drifting clouds */}
         <g opacity="0.92" style={{ animation: 'cloudDriftA 110s linear infinite' }}>
@@ -305,7 +307,7 @@ export function Scene({ now, daysRemaining = 0 }: SceneProps) {
       <WindowSill />
 
       {/* ============= MURPHY ON SILL ============= */}
-      <MurphyOnSill alert={isEvening} />
+      <MurphyOnSill alert={isEvening} onTap={onTapMurphy} />
 
       {/* ============= CURTAINS ============= */}
       <Curtains />
@@ -410,6 +412,36 @@ function Stars() {
     <circle key={i} cx={s.x} cy={s.y} r={s.r} fill="#fff8e0"
       style={{ animation: `starTwinkle ${3 + (i % 4) * 0.6}s ease-in-out infinite`, animationDelay: `${s.d}s` }} />
   ))}</g>;
+}
+
+/* Aurora ribbons drifting across the night sky */
+function Aurora() {
+  return (
+    <g pointerEvents="none" opacity="0.55" style={{ animation: 'auroraDrift 18s ease-in-out infinite' }}>
+      <defs>
+        <linearGradient id="auroraGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#7afca8" stopOpacity="0" />
+          <stop offset="40%" stopColor="#7afca8" stopOpacity="0.55" />
+          <stop offset="60%" stopColor="#a888fc" stopOpacity="0.6" />
+          <stop offset="100%" stopColor="#a888fc" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d="M 60 200 Q 200 160 360 200 Q 520 240 660 200" stroke="url(#auroraGrad)" strokeWidth="32" fill="none" opacity="0.5" />
+      <path d="M 60 240 Q 220 220 360 250 Q 500 280 660 240" stroke="url(#auroraGrad)" strokeWidth="22" fill="none" opacity="0.4" />
+    </g>
+  );
+}
+
+/* Shooting star — appears once every minute or so */
+function ShootingStar({ seed }: { seed: number }) {
+  const seeded = (seed * 13) % 7;
+  return (
+    <g pointerEvents="none" style={{ animation: `shootStar 28s linear ${seeded}s infinite` }}>
+      <line x1="0" y1="0" x2="60" y2="20" stroke="#fff8e0" strokeWidth="1.4" strokeLinecap="round" opacity="0.9" />
+      <line x1="0" y1="0" x2="40" y2="14" stroke="#fff8e0" strokeWidth="0.7" strokeLinecap="round" opacity="0.6" />
+      <circle cx="0" cy="0" r="1.6" fill="#fff8e0" />
+    </g>
+  );
 }
 
 function MalvernHills({ seed }: { seed: number }) {
@@ -754,11 +786,18 @@ function WindowSill() {
   );
 }
 
-function MurphyOnSill({ alert: _alert }: { alert: boolean }) {
+function MurphyOnSill({ alert: _alert, onTap }: { alert: boolean; onTap?: () => void }) {
   // Murphy sits upright on the LEFT half of the sill, in 3/4 view facing slightly right (toward viewer / Hettie below).
   // Sill top is at y=582. Murphy's bum on sill at y=580, body extends up to y=440, head at y=440-510.
   return (
-    <g style={{ transformOrigin: '200px 540px', animation: 'breathe 5s ease-in-out infinite' }}>
+    <g
+      onClick={onTap}
+      style={{ cursor: onTap ? 'pointer' : 'default', transformOrigin: '200px 540px', animation: 'breathe 5s ease-in-out infinite' }}
+      tabIndex={onTap ? 0 : undefined}
+      role={onTap ? 'button' : undefined}
+      aria-label={onTap ? 'pet Murphy' : undefined}
+      onKeyDown={(e) => { if (onTap && (e.key === 'Enter' || e.key === ' ')) onTap(); }}
+    >
       {/* TAIL — peeking from his right side, curled up */}
       <g style={{ transformOrigin: '290px 580px', animation: 'tailSwishGentle 4.5s ease-in-out infinite' }}>
         <path d="M 270 588 Q 296 568 310 540 Q 314 530 304 530 Q 286 552 268 580 Q 264 586 270 588 Z" fill="url(#murphyCoat)" />
@@ -926,58 +965,91 @@ function FairyLights() {
 }
 
 function PolaroidWall() {
-  // polaroids hung on left/right wall sides next to window
+  // photo wall on visible wall area between sill and desk, beside Hettie's head/body
   return (
-    <g opacity="0.95">
-      {/* left side stack */}
-      <g transform="translate(-2 380)">
-        {/* string */}
-        <path d="M 6 -10 Q 30 -4 56 -8" stroke="#3a2418" strokeWidth="0.5" fill="none" opacity="0.5" />
-        <g transform="translate(4 0) rotate(-6)">
-          <rect width="38" height="46" fill="#fbf1e0" rx="1.5" />
-          <rect x="3" y="3" width="32" height="32" fill="#7a8aa0" />
-          <path d="M 3 22 L 35 22 L 35 35 L 3 35 Z" fill="#5a7088" />
-          <path d="M 3 14 Q 12 12 20 16 Q 28 18 35 14 L 35 22 L 3 22 Z" fill="#3a4a5a" opacity="0.85" />
-          <text x="19" y="42" textAnchor="middle" fontSize="5" fill="#5a3424" fontFamily="Caveat, cursive">garda</text>
-        </g>
+    <g opacity="0.97">
+      {/* LEFT WALL cluster — between sill (y=620) and desk (y=900), beside Hettie */}
+      {/* polaroid 1 - garda lake */}
+      <g transform="translate(78 638) rotate(-7)">
+        <rect width="40" height="48" fill="#fbf1e0" rx="1.5" />
+        <rect x="3" y="3" width="34" height="34" fill="#7a8aa0" />
+        <path d="M 3 24 L 37 24 L 37 37 L 3 37 Z" fill="#5a7088" />
+        <path d="M 3 16 Q 12 12 18 16 Q 26 20 37 16 L 37 24 L 3 24 Z" fill="#3a4a5a" opacity="0.85" />
+        <text x="20" y="45" textAnchor="middle" fontSize="6" fill="#5a3424" fontFamily="Caveat, cursive">garda 🤍</text>
+        <rect x="13" y="-4" width="14" height="6" fill="#fce4a8" opacity="0.75" />
+      </g>
+      {/* polaroid 2 - heart "us" */}
+      <g transform="translate(64 692) rotate(6)">
+        <rect width="36" height="44" fill="#fbf1e0" rx="1.5" />
+        <rect x="3" y="3" width="30" height="30" fill="#c97844" />
+        <path d="M 18 12 q -4 -4 -7 -1 q -3 4 7 11 q 10 -7 7 -11 q -3 -3 -7 1 Z" fill="#fff4d8" opacity="0.92" />
+        <text x="18" y="40" textAnchor="middle" fontSize="6" fill="#5a3424" fontFamily="Caveat, cursive">us</text>
+        <rect x="11" y="-4" width="14" height="5" fill="#fce4a8" opacity="0.75" />
       </g>
 
-      {/* right side */}
-      <g transform="translate(670 360) rotate(4)">
-        <rect width="42" height="50" fill="#fbf1e0" rx="1.5" />
-        <rect x="3" y="3" width="36" height="36" fill="#1a1410" />
-        {/* tiny murphy */}
-        <ellipse cx="22" cy="28" rx="11" ry="7" fill="#2a1e16" />
-        <ellipse cx="16" cy="22" rx="6.5" ry="6.5" fill="#2a1e16" />
-        <ellipse cx="13" cy="24" rx="3" ry="5" fill="#1a1410" />
-        <ellipse cx="19" cy="24" rx="3" ry="5" fill="#1a1410" />
-        <circle cx="14.5" cy="22" r="0.6" fill="#fff" opacity="0.7" />
-        <circle cx="17.5" cy="22" r="0.6" fill="#fff" opacity="0.7" />
-        <ellipse cx="11" cy="25" rx="1.4" ry="0.8" fill="#0a0605" />
-        <text x="22" y="46" textAnchor="middle" fontSize="5" fill="#5a3424" fontFamily="Caveat, cursive">murphy</text>
+      {/* postcard malvern - top of left cluster */}
+      <g transform="translate(170 632) rotate(-4)">
+        <rect width="56" height="36" fill="#fef8e0" rx="1.5" />
+        <rect width="56" height="12" fill="#9ec3df" />
+        <path d="M 0 10 L 10 7 L 22 10 L 34 5 L 44 8 L 56 5 L 56 12 L 0 12 Z" fill="#5a7e4a" />
+        <text x="28" y="22" textAnchor="middle" fontSize="6" fill="#5a3424" fontFamily="Caveat, cursive">malvern</text>
+        <text x="28" y="30" textAnchor="middle" fontSize="4" fill="#5a3424" fontFamily="Caveat, cursive" fontStyle="italic">wish u were here</text>
+        <rect x="44" y="16" width="9" height="11" fill="#c97844" stroke="#fff" strokeWidth="0.6" />
       </g>
 
-      {/* heart polaroid lower right */}
-      <g transform="translate(670 460) rotate(-3)">
+      {/* polaroid 4 - puppy */}
+      <g transform="translate(154 686) rotate(8)">
         <rect width="38" height="46" fill="#fbf1e0" rx="1.5" />
-        <rect x="3" y="3" width="32" height="32" fill="#c97844" />
-        <path d="M 19 14 q -5 -5 -8 -1 q -3 4 8 13 q 11 -9 8 -13 q -3 -4 -8 1 Z" fill="#fff4d8" opacity="0.92" />
-        <text x="19" y="42" textAnchor="middle" fontSize="5" fill="#5a3424" fontFamily="Caveat, cursive">us</text>
+        <rect x="3" y="3" width="32" height="32" fill="#1a1410" />
+        <ellipse cx="20" cy="26" rx="10" ry="6" fill="#2a1e16" />
+        <ellipse cx="14" cy="20" rx="6.5" ry="6.5" fill="#2a1e16" />
+        <ellipse cx="11" cy="22" rx="3" ry="5" fill="#1a1410" />
+        <ellipse cx="17" cy="22" rx="3" ry="5" fill="#1a1410" />
+        <circle cx="12.5" cy="20" r="0.7" fill="#fff" opacity="0.7" />
+        <circle cx="15.5" cy="20" r="0.7" fill="#fff" opacity="0.7" />
+        <ellipse cx="10" cy="23" rx="1.4" ry="0.8" fill="#0a0605" />
+        <text x="19" y="42" textAnchor="middle" fontSize="6" fill="#5a3424" fontFamily="Caveat, cursive">murphy</text>
       </g>
 
-      {/* tape pieces */}
-      <rect x="14" y="376" width="10" height="5" fill="#fce4a8" opacity="0.7" />
-      <rect x="680" y="356" width="10" height="5" fill="#fce4a8" opacity="0.7" />
-      <rect x="680" y="456" width="10" height="5" fill="#fce4a8" opacity="0.7" />
+      {/* Heart sticker note */}
+      <g transform="translate(140 740) rotate(-6)">
+        <rect width="40" height="40" fill="#fce4a8" rx="1" />
+        <text x="20" y="20" textAnchor="middle" fontSize="10" fill="#9a3030" fontFamily="Caveat, cursive">love u</text>
+        <text x="20" y="32" textAnchor="middle" fontSize="10" fill="#9a3030" fontFamily="Caveat, cursive">x x</text>
+      </g>
 
-      {/* postcard at upper-left */}
-      <g transform="translate(-4 200) rotate(-4)">
-        <rect width="68" height="44" fill="#fef8e0" rx="1.5" />
-        <rect width="68" height="14" fill="#9ec3df" />
-        <path d="M 0 12 L 14 8 L 28 12 L 42 6 L 56 10 L 68 6 L 68 14 L 0 14 Z" fill="#5a7e4a" />
-        <text x="34" y="26" textAnchor="middle" fontSize="6" fill="#5a3424" fontFamily="Caveat, cursive">malvern</text>
-        <text x="34" y="36" textAnchor="middle" fontSize="4" fill="#5a3424" fontFamily="Caveat, cursive" fontStyle="italic">wish u were here</text>
-        <rect x="56" y="20" width="10" height="12" fill="#c97844" stroke="#fff" strokeWidth="0.7" />
+      {/* RIGHT WALL cluster (above and below chalkboard) */}
+      {/* polaroid 5 - house */}
+      <g transform="translate(508 632) rotate(5)">
+        <rect width="40" height="48" fill="#fbf1e0" rx="1.5" />
+        <rect x="3" y="3" width="34" height="34" fill="#5a7e4a" />
+        <rect x="13" y="14" width="14" height="20" fill="#7a4a3a" />
+        <path d="M 11 14 L 20 6 L 29 14 Z" fill="#3a2418" />
+        <rect x="17" y="22" width="6" height="10" fill="#3a2418" />
+        <text x="20" y="44" textAnchor="middle" fontSize="6" fill="#5a3424" fontFamily="Caveat, cursive">home</text>
+        <rect x="13" y="-4" width="14" height="5" fill="#fce4a8" opacity="0.75" />
+      </g>
+
+      {/* polaroid 6 - couple beach */}
+      <g transform="translate(514 800) rotate(-4)">
+        <rect width="38" height="46" fill="#fbf1e0" rx="1.5" />
+        <rect x="3" y="3" width="32" height="32" fill="#a8c0d8" />
+        <rect x="3" y="20" width="32" height="14" fill="#fce4a8" />
+        <ellipse cx="13" cy="18" rx="3" ry="5" fill="#c97844" />
+        <ellipse cx="20" cy="18" rx="3" ry="5" fill="#5a3424" />
+        <ellipse cx="13" cy="24" rx="2.4" ry="3" fill="#c97844" />
+        <ellipse cx="20" cy="24" rx="2.4" ry="3" fill="#3a2418" />
+        <text x="19" y="42" textAnchor="middle" fontSize="6" fill="#5a3424" fontFamily="Caveat, cursive">us 💕</text>
+      </g>
+
+      {/* tiny dried flower bunch on left wall */}
+      <g transform="translate(122 808)">
+        <line x1="14" y1="-4" x2="14" y2="22" stroke="#5a3424" strokeWidth="0.6" />
+        <ellipse cx="10" cy="2" rx="4" ry="6" fill="#9abe7a" opacity="0.8" transform="rotate(-20 10 2)" />
+        <ellipse cx="18" cy="-2" rx="4" ry="6" fill="#a85970" opacity="0.85" transform="rotate(15 18 -2)" />
+        <ellipse cx="12" cy="-6" rx="3" ry="5" fill="#fbe2ba" opacity="0.85" transform="rotate(-10 12 -6)" />
+        {/* tiny bow */}
+        <path d="M 10 18 q 4 -2 4 4 q 0 -6 4 -4" stroke="#c75a4a" strokeWidth="1.4" fill="none" />
       </g>
     </g>
   );
@@ -1164,6 +1236,11 @@ function WallClock({ now }: { now: Date }) {
         x2={44 + Math.cos((minAngle - 90) * Math.PI / 180) * 26}
         y2={46 + Math.sin((minAngle - 90) * Math.PI / 180) * 26}
         stroke="#3a2418" strokeWidth="1.6" strokeLinecap="round" />
+      {/* second hand — animated continuously */}
+      <g style={{ transformOrigin: '44px 46px', animation: 'spin 60s steps(60, end) infinite' }}>
+        <line x1="44" y1="46" x2="44" y2="20" stroke="#c75a4a" strokeWidth="0.8" strokeLinecap="round" />
+        <circle cx="44" cy="20" r="1.2" fill="#c75a4a" />
+      </g>
       {/* center cap */}
       <circle cx="44" cy="46" r="2.4" fill="#c75a4a" />
       {/* highlight */}
@@ -1484,17 +1561,31 @@ function Desk() {
         <ellipse cx="18" cy="6" rx="5" ry="7" fill="#9abe7a" />
       </g>
 
-      {/* CD player (vinyl box) on left */}
+      {/* CD player (vinyl box) on left — with spinning record */}
       <g transform="translate(126 856)">
         <ellipse cx="40" cy="42" rx="44" ry="6" fill="#1a1410" opacity="0.4" />
         <rect width="80" height="36" y="6" fill="#1a1410" rx="3" />
-        <circle cx="56" cy="24" r="14" fill="#0a0605" stroke="#3a2418" strokeWidth="0.6" />
-        <circle cx="56" cy="24" r="2.6" fill="#5a3424" />
-        <path d="M 44 22 L 44 26 M 47 21 L 47 27 M 50 20 L 50 28 M 60 20 L 60 28 M 63 21 L 63 27 M 66 22 L 66 26" stroke="#5a3424" strokeWidth="0.5" />
+        {/* spinning vinyl */}
+        <g style={{ transformOrigin: '56px 24px', animation: 'spin 8s linear infinite' }}>
+          <circle cx="56" cy="24" r="14" fill="#0a0605" stroke="#3a2418" strokeWidth="0.6" />
+          <circle cx="56" cy="24" r="11" fill="none" stroke="#1a1410" strokeWidth="0.4" opacity="0.6" />
+          <circle cx="56" cy="24" r="8" fill="none" stroke="#1a1410" strokeWidth="0.4" opacity="0.5" />
+          {/* label */}
+          <circle cx="56" cy="24" r="4" fill="#c75a4a" />
+          <circle cx="56" cy="24" r="0.8" fill="#fbf1e0" />
+          {/* highlight reflection */}
+          <path d="M 50 20 q 4 -2 8 0" stroke="#fff8e0" strokeWidth="0.4" fill="none" opacity="0.4" />
+        </g>
+        {/* tonearm */}
+        <line x1="74" y1="14" x2="60" y2="22" stroke="#7a6048" strokeWidth="0.8" />
+        <circle cx="74" cy="14" r="1.4" fill="#7a6048" />
+        <circle cx="60" cy="22" r="0.9" fill="#3a2418" />
+        {/* speaker grill on left */}
         <rect x="6" y="14" width="26" height="3" fill="#5a3424" rx="0.5" />
         <rect x="6" y="20" width="18" height="2" fill="#3a2418" />
         <rect x="6" y="24" width="18" height="2" fill="#3a2418" />
-        <circle cx="74" cy="13" r="0.9" fill="#7afca8" style={{ animation: 'fairyPulse 3s ease-in-out infinite' }} />
+        {/* power LED */}
+        <circle cx="74" cy="38" r="0.9" fill="#7afca8" style={{ animation: 'fairyPulse 3s ease-in-out infinite' }} />
       </g>
 
       {/* PHONE face down (right side of desk) */}

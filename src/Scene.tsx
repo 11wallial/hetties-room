@@ -417,9 +417,10 @@ export function Scene({ now, daysRemaining = 0, daysSince = 0, totalDays = 49, o
       <g style={{ mixBlendMode: 'screen' }} pointerEvents="none">
         <ellipse cx="360" cy="700" rx="180" ry="100" fill={isNight ? '#a8b8d8' : '#ffd896'} opacity={isNight ? '0.08' : '0.06'} />
       </g>
-      {/* Warm wash on Hettie's left side (from lamp on her right cheek viewer's left) */}
+      {/* Warm wash on Hettie's cheek (from lamp, viewer's left side of her face).
+          Kept narrow so it sits ON the face — not bleeding past her hair. */}
       <g style={{ mixBlendMode: 'screen' }} pointerEvents="none">
-        <ellipse cx="316" cy="720" rx="60" ry="80" fill="#ffd896" opacity="0.15"
+        <ellipse cx="340" cy="740" rx="28" ry="46" fill="#ffd896" opacity="0.13"
           style={{ animation: 'flicker 4s ease-in-out infinite' }} />
       </g>
       {isNight && (
@@ -2232,9 +2233,6 @@ function Lamp() {
       <ellipse cx="200" cy="894" rx="200" ry="30" fill="url(#lampGlow)" opacity="0.9" pointerEvents="none" />
       <ellipse cx="200" cy="892" rx="160" ry="22" fill="#ffe6a8" opacity="0.55" pointerEvents="none" />
       <ellipse cx="200" cy="890" rx="120" ry="14" fill="#fff8e0" opacity="0.45" pointerEvents="none" />
-      {/* glow on lamp shade itself */}
-      <circle cx="158" cy="660" r="22" fill="#ffe6a8" opacity="0.45" pointerEvents="none"
-        style={{ animation: 'flicker 4s ease-in-out infinite' }} />
 
       {/* lamp shape */}
       <g transform="translate(176 736)">

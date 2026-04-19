@@ -1,0 +1,105 @@
+@keyframes breathe {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-1.5px); }
+}
+
+@keyframes hairSway {
+  0%, 100% { transform: rotate(-0.5deg); }
+  50% { transform: rotate(0.5deg); }
+}
+
+@keyframes headTilt {
+  0%, 100% { transform: rotate(-1deg) translateX(0); }
+  50% { transform: rotate(0.5deg) translateX(0.5px); }
+}
+
+@keyframes leafSwayA {
+  0%, 100% { transform: rotate(-1.6deg); }
+  50% { transform: rotate(1.6deg); }
+}
+@keyframes leafSwayB {
+  0%, 100% { transform: rotate(2deg); }
+  50% { transform: rotate(-1deg); }
+}
+
+@keyframes curtainSway {
+  0%, 100% { transform: translateX(0) skewY(0deg); }
+  50% { transform: translateX(-1.5px) skewY(0.4deg); }
+}
+
+@keyframes steamRise {
+  0% { opacity: 0; transform: translateY(0) translateX(0) scale(0.7); }
+  20% { opacity: 0.6; }
+  100% { opacity: 0; transform: translateY(-44px) translateX(-6px) scale(1.6); }
+}
+@keyframes steamRise2 {
+  0% { opacity: 0; transform: translateY(0) translateX(0) scale(0.7); }
+  25% { opacity: 0.5; }
+  100% { opacity: 0; transform: translateY(-46px) translateX(5px) scale(1.7); }
+}
+
+@keyframes dustFloat {
+  0% { opacity: 0; transform: translateY(0) translateX(0); }
+  20% { opacity: 0.7; }
+  80% { opacity: 0.55; }
+  100% { opacity: 0; transform: translateY(-90px) translateX(20px); }
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 0.92; transform: scale(1); }
+  45% { opacity: 1; transform: scale(1.02); }
+  60% { opacity: 0.86; transform: scale(0.98); }
+  75% { opacity: 0.95; transform: scale(1); }
+}
+
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.95; }
+}
+
+@keyframes fairyPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+@keyframes earSway {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-2deg); }
+}
+@keyframes earSwayB {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(2deg); }
+}
+
+@keyframes tailSwishGentle {
+  0%, 100% { transform: rotate(-8deg); }
+  50% { transform: rotate(10deg); }
+}
+
+@keyframes cloudDriftA {
+  0% { transform: translateX(-200px); }
+  100% { transform: translateX(720px); }
+}
+@keyframes cloudDriftB {
+  0% { transform: translateX(720px); }
+  100% { transform: translateX(-200px); }
+}
+
+@keyframes sunBreathe {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.04); opacity: 0.95; }
+}
+
+@keyframes dropSlide {
+  0% { transform: translateY(-30px); opacity: 0; }
+  10% { opacity: 0.6; }
+  85% { opacity: 0.55; }
+  100% { transform: translateY(360px); opacity: 0; }
+}
+
+@keyframes noteFloat {
+  0% { opacity: 0; transform: translate(0, 0); }
+  20% { opacity: 0.7; transform: translate(2px, -10px); }
+  60% { opacity: 0.5; transform: translate(-4px, -40px); }
+  100% { opacity: 0; transform: translate(6px, -80px); }
+}

@@ -1,0 +1,248 @@
+.stage {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at 30% 40%, #2a1530 0%, #1a0e1f 55%, #0a0510 100%);
+  overflow: hidden;
+}
+
+.scene-frame {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: #0a0510;
+}
+
+/* On wide screens (desktop/landscape), constrain to a phone-shape window centered */
+@media (min-aspect-ratio: 9/16) {
+  .stage { background: radial-gradient(ellipse at 30% 40%, #2a1530 0%, #1a0e1f 55%, #0a0510 100%); }
+  .scene-frame {
+    position: relative;
+    inset: auto;
+    height: 100vh;
+    height: 100dvh;
+    width: calc(100vh * 9 / 16);
+    width: calc(100dvh * 9 / 16);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+    border-radius: 14px;
+  }
+}
+
+.scene-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.overlay-ui {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(14px, 2.6vh, 26px) clamp(14px, 4vw, 22px);
+  z-index: 30;
+}
+
+.overlay-ui > * {
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.overlay-top { flex: 0 0 auto; padding-top: clamp(8px, 2vh, 18px); }
+.overlay-mid { flex: 0 0 auto; margin-top: clamp(40px, 7vh, 60px); }
+.overlay-bottom { flex: 0 0 auto; margin-top: auto; }
+
+/* TOP: handwritten title */
+.title-stamp {
+  align-self: center;
+  text-align: center;
+  font-family: 'Caveat', cursive;
+  font-size: clamp(18px, 5.5vw, 28px);
+  color: #fff4d8;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.85), 0 0 18px rgba(0,0,0,0.5);
+  opacity: 0.92;
+  pointer-events: none;
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+.title-stamp .small {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(8px, 2.2vw, 11px);
+  letter-spacing: 0.36em;
+  text-transform: uppercase;
+  color: #ffd9a8;
+  font-style: normal;
+  margin-top: 6px;
+  opacity: 0.75;
+}
+
+/* MIDDLE-ish: countdown */
+.countdown-card {
+  align-self: center;
+  text-align: center;
+  color: #fff4d8;
+  font-family: 'Cormorant Garamond', 'Georgia', serif;
+  text-shadow: 0 3px 14px rgba(10, 4, 2, 0.95), 0 0 28px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  width: 100%;
+}
+
+.countdown-card .label {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(14px, 4.4vw, 22px);
+  letter-spacing: 0.04em;
+  color: #ffe1b8;
+  opacity: 0.92;
+  font-style: italic;
+}
+
+.countdown-card .days {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.4ch;
+  margin-top: -0.05em;
+}
+
+.countdown-card .days .num {
+  font-size: clamp(86px, 28vw, 156px);
+  font-weight: 500;
+  line-height: 0.86;
+  color: #fff8ea;
+  letter-spacing: -0.04em;
+  text-shadow:
+    0 6px 36px rgba(20, 8, 4, 0.98),
+    0 0 60px rgba(255, 200, 140, 0.22),
+    0 1px 0 rgba(255, 240, 210, 0.4);
+}
+
+.countdown-card .days .unit {
+  font-size: clamp(20px, 6.4vw, 36px);
+  font-style: italic;
+  font-weight: 400;
+  color: #fff0d0;
+  letter-spacing: 0.02em;
+}
+
+.countdown-card .sub {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(15px, 4.6vw, 22px);
+  margin-top: 4px;
+  color: #fff0d0;
+  font-style: italic;
+}
+
+.progress-track {
+  margin: clamp(10px, 1.4vh, 14px) auto 0;
+  width: clamp(180px, 56vw, 260px);
+  height: 2px;
+  background: rgba(255, 240, 210, 0.18);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255,210,150,0.4), #fff0d0);
+  border-radius: 2px;
+  box-shadow: 0 0 12px rgba(255, 210, 150, 0.6);
+  transition: width 1.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.progress-meta {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(9px, 2.4vw, 11px);
+  letter-spacing: 0.36em;
+  text-transform: uppercase;
+  color: #ffe5b8;
+  margin-top: 8px;
+  opacity: 0.78;
+  font-weight: 400;
+}
+
+.audio-toggle {
+  position: absolute;
+  bottom: clamp(14px, 2.6vh, 22px);
+  left: clamp(14px, 4vw, 22px);
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 240, 210, 0.12);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 240, 210, 0.28);
+  color: #fff4d8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  z-index: 40;
+  transition: background 0.3s, transform 0.2s;
+}
+.audio-toggle:hover { background: rgba(255, 240, 210, 0.22); transform: scale(1.05); }
+.audio-toggle:active { transform: scale(0.95); }
+
+/* Bottom note card — handwritten greeting */
+.note-card {
+  align-self: center;
+  background: linear-gradient(180deg, #fffaee 0%, #f8eedb 100%);
+  color: #2a1810;
+  font-family: 'Caveat', cursive;
+  padding: 10px 18px 12px;
+  border-radius: 2px;
+  font-size: clamp(14px, 4.2vw, 18px);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.45), 0 1px 0 rgba(255,255,255,0.8) inset;
+  pointer-events: none;
+  max-width: 86%;
+  text-align: center;
+  line-height: 1.18;
+  z-index: 35;
+  position: relative;
+  rotate: -1.6deg;
+  margin-bottom: 8px;
+}
+
+.note-card::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 42px;
+  height: 14px;
+  background: rgba(255, 220, 160, 0.6);
+  border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
+}
+
+.fade-in { animation: appFadeIn 1.6s ease-out both; }
+@keyframes appFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.title-stamp { animation: liftIn 2.2s cubic-bezier(0.22, 0.61, 0.36, 1) 0.3s both; }
+.countdown-card { animation: liftIn 2.4s cubic-bezier(0.22, 0.61, 0.36, 1) 0.6s both; }
+.note-card { animation: liftIn 2.4s cubic-bezier(0.22, 0.61, 0.36, 1) 1.0s both; }
+@keyframes liftIn {
+  from { opacity: 0; transform: translateY(10px) rotate(-1.6deg); }
+  to { opacity: 1; transform: translateY(0) rotate(-1.6deg); }
+}
+.title-stamp { animation-name: titleLift; }
+@keyframes titleLift {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.countdown-card { animation-name: cardLift; }
+@keyframes cardLift {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}

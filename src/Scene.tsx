@@ -442,9 +442,6 @@ export function Scene({ now, daysRemaining = 0, daysSince = 0, totalDays = 49, o
       {/* ============= STEAM FROM MUG ============= */}
       <Steam />
 
-      {/* ============= MUSIC NOTES ============= */}
-      <MusicNotes />
-
       {/* ============= DUST MOTES ============= */}
       <DustMotes />
 
@@ -2294,18 +2291,6 @@ function Steam() {
         style={{ animation: 'steamRise2 4.5s ease-out 0.8s infinite' }} />
       <path className="steam-wisp" d="M 82 832 Q 86 816 80 798 Q 74 780 82 762" stroke="#fff8e8" strokeWidth="1.6" fill="none" strokeLinecap="round" opacity="0.4"
         style={{ animation: 'steamRise 5s ease-out 1.5s infinite' }} />
-    </g>
-  );
-}
-
-function MusicNotes() {
-  return (
-    <g pointerEvents="none">
-      {[0, 1, 2].map(i => (
-        <g key={i} style={{ animation: `noteFloat 6s ease-out infinite`, animationDelay: `${i * 2.2}s` }}>
-          <text x={250 + i * 18} y={690} fontSize="16" fill="#fff4d8" opacity="0.6" fontFamily="serif">♪</text>
-        </g>
-      ))}
     </g>
   );
 }

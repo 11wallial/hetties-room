@@ -370,6 +370,9 @@ export function Scene({ now, daysRemaining = 0, daysSince = 0, totalDays = 49, o
       {/* ============= SUN CATCHER hanging inside window ============= */}
       <SunCatcher />
 
+      {/* ============= WIND CHIME hanging in window ============= */}
+      <WindChime />
+
       {/* ============= WARM AMBIENT GLOW ============= */}
       <rect width="720" height="1280" fill="url(#warmGlow)" pointerEvents="none" />
 
@@ -1546,6 +1549,25 @@ function SunCatcher() {
         <ellipse cx="-38" cy="500" rx="3" ry="1.4" fill="#9abe7a" opacity="0.5" />
         <ellipse cx="-32" cy="500" rx="3" ry="1.4" fill="#a8c0d8" opacity="0.5" />
       </g>
+    </g>
+  );
+}
+
+/* Wind chime hanging in the window — sways gently */
+function WindChime() {
+  return (
+    <g transform="translate(150 80)" style={{ transformOrigin: '0 0', animation: 'leafSwayA 14s ease-in-out infinite' }}>
+      <line x1="0" y1="0" x2="0" y2="60" stroke="#5a3424" strokeWidth="0.5" opacity="0.65" />
+      {/* hanger ring */}
+      <circle cx="0" cy="60" r="3" fill="none" stroke="#9a7a5a" strokeWidth="0.8" />
+      {/* chimes */}
+      <line x1="-6" y1="64" x2="-6" y2="100" stroke="#dccab0" strokeWidth="1.2" />
+      <line x1="-2" y1="64" x2="-2" y2="108" stroke="#dccab0" strokeWidth="1.2" />
+      <line x1="2" y1="64" x2="2" y2="104" stroke="#dccab0" strokeWidth="1.2" />
+      <line x1="6" y1="64" x2="6" y2="96" stroke="#dccab0" strokeWidth="1.2" />
+      {/* center catcher */}
+      <line x1="0" y1="64" x2="0" y2="108" stroke="#9a7a5a" strokeWidth="0.4" />
+      <ellipse cx="0" cy="108" rx="3" ry="2" fill="#9a7a5a" />
     </g>
   );
 }

@@ -1139,11 +1139,11 @@ function PolaroidWall() {
         <text x="19" y="42" textAnchor="middle" fontSize="6" fill="#5a3424" fontFamily="Caveat, cursive">us 💕</text>
       </g>
 
-      {/* Heart sticker note — moved to LEFT lower wall, well clear of lamp */}
-      <g transform="translate(74 798) rotate(-6)">
-        <rect width="36" height="36" fill="#fce4a8" rx="1" />
-        <text x="18" y="17" textAnchor="middle" fontSize="9" fill="#9a3030" fontFamily="Caveat, cursive">love u</text>
-        <text x="18" y="29" textAnchor="middle" fontSize="9" fill="#9a3030" fontFamily="Caveat, cursive">x x</text>
+      {/* Heart sticker note — beside chalkboard (right wall) */}
+      <g transform="translate(596 800) rotate(4)">
+        <rect width="40" height="40" fill="#fce4a8" rx="1" />
+        <text x="20" y="18" textAnchor="middle" fontSize="9" fill="#9a3030" fontFamily="Caveat, cursive">love u</text>
+        <text x="20" y="30" textAnchor="middle" fontSize="9" fill="#9a3030" fontFamily="Caveat, cursive">x x</text>
       </g>
     </g>
   );
@@ -1215,7 +1215,7 @@ function WallCalendar({ daysSince, totalDays }: { daysSince: number; totalDays: 
   const w = cols * cell + 8;
   const h = rows * cell + 32;
   return (
-    <g transform="translate(458 632) rotate(-3)">
+    <g transform="translate(72 800) rotate(-3)">
       {/* push-pin */}
       <circle cx={w / 2} cy="-4" r="2.4" fill="#c75a4a" />
       <circle cx={w / 2} cy="-4" r="0.8" fill="#fff8e0" opacity="0.7" />

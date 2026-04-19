@@ -302,6 +302,9 @@ export function Scene({ now, daysRemaining = 0, daysSince = 0, totalDays = 49, o
         {/* Birds drifting */}
         <Birds />
 
+        {/* Butterfly fluttering across window */}
+        <Butterfly />
+
         {/* atmospheric haze */}
         <rect x="60" y="80" width="600" height="380" fill="url(#hazeGrad)" pointerEvents="none" />
 
@@ -366,6 +369,10 @@ export function Scene({ now, daysRemaining = 0, daysSince = 0, totalDays = 49, o
 
       {/* ============= LIGHT POOL ON FLOOR ============= */}
       <ellipse cx="360" cy="1180" rx="380" ry="80" fill="url(#floorPool)" pointerEvents="none" />
+
+      {/* warm reflection on floor under lamp */}
+      <ellipse cx="180" cy="1140" rx="160" ry="40" fill="#ffe6a8" opacity="0.18" pointerEvents="none"
+        style={{ animation: 'flicker 4s ease-in-out infinite' }} />
 
       {/* ============= FLOOR ============= */}
       <Floor />
@@ -636,6 +643,24 @@ function MalvernHills({ seed }: { seed: number }) {
       {/* Reservoir glint (small lake) */}
       <ellipse cx="540" cy="500" rx="36" ry="4" fill="#a8c0d8" opacity="0.55" />
       <path d="M 510 500 q 6 -2 12 0 q 6 -2 12 0" stroke="#fff8e0" strokeWidth="0.4" fill="none" opacity="0.6" />
+    </g>
+  );
+}
+
+/* Butterfly drifting near the window — adds a sweet moment of life */
+function Butterfly() {
+  return (
+    <g pointerEvents="none" style={{ animation: 'mothFlight 70s ease-in-out infinite' }}>
+      <g style={{ transformOrigin: '0 0', animation: 'wingFlap 0.4s ease-in-out infinite' }}>
+        <ellipse cx="-4" cy="-2" rx="5" ry="3.5" fill="#ec88a8" opacity="0.85" />
+        <ellipse cx="-4" cy="2" rx="4" ry="3" fill="#c75a4a" opacity="0.8" />
+        <ellipse cx="4" cy="-2" rx="5" ry="3.5" fill="#ec88a8" opacity="0.85" />
+        <ellipse cx="4" cy="2" rx="4" ry="3" fill="#c75a4a" opacity="0.8" />
+        {/* body */}
+        <ellipse cx="0" cy="0" rx="0.8" ry="3" fill="#3a2418" />
+        {/* antennae */}
+        <path d="M 0 -2 L -2 -5 M 0 -2 L 2 -5" stroke="#3a2418" strokeWidth="0.4" fill="none" />
+      </g>
     </g>
   );
 }
@@ -1726,7 +1751,7 @@ function Desk() {
         <circle cx="74" cy="38" r="0.9" fill="#7afca8" style={{ animation: 'fairyPulse 3s ease-in-out infinite' }} />
       </g>
 
-      {/* PHONE face down (right side of desk) */}
+      {/* PHONE face down (right side of desk) — with subtle notification glow */}
       <g transform="translate(626 854) rotate(8)">
         <rect width="40" height="74" rx="6" fill="#1a1410" />
         <rect x="2" y="2" width="36" height="70" rx="5" fill="#2a1f1a" />
@@ -1735,6 +1760,11 @@ function Desk() {
         <circle cx="10" cy="10" r="1.6" fill="#3a2418" />
         <circle cx="16" cy="10" r="1.6" fill="#3a2418" />
         <circle cx="10" cy="16" r="1.4" fill="#3a2418" />
+        {/* notification glow (heart from Xan) — pulses subtly */}
+        <g style={{ animation: 'notifPulse 18s ease-in-out infinite' }}>
+          <ellipse cx="20" cy="40" rx="22" ry="18" fill="#ec88a8" opacity="0.3" filter="blur(4px)" />
+          <text x="20" y="44" textAnchor="middle" fontSize="9" fill="#fff8e0" opacity="0.85" fontFamily="serif">♥</text>
+        </g>
       </g>
 
       {/* sticky notes pad */}
@@ -1937,6 +1967,12 @@ function Hettie() {
 
         {/* face shape */}
         <path d="M 320 656 Q 302 670 302 706 Q 302 736 314 752 Q 332 768 360 768 Q 388 768 406 752 Q 418 736 418 706 Q 418 670 400 656 Q 360 644 320 656 Z" fill="url(#skinGrad)" />
+        {/* subtle nose shadow on right side of nose */}
+        <path d="M 366 728 Q 369 738 365 742" stroke="#c08a72" strokeWidth="0.8" fill="none" opacity="0.4" />
+        {/* contour shadow along jaw on viewer-right (away from light) */}
+        <path d="M 416 720 Q 414 740 406 754" stroke="#c08a72" strokeWidth="1.4" fill="none" opacity="0.3" />
+        {/* subtle warm light catch on viewer-left cheek (toward lamp) */}
+        <ellipse cx="324" cy="724" rx="14" ry="20" fill="#ffe6c8" opacity="0.25" />
 
         {/* ears */}
         <path d="M 302 706 Q 296 714 298 728 Q 304 736 312 728" fill="url(#skinGrad)" />
@@ -2168,8 +2204,23 @@ function DustMotes() {
     { x: 500, y: 1100, d: 3.7, dur: 10 }, { x: 580, y: 1020, d: 0.4, dur: 9.5 },
     { x: 240, y: 980, d: 2.4, dur: 11 }, { x: 480, y: 980, d: 4.4, dur: 9 },
   ];
-  return <g pointerEvents="none">{motes.map((m, i) => (
-    <circle key={i} cx={m.x} cy={m.y} r={i % 2 === 0 ? 0.9 : 1.4} fill="#ffe9c2"
-      style={{ animation: `dustFloat ${m.dur}s linear infinite`, animationDelay: `${m.d}s` }} />
-  ))}</g>;
+  // dense dust in the LAMP CONE area (centered around lamp at x=180, y=720-900)
+  const lampDust = [
+    { x: 130, y: 880, d: 0, dur: 6 }, { x: 160, y: 870, d: 1.2, dur: 7 }, { x: 200, y: 850, d: 2.4, dur: 6.5 },
+    { x: 230, y: 880, d: 0.8, dur: 8 }, { x: 180, y: 800, d: 3.5, dur: 7.5 }, { x: 250, y: 820, d: 1.8, dur: 7 },
+    { x: 110, y: 850, d: 4.2, dur: 6.5 }, { x: 290, y: 860, d: 2.7, dur: 8 },
+    { x: 150, y: 820, d: 1.4, dur: 6 }, { x: 220, y: 780, d: 3, dur: 7 },
+  ];
+  return (
+    <g pointerEvents="none">
+      {motes.map((m, i) => (
+        <circle key={i} cx={m.x} cy={m.y} r={i % 2 === 0 ? 0.9 : 1.4} fill="#ffe9c2"
+          style={{ animation: `dustFloat ${m.dur}s linear infinite`, animationDelay: `${m.d}s` }} />
+      ))}
+      {lampDust.map((m, i) => (
+        <circle key={`l${i}`} cx={m.x} cy={m.y} r={i % 2 === 0 ? 1.1 : 0.8} fill="#fff8e0"
+          style={{ animation: `dustFloat ${m.dur}s linear infinite`, animationDelay: `${m.d}s`, opacity: 0.7 }} />
+      ))}
+    </g>
+  );
 }

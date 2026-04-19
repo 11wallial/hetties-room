@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3e2654"/>
+      <stop offset="55%" stop-color="#a85970"/>
+      <stop offset="100%" stop-color="#f4a06a"/>
+    </linearGradient>
+    <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4d6443"/>
+      <stop offset="100%" stop-color="#2c3a2a"/>
+    </linearGradient>
+    <linearGradient id="hill2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#658260"/>
+      <stop offset="100%" stop-color="#3d5240"/>
+    </linearGradient>
+    <linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7a4838"/>
+      <stop offset="100%" stop-color="#5a3424"/>
+    </linearGradient>
+    <radialGradient id="sunGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#fff0c0"/>
+      <stop offset="40%" stop-color="#fff0c0" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#fff0c0" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="vignette" cx="0.5" cy="0.5" r="0.7">
+      <stop offset="55%" stop-color="#000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.5"/>
+    </radialGradient>
+  </defs>
+
+  <!-- background wall -->
+  <rect width="1200" height="630" fill="url(#wall)"/>
+
+  <!-- window frame -->
+  <rect x="60" y="60" width="1080" height="500" fill="#3d2418" rx="6"/>
+  <!-- sky inside -->
+  <rect x="80" y="80" width="1040" height="460" fill="url(#sky)"/>
+  <!-- sun glow -->
+  <circle cx="600" cy="240" r="220" fill="url(#sunGlow)"/>
+  <circle cx="600" cy="240" r="48" fill="#fff0c0" opacity="0.95"/>
+
+  <!-- distant village -->
+  <g opacity="0.7" transform="translate(220 360)">
+    <rect x="0" y="0" width="22" height="28" fill="#3a4e3a"/>
+    <path d="M -3 0 L 11 -12 L 25 0 Z" fill="#2a3a2a"/>
+    <rect x="22" y="6" width="16" height="22" fill="#3a4858"/>
+    <path d="M 21 6 L 30 -2 L 39 6 Z" fill="#2a3a48"/>
+    <rect x="38" y="-4" width="20" height="32" fill="#5a4040"/>
+    <path d="M 37 -4 L 48 -16 L 59 -4 Z" fill="#3a2828"/>
+    <!-- church spire -->
+    <rect x="64" y="-6" width="20" height="34" fill="#5a5040"/>
+    <path d="M 63 -6 L 74 -22 L 85 -6 Z" fill="#3a3328"/>
+    <path d="M 70 -6 L 74 -42 L 78 -6 Z" fill="#3a3328"/>
+  </g>
+
+  <!-- mid hill -->
+  <path d="M 80 540 L 80 320 L 200 280 L 360 240 L 520 220 L 680 240 L 840 270 L 1000 300 L 1120 320 L 1120 540 Z" fill="url(#hill2)"/>
+
+  <!-- near hill -->
+  <path d="M 80 540 L 80 380 L 200 360 L 380 340 L 600 320 L 820 340 L 1000 360 L 1120 380 L 1120 540 Z" fill="url(#hill)"/>
+
+  <!-- birds -->
+  <g stroke="#3a2418" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.7">
+    <path d="M 760 180 q 8 -8 16 0 q 8 -8 16 0"/>
+    <path d="M 820 200 q 6 -6 12 0 q 6 -6 12 0"/>
+    <path d="M 700 160 q 6 -6 12 0 q 6 -6 12 0"/>
+  </g>
+
+  <!-- bunting at top -->
+  <path d="M 60 60 Q 600 100 1140 60" stroke="#7a4830" stroke-width="2" fill="none" opacity="0.7"/>
+  <g>
+    <path d="M 200 78 L 220 78 L 210 100 Z" fill="#c75a4a"/>
+    <path d="M 320 84 L 340 84 L 330 106 Z" fill="#fbe2ba"/>
+    <path d="M 440 88 L 460 88 L 450 110 Z" fill="#9abe7a"/>
+    <path d="M 560 90 L 580 90 L 570 112 Z" fill="#a85970"/>
+    <path d="M 680 90 L 700 90 L 690 112 Z" fill="#fce4a8"/>
+    <path d="M 800 88 L 820 88 L 810 110 Z" fill="#5a7e4a"/>
+    <path d="M 920 84 L 940 84 L 930 106 Z" fill="#c75a4a"/>
+    <path d="M 1040 78 L 1060 78 L 1050 100 Z" fill="#fbe2ba"/>
+  </g>
+
+  <!-- title -->
+  <text x="600" y="595" text-anchor="middle"
+    font-family="'Cormorant Garamond', Georgia, serif"
+    font-style="italic" font-size="42" font-weight="500" fill="#fff4d8">
+    until you're home
+  </text>
+  <text x="40" y="40" font-family="Caveat, cursive" font-size="28" fill="#fff4d8" opacity="0.9">hettie's room</text>
+
+  <!-- vignette -->
+  <rect width="1200" height="630" fill="url(#vignette)"/>
+</svg>

@@ -337,6 +337,11 @@ export function Scene({ now, daysRemaining = 0 }: SceneProps) {
       {/* ============= LAMP (in front of window) ============= */}
       <Lamp />
 
+      {/* ============= rim light on Hettie from window ============= */}
+      <g style={{ mixBlendMode: 'screen' }} pointerEvents="none">
+        <ellipse cx="360" cy="700" rx="180" ry="100" fill="#ffd896" opacity="0.06" />
+      </g>
+
       {/* ============= DESK ============= */}
       <Desk />
 
@@ -522,11 +527,6 @@ function WindowFrameFront() {
       <rect x="356" y="80" width="8" height="3" fill="#7a4830" opacity="0.7" />
       <rect x="356" y="80" width="2" height="500" fill="#1a0e08" opacity="0.5" />
       <rect x="362" y="80" width="2" height="500" fill="#7a4830" opacity="0.4" />
-
-      {/* HIGH HORIZONTAL MULLION — splits sky band off, well above the hills (y=200) */}
-      <rect x="60" y="196" width="600" height="6" fill="url(#frameGrad)" opacity="0.92" />
-      <rect x="60" y="196" width="600" height="2" fill="#7a4830" opacity="0.65" />
-      <rect x="60" y="200" width="600" height="2" fill="#1a0e08" opacity="0.45" />
 
       {/* inner trim highlights along top inside */}
       <rect x="62" y="82" width="596" height="2" fill="#ffce8a" opacity="0.4" />
@@ -1072,10 +1072,29 @@ function Hettie() {
     <g style={{ transformOrigin: '360px 800px', animation: 'breathe 5s ease-in-out infinite' }}>
       {/* Hettie sits at desk; her head + shoulders + hands visible above the desk surface (y=900) */}
 
+      {/* CHAIR back behind Hettie */}
+      <g>
+        <rect x="218" y="800" width="284" height="110" fill="#3a2418" rx="10" />
+        <rect x="226" y="808" width="268" height="98" fill="#8a4838" rx="7" />
+        <path d="M 228 826 Q 360 832 492 826" stroke="#5a2818" strokeWidth="1" fill="none" opacity="0.6" />
+        <path d="M 228 856 Q 360 862 492 856" stroke="#5a2818" strokeWidth="1" fill="none" opacity="0.6" />
+        <path d="M 228 886 Q 360 892 492 886" stroke="#5a2818" strokeWidth="1" fill="none" opacity="0.6" />
+      </g>
+
       {/* TORSO — hoodie (visible above desk) */}
       <g>
         {/* back of hoodie */}
         <path d="M 254 810 Q 230 850 232 905 L 488 905 Q 492 850 466 810 Q 440 776 396 770 Q 320 770 290 780 Q 270 794 254 810 Z" fill="url(#hoodieGrad)" />
+        {/* hoodie knit texture (subtle vertical lines) */}
+        {[260, 275, 290, 305, 320, 335, 350, 365, 380, 395, 410, 425, 440, 455, 470, 485].map(x => (
+          <path key={x} d={`M ${x} 820 Q ${x + 0.5} 855 ${x} 900`} stroke="#a08470" strokeWidth="0.4" fill="none" opacity="0.35" />
+        ))}
+        {/* horizontal knit ridge */}
+        <path d="M 246 858 Q 360 866 478 858" stroke="#a08470" strokeWidth="0.5" fill="none" opacity="0.4" />
+        <path d="M 248 882 Q 360 890 476 882" stroke="#a08470" strokeWidth="0.4" fill="none" opacity="0.4" />
+        {/* hoodie ribbed cuffs/hem */}
+        <path d="M 240 898 Q 360 908 488 898 L 488 905 L 232 905 Z" fill="#9a7a5a" opacity="0.4" />
+
         {/* hood scrunch behind neck */}
         <path d="M 312 770 Q 326 752 360 752 Q 394 752 408 770 Q 414 790 392 798 Q 360 802 328 798 Q 308 790 312 770 Z" fill="url(#hoodieGrad)" />
         <path d="M 320 786 Q 360 784 400 786" stroke="#a08470" strokeWidth="1" fill="none" opacity="0.6" />
@@ -1086,6 +1105,7 @@ function Hettie() {
         <circle cx="366" cy="840" r="3.2" fill="#9a7a5a" />
         {/* pocket */}
         <path d="M 296 868 Q 360 880 422 870 Q 432 884 422 902 L 298 902 Q 290 884 296 868 Z" fill="#dccab0" opacity="0.55" />
+        <path d="M 304 882 Q 360 888 416 882" stroke="#9a7a5a" strokeWidth="0.5" fill="none" opacity="0.5" />
       </g>
 
       {/* RIGHT ARM (her right, viewer's left) — propped up holding head */}

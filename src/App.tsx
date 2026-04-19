@@ -5,22 +5,17 @@ import { Scene } from './Scene';
 const RETURN = new Date('2026-06-04T00:00:00');
 const DEPARTURE = new Date('2026-04-16T00:00:00');
 
-function pickGreeting(daysRemaining: number, hour: number): string {
+function pickGreeting(daysRemaining: number): string {
   if (daysRemaining <= 0) return "you're home, my love 💛";
-  const morning = hour >= 5 && hour < 11;
-  const evening = hour >= 18 || hour < 4;
-
-  const pool: string[] = [];
-  if (morning) {
-    pool.push('good morning, baby ☕', "wakey wakey, you're closer than yesterday", 'morning, sunshine — kettle is on');
-  } else if (evening) {
-    pool.push('the lamp is on for you 🕯️', "fairy lights are humming · the bed's warm", "soft hours · we're both tucked in");
-  } else {
-    pool.push("a little check-in from home", 'the hills are still here · so is your dog', 'the kettle just clicked, again');
-  }
-  if (daysRemaining <= 7) pool.push("almost on the doormat now", "one more week of missing you");
-  if (daysRemaining === 1) pool.push("tomorrow, tomorrow, tomorrow");
-  const idx = Math.floor((Date.now() / (1000 * 60 * 60 * 6)) % pool.length);
+  const pool = [
+    'love you lots ❤️ xx',
+    'See you soon!',
+    'Spicy Garlic Pasta pls',
+    'Murphy awaits...',
+    'head scratches loading.....',
+  ];
+  // rotate every ~3 hours so she sees a different one through the day, but stable for a while
+  const idx = Math.floor((Date.now() / (1000 * 60 * 60 * 3)) % pool.length);
   return pool[idx];
 }
 
@@ -62,8 +57,7 @@ function App() {
     return `just ${daysRemaining} day${daysRemaining === 1 ? '' : 's'} now`;
   }, [daysRemaining, weeks, extra]);
 
-  const hour = now.getHours() + now.getMinutes() / 60;
-  const greeting = useMemo(() => pickGreeting(daysRemaining, hour), [daysRemaining, Math.floor(hour / 6)]);
+  const greeting = useMemo(() => pickGreeting(daysRemaining), [daysRemaining, Math.floor(Date.now() / (1000 * 60 * 60 * 3))]);
 
   const toggleAudio = async () => {
     if (audioOn) {

@@ -152,19 +152,34 @@ export function Scene({ now, daysRemaining = 0, daysSince = 0, totalDays = 49, o
           <stop offset="100%" stopColor="#a08470" />
         </linearGradient>
 
-        {/* MURPHY */}
+        {/* MURPHY — warmer chocolate coat (not pitch-black) so his face reads */}
         <linearGradient id="murphyCoat" x1="0" y1="0" x2="0.7" y2="0.7">
-          <stop offset="0%" stopColor="#3a2e26" />
-          <stop offset="50%" stopColor="#1a120e" />
-          <stop offset="100%" stopColor="#050302" />
+          <stop offset="0%" stopColor="#5a3a2a" />
+          <stop offset="50%" stopColor="#3a2418" />
+          <stop offset="100%" stopColor="#1a0e08" />
         </linearGradient>
         <linearGradient id="murphyBelly" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#1a120e" />
-          <stop offset="100%" stopColor="#3a2820" />
+          <stop offset="0%" stopColor="#3a2418" />
+          <stop offset="100%" stopColor="#6a4a32" />
         </linearGradient>
         <linearGradient id="murphyRim" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#ffd896" stopOpacity="0.85" />
           <stop offset="100%" stopColor="#ffa060" stopOpacity="0" />
+        </linearGradient>
+        {/* Eyes — warm amber iris with dark pupil drawn over */}
+        <radialGradient id="murphyEye" cx="0.5" cy="0.5" r="0.6">
+          <stop offset="0%"  stopColor="#e6a060" />
+          <stop offset="60%" stopColor="#a86a2a" />
+          <stop offset="100%" stopColor="#3a1a08" />
+        </radialGradient>
+        {/* Tan markings — eyebrow spots, muzzle underside, paws — for a rottweiler-ish warmth */}
+        <linearGradient id="murphyTan" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#c9843a" />
+          <stop offset="100%" stopColor="#7a4a1c" />
+        </linearGradient>
+        <linearGradient id="murphyCream" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#fff4d8" />
+          <stop offset="100%" stopColor="#e6d4a8" />
         </linearGradient>
 
         {/* DESK */}
@@ -919,48 +934,55 @@ function MurphyOnSill({ alert: _alert, onTap }: { alert: boolean; onTap?: () => 
 
       {/* HEAD — slightly cocked to viewer's right */}
       <g style={{ transformOrigin: '212px 478px', animation: 'headTilt 12s ease-in-out infinite' }}>
-        {/* skull */}
-        <ellipse cx="212" cy="470" rx="44" ry="40" fill="url(#murphyCoat)" />
-        {/* highlight on top of head */}
-        <ellipse cx="220" cy="448" rx="22" ry="10" fill="#3a2e26" opacity="0.7" />
+        {/* skull — a touch smaller so body reads */}
+        <ellipse cx="212" cy="472" rx="40" ry="36" fill="url(#murphyCoat)" />
+        {/* lighter crown highlight */}
+        <ellipse cx="216" cy="452" rx="20" ry="9" fill="#6a4430" opacity="0.65" />
 
-        {/* MUZZLE — pointing forward-right */}
-        <path d="M 222 488 Q 256 488 270 502 Q 270 518 256 522 Q 232 522 218 514 Q 212 502 222 488 Z" fill="#1a120e" />
+        {/* TAN EYEBROW SPOTS — rottweiler-style warmth, reads against dark coat */}
+        <ellipse cx="196" cy="460" rx="4.5" ry="2.8" fill="url(#murphyTan)" opacity="0.85" transform="rotate(-12 196 460)" />
+        <ellipse cx="234" cy="458" rx="5" ry="3" fill="url(#murphyTan)" opacity="0.9" transform="rotate(8 234 458)" />
+
+        {/* MUZZLE — pointing forward-right, with tan underside for contrast */}
+        <path d="M 222 488 Q 256 488 270 502 Q 270 518 256 522 Q 232 522 218 514 Q 212 502 222 488 Z" fill="#2a1810" />
+        {/* warm tan underside — lifts the face out of the shadow */}
+        <path d="M 224 506 Q 248 512 264 510 Q 262 520 250 522 Q 230 522 220 516 Q 218 510 224 506 Z" fill="url(#murphyTan)" opacity="0.6" />
+        {/* muzzle crease */}
         <path d="M 232 514 Q 252 520 268 514" stroke="#0a0605" strokeWidth="0.8" fill="none" opacity="0.55" />
-        {/* nose */}
-        <ellipse cx="266" cy="500" rx="7" ry="5.5" fill="#0a0605" />
-        <ellipse cx="264" cy="498" rx="2" ry="1.2" fill="#5a4a3a" opacity="0.7" />
+        {/* nose — glossy */}
+        <ellipse cx="266" cy="500" rx="7" ry="5.5" fill="#1a0e08" />
+        <ellipse cx="264" cy="498" rx="2.4" ry="1.4" fill="#8a6a4a" opacity="0.75" />
         {/* mouth */}
         <path d="M 248 514 Q 256 522 264 516" stroke="#0a0605" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.75" />
         {/* tongue */}
-        <ellipse cx="256" cy="520" rx="3" ry="1.6" fill="#c95a4a" opacity="0.55" />
+        <ellipse cx="256" cy="520" rx="3" ry="1.6" fill="#d46a5a" opacity="0.75" />
 
-        {/* EYES — large puppy eyes facing forward, with subtle blink */}
+        {/* EYES — bright amber iris, visible against dark coat */}
         <g style={{ transformOrigin: '218px 470px', animation: 'eyeBreathDog 11s ease-in-out infinite' }}>
           {/* left eye (further from viewer, smaller) */}
           <g>
-            <ellipse cx="200" cy="470" rx="6" ry="4.5" fill="#fff8e0" opacity="0.35" />
-            <ellipse cx="200" cy="471" rx="4.5" ry="3.6" fill="#1a0e08" />
-            <ellipse cx="200" cy="471" rx="3.4" ry="2.6" fill="url(#murphyEye)" />
-            <circle cx="201.5" cy="469.5" r="1.4" fill="#fff8e0" />
-            <circle cx="199.5" cy="472" r="0.6" fill="#fff" opacity="0.7" />
+            <ellipse cx="200" cy="470" rx="6" ry="4.5" fill="#fff4d8" opacity="0.55" />
+            <ellipse cx="200" cy="471" rx="4.6" ry="3.7" fill="url(#murphyEye)" />
+            <circle cx="200" cy="471" r="1.8" fill="#0a0605" />
+            <circle cx="201" cy="469.5" r="1" fill="#fff8e0" />
+            <circle cx="199.5" cy="472" r="0.5" fill="#fff" opacity="0.75" />
           </g>
           {/* right eye (closer to viewer, larger) */}
           <g>
-            <ellipse cx="234" cy="468" rx="7" ry="5" fill="#fff8e0" opacity="0.35" />
-            <ellipse cx="234" cy="469" rx="5.4" ry="4" fill="#1a0e08" />
-            <ellipse cx="234" cy="469" rx="4.4" ry="3.2" fill="url(#murphyEye)" />
-            <circle cx="236" cy="467" r="1.7" fill="#fff8e0" />
-            <circle cx="233" cy="470.5" r="0.7" fill="#fff" opacity="0.7" />
+            <ellipse cx="234" cy="468" rx="7" ry="5" fill="#fff4d8" opacity="0.55" />
+            <ellipse cx="234" cy="469" rx="5.5" ry="4.1" fill="url(#murphyEye)" />
+            <circle cx="234" cy="469" r="2.2" fill="#0a0605" />
+            <circle cx="235.5" cy="467" r="1.3" fill="#fff8e0" />
+            <circle cx="233" cy="470.5" r="0.6" fill="#fff" opacity="0.8" />
           </g>
         </g>
 
-        {/* eyebrows */}
-        <path d="M 192 462 Q 200 458 208 462" stroke="#0a0605" strokeWidth="1.1" fill="none" opacity="0.5" />
-        <path d="M 226 460 Q 234 456 244 460" stroke="#0a0605" strokeWidth="1.2" fill="none" opacity="0.55" />
+        {/* eyebrows — subtle arches above tan spots */}
+        <path d="M 190 458 Q 200 454 210 458" stroke="#1a0e08" strokeWidth="1" fill="none" opacity="0.5" />
+        <path d="M 224 456 Q 234 452 244 456" stroke="#1a0e08" strokeWidth="1.1" fill="none" opacity="0.55" />
 
         {/* whiskers */}
-        <path d="M 220 504 L 200 500 M 220 508 L 198 510 M 222 512 L 200 516" stroke="#5a4030" strokeWidth="0.4" opacity="0.6" />
+        <path d="M 220 504 L 200 500 M 220 508 L 198 510 M 222 512 L 200 516" stroke="#8a6a4a" strokeWidth="0.4" opacity="0.7" />
 
         {/* BIG FLOPPY EARS — hanging down beside face */}
         <g style={{ transformOrigin: '170px 446px', animation: 'earSway 6s ease-in-out infinite' }}>
@@ -989,35 +1011,35 @@ function MurphyOnSill({ alert: _alert, onTap }: { alert: boolean; onTap?: () => 
         </g>
       </g>
 
-      {/* WHITE CHEST — visible patch in center */}
-      <path d="M 200 528 Q 220 522 240 528 Q 246 548 232 558 Q 214 562 198 554 Q 192 540 200 528 Z" fill="#f5ebe0" opacity="0.9" />
-      <path d="M 208 540 Q 222 540 232 542" stroke="#dccab0" strokeWidth="0.5" fill="none" opacity="0.6" />
+      {/* WHITE/CREAM CHEST — visible bib */}
+      <path d="M 200 526 Q 220 520 240 526 Q 248 546 232 560 Q 214 564 198 556 Q 190 540 200 526 Z" fill="url(#murphyCream)" opacity="0.95" />
+      <path d="M 208 540 Q 222 540 232 542" stroke="#c8b090" strokeWidth="0.5" fill="none" opacity="0.6" />
 
-      {/* FRONT PAWS — resting on sill */}
+      {/* FRONT PAWS — resting on sill, with visible toes and cream pads */}
       <g>
-        <ellipse cx="206" cy="580" rx="13" ry="7" fill="#1a120e" />
-        <ellipse cx="208" cy="584" rx="8" ry="3" fill="#f5ebe0" opacity="0.95" />
-        <line x1="204" y1="582" x2="204" y2="586" stroke="#3d2818" strokeWidth="0.6" />
-        <line x1="208" y1="582" x2="208" y2="586" stroke="#3d2818" strokeWidth="0.6" />
-        <line x1="212" y1="582" x2="212" y2="586" stroke="#3d2818" strokeWidth="0.6" />
+        {/* left paw */}
+        <ellipse cx="206" cy="580" rx="14" ry="7.5" fill="url(#murphyCoat)" />
+        <ellipse cx="208" cy="584" rx="9" ry="3.2" fill="url(#murphyCream)" opacity="0.95" />
+        <path d="M 200 576 Q 199 584 202 588 M 206 574 Q 205 584 208 588 M 212 576 Q 212 584 214 588" stroke="#2a1810" strokeWidth="0.7" fill="none" opacity="0.7" />
+        {/* tan accent on the toes */}
+        <ellipse cx="206" cy="584" rx="5" ry="1.2" fill="url(#murphyTan)" opacity="0.35" />
 
-        <ellipse cx="244" cy="580" rx="13" ry="7" fill="#1a120e" />
-        <ellipse cx="248" cy="584" rx="8" ry="3" fill="#f5ebe0" opacity="0.95" />
-        <line x1="240" y1="582" x2="240" y2="586" stroke="#3d2818" strokeWidth="0.6" />
-        <line x1="244" y1="582" x2="244" y2="586" stroke="#3d2818" strokeWidth="0.6" />
-        <line x1="248" y1="582" x2="248" y2="586" stroke="#3d2818" strokeWidth="0.6" />
+        {/* right paw */}
+        <ellipse cx="244" cy="580" rx="14" ry="7.5" fill="url(#murphyCoat)" />
+        <ellipse cx="248" cy="584" rx="9" ry="3.2" fill="url(#murphyCream)" opacity="0.95" />
+        <path d="M 238 576 Q 237 584 240 588 M 244 574 Q 244 584 246 588 M 250 576 Q 250 584 252 588" stroke="#2a1810" strokeWidth="0.7" fill="none" opacity="0.7" />
+        <ellipse cx="246" cy="584" rx="5" ry="1.2" fill="url(#murphyTan)" opacity="0.35" />
       </g>
 
-      {/* COLLAR with bone-shaped name tag */}
+      {/* COLLAR with round brass name tag */}
       <path d="M 188 522 Q 220 532 250 522" stroke="#c75a4a" strokeWidth="3.4" fill="none" />
       <path d="M 188 522 Q 220 532 250 522" stroke="#a84030" strokeWidth="1.2" fill="none" opacity="0.5" />
-      {/* tag (bone shaped) */}
+      {/* small brass disc */}
       <g transform="translate(220 540)">
-        <ellipse cx="-3.5" cy="-2" rx="2.4" ry="2.4" fill="#fcd092" />
-        <ellipse cx="3.5" cy="-2" rx="2.4" ry="2.4" fill="#fcd092" />
-        <rect x="-3.5" y="-3.5" width="7" height="3" fill="#fcd092" />
-        <text x="0" y="0" textAnchor="middle" fontSize="2.8" fill="#5a3424" fontFamily="serif">M</text>
-        <line x1="0" y1="-4" x2="0" y2="-7" stroke="#a87030" strokeWidth="0.5" />
+        <line x1="0" y1="-8" x2="0" y2="-4" stroke="#a87030" strokeWidth="0.6" />
+        <circle r="5" fill="#fcd092" stroke="#a87030" strokeWidth="0.5" />
+        <circle r="5" fill="url(#murphyRim)" opacity="0.4" />
+        <text x="0" y="1.6" textAnchor="middle" fontSize="4.5" fill="#5a3424" fontFamily="'Cormorant Garamond', Georgia, serif" fontWeight="500">M</text>
       </g>
 
       {/* RIM LIGHT from sky behind */}

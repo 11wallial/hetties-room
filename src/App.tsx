@@ -1,27 +1,31 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import './App.css';
 import { Scene } from './Scene';
+import { LocationTracker } from './LocationTracker';
+import { NoteBoard } from './NoteBoard';
+import { RecentNotes } from './RecentNotes';
 
 const RETURN = new Date('2026-06-04T00:00:00');
 const DEPARTURE = new Date('2026-04-16T00:00:00');
 
-function pickGreeting(daysRemaining: number): string {
+function pickGreeting(daysRemaining: number, slot: number): string {
   if (daysRemaining <= 0) return "you're home, my love 💛";
   const pool = [
     'love you lots ❤️ xx',
-    'See you soon!',
-    'Spicy Garlic Pasta pls',
-    'Murphy awaits...',
+    'see you soon!',
+    'spicy garlic pasta pls',
+    'murphy awaits...',
     'head scratches loading.....',
   ];
-  // rotate every ~3 hours so she sees a different one through the day, but stable for a while
-  const idx = Math.floor((Date.now() / (1000 * 60 * 60 * 3)) % pool.length);
-  return pool[idx];
+  return pool[slot % pool.length];
 }
 
 function App() {
   const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
   const fakeHour = params.get('h');
+  // Identity — ?who=hettie (or anything else) labels the author for the pinboard
+  const who = ((params.get('who') ?? 'xan').toLowerCase().trim()) || 'xan';
+
   const initialNow = (() => {
     if (!fakeHour) return new Date();
     const h = parseFloat(fakeHour);
@@ -29,9 +33,13 @@ function App() {
     d.setHours(Math.floor(h), Math.round((h - Math.floor(h)) * 60), 0, 0);
     return d;
   })();
+
   const [now, setNow] = useState(initialNow);
   const [hearts, setHearts] = useState<{ id: number; x: number; delay: number }[]>([]);
   const [audioOn, setAudioOn] = useState(false);
+  const [showMap, setShowMap] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
+  const [notesVersion, setNotesVersion] = useState(0);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const stopAudioRef = useRef<(() => void) | null>(null);
 
@@ -57,18 +65,21 @@ function App() {
     return `just ${daysRemaining} day${daysRemaining === 1 ? '' : 's'} now`;
   }, [daysRemaining, weeks, extra]);
 
-  const greeting = useMemo(() => pickGreeting(daysRemaining), [daysRemaining, Math.floor(Date.now() / (1000 * 60 * 60 * 3))]);
+  // Rotate every ~3 hours, but stable within a window
+  const greetingSlot = Math.floor(now.getTime() / (1000 * 60 * 60 * 3));
+  const greeting = useMemo(() => pickGreeting(daysRemaining, greetingSlot), [daysRemaining, greetingSlot]);
 
-  // Lo-fi tracks — HoliznaCC0 "Lo-fi And Chill" album, CC0 1.0 Universal license
-  // (no attribution required, public domain dedication)
+  // Lo-fi tracks — HoliznaCC0 "Lo-fi And Chill" album, CC0 1.0 (no attribution required)
   const trackList = useMemo(() => [
-    `${import.meta.env.BASE_URL}lofi.mp3`,                  // Everything You Ever Dreamed
-    `${import.meta.env.BASE_URL}lofi-autumn.mp3`,           // Autumn
-    `${import.meta.env.BASE_URL}lofi-a-little-shade.mp3`,   // A Little Shade
-    `${import.meta.env.BASE_URL}lofi-cellar-door.mp3`,      // Cellar Door
+    `${import.meta.env.BASE_URL}lofi.mp3`,
+    `${import.meta.env.BASE_URL}lofi-autumn.mp3`,
+    `${import.meta.env.BASE_URL}lofi-a-little-shade.mp3`,
+    `${import.meta.env.BASE_URL}lofi-cellar-door.mp3`,
   ], []);
   const audioElRef = useRef<HTMLAudioElement | null>(null);
-  const trackIdxRef = useRef<number>(Math.floor(Math.random() * 4));
+  // Lazy-init via useState to keep render pure
+  const [initialTrack] = useState(() => Math.floor(Math.random() * 4));
+  const trackIdxRef = useRef<number>(initialTrack);
 
   const toggleAudio = async () => {
     if (audioOn) {
@@ -78,7 +89,6 @@ function App() {
       return;
     }
     try {
-      // Use HTMLAudioElement for the lofi track (better for streaming long files)
       if (!audioElRef.current) {
         const el = new Audio();
         el.preload = 'auto';
@@ -87,7 +97,7 @@ function App() {
       }
       const el = audioElRef.current;
       el.src = trackList[trackIdxRef.current];
-      el.loop = false; // we'll advance to next track on ended
+      el.loop = false;
 
       const onEnded = () => {
         trackIdxRef.current = (trackIdxRef.current + 1) % trackList.length;
@@ -96,8 +106,7 @@ function App() {
       };
       el.addEventListener('ended', onEnded);
 
-      // Add a soft rain layer on top, low volume — keeps the cosy ambience
-      const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+      const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       if (!audioCtxRef.current) audioCtxRef.current = new Ctx();
       const ctx = audioCtxRef.current;
       if (ctx.state === 'suspended') await ctx.resume();
@@ -118,7 +127,6 @@ function App() {
       noise.connect(noiseFilter); noiseFilter.connect(master);
       noise.start();
 
-      // Fade music in
       el.volume = 0;
       await el.play().catch(() => {});
       const fadeIn = setInterval(() => {
@@ -129,13 +137,12 @@ function App() {
       stopAudioRef.current = () => {
         clearInterval(fadeIn);
         el.removeEventListener('ended', onEnded);
-        // fade music out
         const fadeOut = setInterval(() => {
           if (el.volume > 0.04) el.volume = Math.max(0, el.volume - 0.05);
           else { clearInterval(fadeOut); el.pause(); }
         }, 60);
         master.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.6);
-        setTimeout(() => { try { noise.stop(); } catch {} }, 700);
+        setTimeout(() => { try { noise.stop(); } catch { /* already stopped */ } }, 700);
       };
       setAudioOn(true);
     } catch (e) {
@@ -184,14 +191,51 @@ function App() {
             </div>
           </div>
           <div className="overlay-bottom">
+            <RecentNotes version={notesVersion} onOpen={() => setShowNotes(true)} />
             <div className="note-card">{greeting}</div>
           </div>
         </div>
 
-        <button className="audio-toggle" onClick={toggleAudio} aria-label={audioOn ? 'mute ambient' : 'play ambient'} title={audioOn ? 'mute' : 'play ambient sound'}>
-          {audioOn ? '♪' : '♫'}
+        {/* Corner buttons */}
+        <button
+          className="corner-toggle audio-toggle"
+          onClick={toggleAudio}
+          aria-label={audioOn ? 'mute ambient' : 'play ambient'}
+          title={audioOn ? 'mute' : 'play ambient sound'}
+        >
+          <span className="corner-icon" aria-hidden>{audioOn ? '♪' : '♫'}</span>
+          <span className="corner-label">{audioOn ? 'playing' : 'lo-fi'}</span>
+        </button>
+
+        <button
+          className="corner-toggle map-toggle"
+          onClick={() => setShowMap(true)}
+          aria-label="open the journey map"
+          title="where next?"
+        >
+          <span className="corner-icon" aria-hidden>🗺</span>
+          <span className="corner-label">where next</span>
+        </button>
+
+        <button
+          className="corner-toggle notes-toggle"
+          onClick={() => setShowNotes(true)}
+          aria-label="open the wish board"
+          title="things to do together"
+        >
+          <span className="corner-icon" aria-hidden>📌</span>
+          <span className="corner-label">wishes</span>
         </button>
       </div>
+
+      {showMap && <LocationTracker now={now} onClose={() => setShowMap(false)} />}
+      {showNotes && (
+        <NoteBoard
+          onClose={() => { setShowNotes(false); setNotesVersion((v) => v + 1); }}
+          onChange={() => setNotesVersion((v) => v + 1)}
+          author={who}
+        />
+      )}
     </div>
   );
 }

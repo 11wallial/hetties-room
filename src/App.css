@@ -48,7 +48,11 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: max(clamp(14px, 2.6vh, 26px), env(safe-area-inset-top)) max(clamp(14px, 4vw, 22px), env(safe-area-inset-right)) max(clamp(14px, 2.6vh, 26px), env(safe-area-inset-bottom)) max(clamp(14px, 4vw, 22px), env(safe-area-inset-left));
+  padding:
+    max(clamp(14px, 2.6vh, 26px), env(safe-area-inset-top))
+    max(clamp(14px, 4vw, 22px), env(safe-area-inset-right))
+    max(clamp(14px, 2.6vh, 26px), env(safe-area-inset-bottom))
+    max(clamp(14px, 4vw, 22px), env(safe-area-inset-left));
   z-index: 30;
 }
 
@@ -171,27 +175,99 @@
   font-weight: 400;
 }
 
-.audio-toggle {
+/* ── Corner toggle buttons (audio · map · notes) ─────────────────────────── */
+/* Warm amber "pinned paper" feel — visible without being loud. */
+.corner-toggle {
   position: absolute;
-  bottom: max(clamp(14px, 2.6vh, 22px), env(safe-area-inset-bottom));
-  left: max(clamp(14px, 4vw, 22px), env(safe-area-inset-left));
-  width: 38px;
-  height: 38px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background: rgba(255, 240, 210, 0.12);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 240, 210, 0.28);
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255, 230, 170, 0.35) 0%, transparent 55%),
+    linear-gradient(140deg, rgba(255, 200, 110, 0.32) 0%, rgba(200, 130, 60, 0.22) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 210, 140, 0.55);
   color: #fff4d8;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1;
   z-index: 40;
-  transition: background 0.3s, transform 0.2s;
+  cursor: pointer;
+  padding: 0;
+  box-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.45),
+    0 2px 6px rgba(255, 160, 80, 0.18),
+    inset 0 1px 0 rgba(255, 240, 210, 0.35);
+  transition: background 0.3s, transform 0.2s, border-color 0.3s, box-shadow 0.3s;
+  animation: cornerGlow 4.2s ease-in-out infinite;
 }
-.audio-toggle:hover { background: rgba(255, 240, 210, 0.22); transform: scale(1.05); }
-.audio-toggle:active { transform: scale(0.95); }
+.corner-toggle:hover {
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255, 240, 190, 0.48) 0%, transparent 55%),
+    linear-gradient(140deg, rgba(255, 210, 130, 0.48) 0%, rgba(220, 150, 70, 0.32) 100%);
+  transform: translateY(-2px) scale(1.05);
+  border-color: rgba(255, 220, 160, 0.75);
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.5),
+    0 3px 10px rgba(255, 180, 100, 0.35),
+    inset 0 1px 0 rgba(255, 240, 210, 0.55);
+}
+.corner-toggle:active { transform: scale(0.94); }
+.corner-toggle:focus-visible {
+  outline: none;
+  border-color: #ffd896;
+  box-shadow: 0 0 0 3px rgba(255, 210, 140, 0.35), 0 4px 14px rgba(0, 0, 0, 0.45);
+}
+
+.corner-icon {
+  font-size: 18px;
+  line-height: 1;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+.corner-label {
+  font-family: 'Caveat', cursive;
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  color: rgba(255, 240, 200, 0.82);
+  line-height: 1;
+  margin-top: 1px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Subtle breathing glow so the buttons don't fade into the scene */
+@keyframes cornerGlow {
+  0%, 100% { box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(255, 160, 80, 0.18), inset 0 1px 0 rgba(255, 240, 210, 0.35); }
+  50%      { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5),  0 3px 10px rgba(255, 180, 100, 0.3),  inset 0 1px 0 rgba(255, 240, 210, 0.4); }
+}
+
+.audio-toggle {
+  bottom: max(clamp(14px, 2.6vh, 22px), env(safe-area-inset-bottom));
+  left:   max(clamp(14px, 4vw, 22px), env(safe-area-inset-left));
+}
+
+.notes-toggle {
+  bottom: max(clamp(14px, 2.6vh, 22px), env(safe-area-inset-bottom));
+  right:  max(clamp(14px, 4vw, 22px), env(safe-area-inset-right));
+  animation-delay: 1.4s;
+}
+
+.map-toggle {
+  /* 60px above the notes button — a touch more gap to fit the label */
+  bottom: max(calc(clamp(14px, 2.6vh, 22px) + 60px), calc(env(safe-area-inset-bottom) + 60px));
+  right:  max(clamp(14px, 4vw, 22px), env(safe-area-inset-right));
+  animation-delay: 0.7s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .corner-toggle { animation: none; }
+}
 
 /* Bottom note card — handwritten greeting */
 .note-card {
@@ -229,22 +305,21 @@
 .fade-in { animation: appFadeIn 1.6s ease-out both; }
 @keyframes appFadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-.title-stamp { animation: liftIn 2.2s cubic-bezier(0.22, 0.61, 0.36, 1) 0.3s both; }
-.countdown-card { animation: liftIn 2.4s cubic-bezier(0.22, 0.61, 0.36, 1) 0.6s both; }
-.note-card { animation: liftIn 2.4s cubic-bezier(0.22, 0.61, 0.36, 1) 1.0s both; }
-@keyframes liftIn {
-  from { opacity: 0; transform: translateY(10px) rotate(-1.6deg); }
-  to { opacity: 1; transform: translateY(0) rotate(-1.6deg); }
-}
-.title-stamp { animation-name: titleLift; }
+.title-stamp   { animation: titleLift 2.2s cubic-bezier(0.22, 0.61, 0.36, 1) 0.3s both; }
+.countdown-card { animation: cardLift 2.4s cubic-bezier(0.22, 0.61, 0.36, 1) 0.6s both; }
+.note-card     { animation: noteLift  2.4s cubic-bezier(0.22, 0.61, 0.36, 1) 1.0s both; }
+
 @keyframes titleLift {
   from { opacity: 0; transform: translateY(-6px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-.countdown-card { animation-name: cardLift; }
 @keyframes cardLift {
   from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes noteLift {
+  from { opacity: 0; transform: translateY(10px) rotate(-1.6deg); }
+  to   { opacity: 1; transform: translateY(0)    rotate(-1.6deg); }
 }
 
 .hearts-layer {
@@ -263,7 +338,13 @@
   user-select: none;
 }
 @keyframes heartFloat {
-  0% { opacity: 0; transform: translateY(0) scale(0.4); }
-  15% { opacity: 1; transform: translateY(-12px) scale(1); }
+  0%   { opacity: 0; transform: translateY(0) scale(0.4); }
+  15%  { opacity: 1; transform: translateY(-12px) scale(1); }
   100% { opacity: 0; transform: translateY(-160px) scale(0.7) rotate(-12deg); }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .fade-in, .title-stamp, .countdown-card, .note-card { animation: none; }
+  .progress-fill { transition: none; }
 }

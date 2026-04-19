@@ -1,0 +1,29 @@
+// Hettie's Room — notes API
+//
+// First-time setup (one-off, takes ~2 min):
+//   1. cd worker/notes-api
+//   2. npx wrangler login
+//   3. npx wrangler kv namespace create HETTIES_NOTES
+//      → paste the returned `id` into kv_namespaces below
+//   4. npx wrangler deploy
+//      → note the deployed URL (https://hetties-room-notes.<you>.workers.dev)
+//   5. In GitHub: Settings → Variables → Actions → New variable
+//      name:  NOTES_WORKER_URL
+//      value: (the URL above)
+//   6. Also add a secret:
+//      Settings → Secrets → Actions → New secret
+//      name:  CLOUDFLARE_API_TOKEN
+//      value: (create one at dash.cloudflare.com → My Profile → API Tokens → "Edit Cloudflare Workers" template)
+//   7. Push any commit — the rebuild will bake the URL in and both devices
+//      will read/write the same shared board.
+{
+  "name": "hetties-room-notes",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-01-01",
+  "kv_namespaces": [
+    {
+      "binding": "HETTIES_NOTES",
+      "id": "0425b321bd774b4b8da09900af25e6f3"
+    }
+  ]
+}

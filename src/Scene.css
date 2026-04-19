@@ -153,6 +153,22 @@
   50% { transform: scaleX(0.4); }
 }
 
+@keyframes balloonDrift {
+  0% { transform: translate(40px, 200px); opacity: 0; }
+  10% { opacity: 0.85; }
+  50% { transform: translate(360px, 120px); }
+  90% { opacity: 0.85; }
+  100% { transform: translate(680px, 180px); opacity: 0; }
+}
+
+@keyframes contrailFly {
+  0% { transform: translate(60px, 110px); opacity: 0; }
+  15% { opacity: 0.6; }
+  50% { transform: translate(360px, 90px); opacity: 0.6; }
+  85% { opacity: 0.6; }
+  100% { transform: translate(680px, 130px); opacity: 0; }
+}
+
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }

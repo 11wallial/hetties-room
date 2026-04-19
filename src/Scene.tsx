@@ -302,6 +302,12 @@ export function Scene({ now, daysRemaining = 0, daysSince = 0, totalDays = 49, o
         {/* Birds drifting */}
         <Birds />
 
+        {/* Hot air balloon — rare, drifts across once in a while */}
+        <HotAirBalloon />
+
+        {/* Aircraft contrail across upper sky */}
+        <Contrail />
+
         {/* Butterfly fluttering across window */}
         <Butterfly />
 
@@ -383,6 +389,11 @@ export function Scene({ now, daysRemaining = 0, daysSince = 0, totalDays = 49, o
       {/* ============= rim light on Hettie from window ============= */}
       <g style={{ mixBlendMode: 'screen' }} pointerEvents="none">
         <ellipse cx="360" cy="700" rx="180" ry="100" fill={isNight ? '#a8b8d8' : '#ffd896'} opacity={isNight ? '0.08' : '0.06'} />
+      </g>
+      {/* Warm wash on Hettie's left side (from lamp on her right cheek viewer's left) */}
+      <g style={{ mixBlendMode: 'screen' }} pointerEvents="none">
+        <ellipse cx="316" cy="720" rx="60" ry="80" fill="#ffd896" opacity="0.15"
+          style={{ animation: 'flicker 4s ease-in-out infinite' }} />
       </g>
       {isNight && (
         <g pointerEvents="none">
@@ -643,6 +654,37 @@ function MalvernHills({ seed }: { seed: number }) {
       {/* Reservoir glint (small lake) */}
       <ellipse cx="540" cy="500" rx="36" ry="4" fill="#a8c0d8" opacity="0.55" />
       <path d="M 510 500 q 6 -2 12 0 q 6 -2 12 0" stroke="#fff8e0" strokeWidth="0.4" fill="none" opacity="0.6" />
+    </g>
+  );
+}
+
+/* Hot air balloon drifting through the upper sky */
+function HotAirBalloon() {
+  return (
+    <g pointerEvents="none" style={{ animation: 'balloonDrift 180s linear infinite' }}>
+      {/* envelope */}
+      <ellipse cx="0" cy="-12" rx="10" ry="11" fill="#c75a4a" />
+      <path d="M -10 -12 q 5 -16 20 0" stroke="#9a3030" strokeWidth="0.5" fill="none" opacity="0.6" />
+      <path d="M -2 -22 q 4 0 4 4 q 0 -4 -4 -4" stroke="#9a3030" strokeWidth="0.4" fill="none" />
+      {/* gas burner / opening */}
+      <ellipse cx="0" cy="0" rx="4" ry="1" fill="#3a2418" />
+      {/* basket */}
+      <rect x="-3.5" y="2" width="7" height="4" fill="#7a4828" rx="0.5" />
+      {/* ropes */}
+      <line x1="-9" y1="-2" x2="-3" y2="2" stroke="#3a2418" strokeWidth="0.4" />
+      <line x1="9" y1="-2" x2="3" y2="2" stroke="#3a2418" strokeWidth="0.4" />
+    </g>
+  );
+}
+
+/* Aircraft contrail high in the sky — appears occasionally */
+function Contrail() {
+  return (
+    <g pointerEvents="none" style={{ animation: 'contrailFly 90s linear infinite' }}>
+      <line x1="0" y1="0" x2="40" y2="-2" stroke="#fff8e0" strokeWidth="1.4" opacity="0.6" strokeLinecap="round" />
+      <line x1="-30" y1="2" x2="0" y2="0" stroke="#fff8e0" strokeWidth="1" opacity="0.4" strokeLinecap="round" />
+      {/* tiny plane */}
+      <circle cx="42" cy="-2" r="1" fill="#3a2418" />
     </g>
   );
 }

@@ -326,7 +326,7 @@ export function Scene({ now, daysRemaining = 0, daysSince = 0, totalDays = 49, o
       <Curtains />
 
       {/* ============= FAIRY LIGHTS ============= */}
-      <FairyLights />
+      <FairyLights isNight={isNight} />
 
       {/* ============= BUNTING above window ============= */}
       <Bunting />
@@ -375,8 +375,15 @@ export function Scene({ now, daysRemaining = 0, daysSince = 0, totalDays = 49, o
 
       {/* ============= rim light on Hettie from window ============= */}
       <g style={{ mixBlendMode: 'screen' }} pointerEvents="none">
-        <ellipse cx="360" cy="700" rx="180" ry="100" fill="#ffd896" opacity="0.06" />
+        <ellipse cx="360" cy="700" rx="180" ry="100" fill={isNight ? '#a8b8d8' : '#ffd896'} opacity={isNight ? '0.08' : '0.06'} />
       </g>
+      {isNight && (
+        <g pointerEvents="none">
+          {/* moonlight catching Hettie's hair */}
+          <path d="M 290 660 Q 280 720 290 780" stroke="#cdd5e8" strokeWidth="3" fill="none" opacity="0.4" strokeLinecap="round" />
+          <path d="M 434 660 Q 444 720 434 780" stroke="#cdd5e8" strokeWidth="3" fill="none" opacity="0.4" strokeLinecap="round" />
+        </g>
+      )}
 
       {/* ============= DESK ============= */}
       <Desk />
@@ -931,16 +938,27 @@ function MurphyOnSill({ alert: _alert, onTap }: { alert: boolean; onTap?: () => 
         <line x1="248" y1="582" x2="248" y2="586" stroke="#3d2818" strokeWidth="0.6" />
       </g>
 
-      {/* COLLAR */}
+      {/* COLLAR with bone-shaped name tag */}
       <path d="M 188 522 Q 220 532 250 522" stroke="#c75a4a" strokeWidth="3.4" fill="none" />
       <path d="M 188 522 Q 220 532 250 522" stroke="#a84030" strokeWidth="1.2" fill="none" opacity="0.5" />
-      <circle cx="220" cy="532" r="3" fill="#fcd092" />
-      <circle cx="220" cy="532" r="1.4" fill="#a87030" opacity="0.7" />
+      {/* tag (bone shaped) */}
+      <g transform="translate(220 540)">
+        <ellipse cx="-3.5" cy="-2" rx="2.4" ry="2.4" fill="#fcd092" />
+        <ellipse cx="3.5" cy="-2" rx="2.4" ry="2.4" fill="#fcd092" />
+        <rect x="-3.5" y="-3.5" width="7" height="3" fill="#fcd092" />
+        <text x="0" y="0" textAnchor="middle" fontSize="2.8" fill="#5a3424" fontFamily="serif">M</text>
+        <line x1="0" y1="-4" x2="0" y2="-7" stroke="#a87030" strokeWidth="0.5" />
+      </g>
 
       {/* RIM LIGHT from sky behind */}
       <path d="M 252 446 Q 286 480 290 540" stroke="url(#murphyRim)" strokeWidth="6" fill="none" opacity="0.85" />
       <path d="M 270 560 Q 280 570 290 580" stroke="url(#murphyRim)" strokeWidth="3" fill="none" opacity="0.55" />
       <path d="M 232 444 Q 250 440 264 444" stroke="#fff4d8" strokeWidth="1.4" fill="none" opacity="0.55" strokeLinecap="round" />
+
+      {/* tiny pulsing "tap me" heart hint above Murphy */}
+      <g style={{ animation: 'pulseHeart 6s ease-in-out infinite' }} pointerEvents="none">
+        <text x="320" y="428" fontSize="14" fill="#c75a4a" fontFamily="serif" opacity="0.6">♥</text>
+      </g>
     </g>
   );
 }
@@ -973,21 +991,26 @@ function Curtains() {
   );
 }
 
-function FairyLights() {
+function FairyLights({ isNight }: { isNight?: boolean }) {
   const beads = [
     { x: 60, y: 86 }, { x: 120, y: 92 }, { x: 180, y: 96 }, { x: 240, y: 94 },
     { x: 300, y: 90 }, { x: 360, y: 88 }, { x: 420, y: 90 }, { x: 480, y: 92 },
     { x: 540, y: 96 }, { x: 600, y: 92 }, { x: 660, y: 86 },
   ];
+  const glowR = isNight ? 16 : 11;
   return (
     <g>
       <path d="M 50 76 Q 200 102 360 92 Q 520 82 670 88" stroke="#3a2418" strokeWidth="0.6" fill="none" opacity="0.65" />
       {beads.map((b, i) => (
         <g key={i}>
-          <circle cx={b.x} cy={b.y} r="11" fill="url(#fairyGlow)"
+          {isNight && (
+            <circle cx={b.x} cy={b.y} r="22" fill="url(#fairyGlow)" opacity="0.5"
+              style={{ animation: `fairyPulse ${3 + (i % 4) * 0.4}s ease-in-out infinite`, animationDelay: `${(i * 0.3) % 2}s` }} />
+          )}
+          <circle cx={b.x} cy={b.y} r={glowR} fill="url(#fairyGlow)"
             style={{ animation: `fairyPulse ${2.5 + (i % 4) * 0.4}s ease-in-out infinite`, animationDelay: `${(i * 0.3) % 2}s` }} />
-          <circle cx={b.x} cy={b.y} r="2.6" fill="#fff4d6" />
-          <circle cx={b.x} cy={b.y} r="1.2" fill="#fff8e8" />
+          <circle cx={b.x} cy={b.y} r="2.8" fill="#fff4d6" />
+          <circle cx={b.x} cy={b.y} r="1.4" fill="#fff8e8" />
         </g>
       ))}
     </g>
@@ -1149,6 +1172,21 @@ function LeftWallShelf() {
         <rect width="20" height="28" fill="#fef8e0" />
         <rect width="20" height="9" fill="#9ec3df" />
         <text x="10" y="22" textAnchor="middle" fontSize="5" fill="#5a3424" fontFamily="Caveat, cursive">love u</text>
+      </g>
+
+      {/* tiny ceramic kettle */}
+      <g transform="translate(160 -22)">
+        <ellipse cx="6" cy="22" rx="10" ry="2" fill="#1a0a06" opacity="0.4" />
+        <path d="M 0 12 Q 0 4 6 4 Q 12 4 12 12 L 11 22 L 1 22 Z" fill="#ec88a8" />
+        <ellipse cx="6" cy="4" rx="6" ry="1.4" fill="#9a4040" />
+        <rect x="4" y="0" width="4" height="3" rx="0.6" fill="#9a4040" />
+        {/* spout */}
+        <path d="M 12 10 L 16 8 L 14 14 Z" fill="#ec88a8" />
+        {/* handle */}
+        <path d="M 0 8 Q -3 4 0 0" stroke="#9a4040" strokeWidth="1.4" fill="none" />
+        {/* steam */}
+        <path d="M 14 6 q 2 -4 0 -8" stroke="#fff" strokeWidth="0.6" fill="none" opacity="0.5" strokeLinecap="round"
+          style={{ animation: 'steamRise 4s ease-out infinite' }} />
       </g>
     </g>
   );
@@ -1757,6 +1795,27 @@ function Desk() {
       <g transform="translate(36 894)">
         <ellipse cx="30" cy="6" rx="32" ry="6" fill="#9a7a5a" opacity="0.6" />
         <ellipse cx="30" cy="6" rx="28" ry="4" fill="#fbf1e0" opacity="0.85" />
+      </g>
+
+      {/* SMALL FRAMED PHOTO on desk — Hettie + Xan */}
+      <g transform="translate(216 808) rotate(-3)">
+        {/* easel back shadow */}
+        <ellipse cx="22" cy="92" rx="26" ry="4" fill="#1a0a06" opacity="0.4" />
+        {/* frame */}
+        <rect x="0" y="0" width="44" height="56" fill="#3a2418" rx="2" />
+        <rect x="3" y="3" width="38" height="50" fill="#fbf1e0" />
+        {/* photo content — couple at sunset */}
+        <rect x="3" y="3" width="38" height="50" fill="#f4a06a" />
+        <path d="M 3 32 L 41 32 L 41 53 L 3 53 Z" fill="#3d5240" />
+        <path d="M 3 26 Q 16 22 22 26 Q 28 30 41 24 L 41 32 L 3 32 Z" fill="#658260" opacity="0.75" />
+        <circle cx="34" cy="14" r="5" fill="#fff0c0" />
+        {/* tiny figures */}
+        <ellipse cx="18" cy="34" rx="3" ry="6" fill="#c97844" />
+        <ellipse cx="24" cy="34" rx="3" ry="6" fill="#3a2418" />
+        <ellipse cx="18" cy="42" rx="2.6" ry="3" fill="#c97844" />
+        <ellipse cx="24" cy="42" rx="2.6" ry="3" fill="#3a2418" />
+        {/* easel leg */}
+        <path d="M 22 53 L 22 86" stroke="#3a2418" strokeWidth="1.4" />
       </g>
     </g>
   );

@@ -29,6 +29,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           workingDirectory: worker/notes-api
+          wranglerVersion: '4'
 
   # ── 2. Build & deploy GitHub Pages ────────────────────────────────────────
   deploy-pages:

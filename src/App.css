@@ -102,9 +102,9 @@
   font-family: 'Cormorant Garamond', 'Georgia', serif;
   pointer-events: auto;
   position: relative;
-  max-width: min(92%, 320px);
+  max-width: min(88%, 300px);
   width: 100%;
-  padding: clamp(10px, 2vh, 16px) clamp(18px, 5vw, 24px) clamp(12px, 2.2vh, 18px);
+  padding: clamp(7px, 1.5vh, 11px) clamp(16px, 4.4vw, 22px) clamp(9px, 1.6vh, 13px);
   background:
     radial-gradient(ellipse at 50% 0%, rgba(255, 210, 140, 0.08) 0%, transparent 60%),
     linear-gradient(180deg, rgba(32, 18, 30, 0.45) 0%, rgba(22, 12, 22, 0.38) 100%);
@@ -153,7 +153,7 @@
 }
 
 .countdown-number .num {
-  font-size: clamp(58px, 17vw, 96px);
+  font-size: clamp(48px, 14vw, 78px);
   font-weight: 500;
   line-height: 0.88;
   color: #fff8ea;
@@ -165,7 +165,7 @@
 }
 
 .countdown-number .unit {
-  font-size: clamp(18px, 5.4vw, 26px);
+  font-size: clamp(16px, 4.8vw, 22px);
   font-style: italic;
   font-weight: 400;
   color: #fff0d0;
@@ -173,17 +173,8 @@
   text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 
-.countdown-sub {
-  font-family: 'Caveat', cursive;
-  font-size: clamp(13px, 3.8vw, 16px);
-  margin-top: 2px;
-  color: rgba(255, 230, 190, 0.82);
-  font-style: italic;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
-}
-
 .countdown-progress {
-  margin-top: clamp(10px, 1.4vh, 14px);
+  margin-top: clamp(6px, 1vh, 10px);
 }
 
 .progress-track {
@@ -313,37 +304,43 @@
   .corner-toggle { animation: none; }
 }
 
-/* Bottom note card — handwritten greeting */
+/* Bottom note card — handwritten greeting (hero message, rotates every ~3h) */
 .note-card {
   align-self: center;
-  background: linear-gradient(180deg, #fffaee 0%, #f8eedb 100%);
-  color: #2a1810;
+  background: linear-gradient(180deg, #fffaee 0%, #f5e6c8 100%);
+  color: #2a1608;
   font-family: 'Caveat', cursive;
-  padding: 10px 18px 12px;
-  border-radius: 2px;
-  font-size: clamp(14px, 4.2vw, 18px);
-  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.45), 0 1px 0 rgba(255,255,255,0.8) inset;
+  padding: clamp(16px, 3vh, 24px) clamp(22px, 6vw, 32px) clamp(18px, 3.2vh, 26px);
+  border-radius: 3px;
+  font-size: clamp(20px, 6vw, 28px);
+  font-weight: 500;
+  box-shadow:
+    0 12px 34px rgba(0, 0, 0, 0.55),
+    0 4px 10px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(180, 140, 100, 0.2);
   pointer-events: none;
-  max-width: 86%;
+  max-width: min(92%, 360px);
   text-align: center;
-  line-height: 1.18;
+  line-height: 1.2;
   z-index: 35;
   position: relative;
   rotate: -1.6deg;
-  margin-bottom: 8px;
+  margin-bottom: clamp(16px, 3vh, 24px);
+  letter-spacing: 0.01em;
 }
 
 .note-card::before {
   content: '';
   position: absolute;
-  top: -10px;
+  top: -12px;
   left: 50%;
-  transform: translateX(-50%);
-  width: 42px;
-  height: 14px;
-  background: rgba(255, 220, 160, 0.6);
+  transform: translateX(-50%) rotate(-4deg);
+  width: 56px;
+  height: 16px;
+  background: linear-gradient(180deg, rgba(255, 220, 140, 0.8) 0%, rgba(220, 170, 90, 0.6) 100%);
   border-radius: 2px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28);
 }
 
 .fade-in { animation: appFadeIn 1.6s ease-out both; }

@@ -56,14 +56,6 @@ function App() {
   const totalDays = Math.ceil((RETURN.getTime() - DEPARTURE.getTime()) / msPerDay);
   const progress = Math.min(100, Math.max(0, (daysSince / totalDays) * 100));
 
-  const weeks = Math.floor(daysRemaining / 7);
-  const extra = daysRemaining % 7;
-  const weekText = useMemo(() => {
-    if (daysRemaining === 0) return "you're home 💛";
-    if (weeks > 0 && extra > 0) return `about ${weeks} week${weeks === 1 ? '' : 's'} & ${extra} day${extra === 1 ? '' : 's'}`;
-    if (weeks > 0) return `about ${weeks} week${weeks === 1 ? '' : 's'} now`;
-    return `just ${daysRemaining} day${daysRemaining === 1 ? '' : 's'} now`;
-  }, [daysRemaining, weeks, extra]);
 
   // Rotate every ~3 hours, but stable within a window
   const greetingSlot = Math.floor(now.getTime() / (1000 * 60 * 60 * 3));
@@ -185,7 +177,6 @@ function App() {
                 <span className="num">{daysRemaining}</span>
                 <span className="unit">day{daysRemaining === 1 ? '' : 's'}</span>
               </div>
-              <div className="countdown-sub">{weekText}</div>
               <div className="countdown-progress">
                 <div className="progress-track"><div className="progress-fill" style={{ width: `${progress}%` }} /></div>
                 <div className="progress-meta">

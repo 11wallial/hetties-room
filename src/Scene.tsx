@@ -527,7 +527,7 @@ function ShootingStar({ seed }: { seed: number }) {
 function MalvernHills({ seed }: { seed: number }) {
   const sheep = (seed % 3) + 3;
   return (
-    <g>
+    <g transform="translate(0 30)">
       {/* DEEP DISTANT ridge — barely visible, hazy */}
       <path
         d="M 60 410 L 60 320 L 100 312 L 140 304 L 180 296 L 230 286 L 280 274 L 330 262 L 380 254 L 430 250 L 480 254 L 530 262 L 580 274 L 620 286 L 660 296 L 660 410 Z"
@@ -1657,19 +1657,6 @@ function Floor() {
       {[120, 280, 440, 580].map((xx, i) => (
         <line key={xx} x1={xx} y1="1080" x2={xx + (i % 2 === 0 ? 14 : -10)} y2="1280" stroke="#2a1408" strokeWidth="0.5" opacity="0.4" />
       ))}
-
-      {/* rug */}
-      <g transform="translate(120 1130)">
-        <ellipse cx="240" cy="80" rx="280" ry="48" fill="#6a2828" opacity="0.95" />
-        <ellipse cx="240" cy="76" rx="240" ry="40" fill="#8a3838" />
-        <ellipse cx="240" cy="76" rx="200" ry="32" fill="#3a1818" opacity="0.7" />
-        <path d="M 70 76 Q 240 80 410 76" stroke="#fce4a8" strokeWidth="1.2" fill="none" opacity="0.4" />
-        <path d="M 90 96 Q 240 100 390 96" stroke="#fce4a8" strokeWidth="1" fill="none" opacity="0.35" />
-        {/* fringe */}
-        {Array.from({ length: 24 }).map((_, i) => (
-          <line key={i} x1={20 + i * 17} y1="124" x2={22 + i * 17} y2="138" stroke="#3a1808" strokeWidth="1" />
-        ))}
-      </g>
 
       {/* slippers — fluffy pink */}
       <g transform="translate(80 1190)">

@@ -75,6 +75,19 @@
   50%      { transform: translateX(-20px); }
 }
 
+/* A bee meandering through the cottage garden */
+@keyframes beeBuzz {
+  0%   { transform: translate(390px, 540px) scale(1); opacity: 0; }
+  10%  { opacity: 1; }
+  20%  { transform: translate(420px, 532px) scale(0.95); }
+  35%  { transform: translate(458px, 548px) scale(1.05); }
+  50%  { transform: translate(486px, 530px) scale(1); }
+  65%  { transform: translate(508px, 544px) scale(0.95); }
+  80%  { transform: translate(478px, 522px) scale(1); }
+  90%  { opacity: 1; }
+  100% { transform: translate(395px, 538px) scale(1); opacity: 0; }
+}
+
 @keyframes dustFloat {
   0% { opacity: 0; transform: translateY(0) translateX(0); }
   20% { opacity: 0.7; }

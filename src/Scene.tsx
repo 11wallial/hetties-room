@@ -1,44 +1,21 @@
 import { useMemo } from 'react';
 import './Scene.css';
+import { getPalette, type Weather } from './weather';
 
-interface SceneProps { now: Date; daysRemaining?: number; daysSince?: number; totalDays?: number; onTapMurphy?: () => void }
-
-function getSkyPalette(hour: number) {
-  const anchors: { h: number; sky: [string, string, string]; sun: string; sunY: number; haze: string; tint: string; }[] = [
-    { h: 0,  sky: ['#0d1530', '#1b1640', '#2a1d44'], sun: '#5a4a7a', sunY: 380, haze: '#3a2848', tint: '#09060f' },
-    { h: 5,  sky: ['#3d2548', '#7a4a5e', '#e0a07a'], sun: '#ffd9a8', sunY: 320, haze: '#a86a6a', tint: '#1a0e1f' },
-    { h: 8,  sky: ['#9ec3df', '#fbe2ba', '#fcd296'], sun: '#fff4d8', sunY: 240, haze: '#e6c098', tint: '#2a1620' },
-    { h: 12, sky: ['#a9d4ee', '#dde8f0', '#f4e4c4'], sun: '#fff8e8', sunY: 160, haze: '#d8c8b0', tint: '#3a2030' },
-    { h: 16, sky: ['#cbd9e8', '#fce5b8', '#fcb37a'], sun: '#fff0c0', sunY: 240, haze: '#e89a78', tint: '#3a1d28' },
-    { h: 19, sky: ['#3e2654', '#a85970', '#f4a06a'], sun: '#fff0c0', sunY: 320, haze: '#bd6a6a', tint: '#1a0e1f' },
-    { h: 21, sky: ['#1a1438', '#3d2050', '#7a3858'], sun: '#fcd092', sunY: 380, haze: '#5a3050', tint: '#0e0612' },
-    { h: 24, sky: ['#0d1530', '#1b1640', '#2a1d44'], sun: '#5a4a7a', sunY: 380, haze: '#3a2848', tint: '#09060f' },
-  ];
-  let i = 0;
-  while (i < anchors.length - 1 && hour >= anchors[i + 1].h) i++;
-  const a = anchors[i]; const b = anchors[Math.min(i + 1, anchors.length - 1)];
-  const t = (hour - a.h) / (b.h - a.h || 1);
-  const lerp = (x: number, y: number) => x + (y - x) * t;
-  const lerpColor = (c1: string, c2: string) => {
-    const p1 = parseInt(c1.slice(1), 16); const p2 = parseInt(c2.slice(1), 16);
-    const r = Math.round(lerp((p1 >> 16) & 0xff, (p2 >> 16) & 0xff));
-    const g = Math.round(lerp((p1 >> 8) & 0xff, (p2 >> 8) & 0xff));
-    const bl = Math.round(lerp(p1 & 0xff, p2 & 0xff));
-    return `#${((r << 16) | (g << 8) | bl).toString(16).padStart(6, '0')}`;
-  };
-  return {
-    sky: a.sky.map((c, j) => lerpColor(c, b.sky[j])) as [string, string, string],
-    sun: lerpColor(a.sun, b.sun),
-    sunY: lerp(a.sunY, b.sunY),
-    haze: lerpColor(a.haze, b.haze),
-    tint: lerpColor(a.tint, b.tint),
-  };
+interface SceneProps {
+  now: Date;
+  weather?: Weather;
+  daysRemaining?: number;
+  daysSince?: number;
+  totalDays?: number;
+  onTapMurphy?: () => void;
 }
 
-export function Scene({ now, daysRemaining = 0, daysSince = 0, totalDays = 49, onTapMurphy }: SceneProps) {
+export function Scene({ now, weather = 'sunshine', daysRemaining = 0, daysSince = 0, totalDays = 49, onTapMurphy }: SceneProps) {
   const hour = now.getHours() + now.getMinutes() / 60;
-  const palette = useMemo(() => getSkyPalette(hour), [Math.floor(hour * 12) / 12]);
-  const isNight = hour < 6 || hour > 20;
+  const hourBucket = Math.floor(hour * 12) / 12;
+  const palette = useMemo(() => getPalette(weather, hour), [weather, hourBucket]);
+  const isNight = palette.isNight;
   const isEvening = hour >= 17 && hour <= 21;
   const seed = now.getDate();
 
@@ -269,11 +246,11 @@ export function Scene({ now, daysRemaining = 0, daysSince = 0, totalDays = 49, o
       <g clipPath="url(#windowGlassClip)">
         {/* sky */}
         <rect x="60" y="80" width="600" height="500" fill="url(#skyGrad)" />
-        {/* sun/moon */}
+        {/* sun/moon — visibility driven by weather */}
         <g style={{ transformOrigin: '360px 200px', animation: 'sunBreathe 14s ease-in-out infinite' }}>
-          <circle cx="360" cy={palette.sunY} r="160" fill="url(#sunGlow)" />
-          <circle cx="360" cy={palette.sunY} r="36" fill={palette.sun} opacity="0.95" />
-          {isNight && (
+          <circle cx="360" cy={palette.sunY} r="160" fill="url(#sunGlow)" opacity={palette.sunGlowOpacity} />
+          <circle cx="360" cy={palette.sunY} r="36" fill={palette.sun} opacity={palette.sunOpacity} />
+          {isNight && palette.sunOpacity > 0.05 && (
             <>
               <circle cx="346" cy={palette.sunY - 12} r="6" fill="#3a2848" opacity="0.55" />
               <circle cx="372" cy={palette.sunY + 4} r="9" fill="#3a2848" opacity="0.45" />
@@ -282,60 +259,82 @@ export function Scene({ now, daysRemaining = 0, daysSince = 0, totalDays = 49, o
           )}
         </g>
 
-        {isNight && <Stars />}
-        {isNight && <Aurora />}
-        {isNight && <ShootingStar seed={seed} />}
+        {isNight && weather !== 'foggy' && weather !== 'rainy' && <Stars />}
+        {isNight && weather === 'sunshine' && <Aurora />}
+        {isNight && weather === 'sunshine' && <ShootingStar seed={seed} />}
 
-        {/* drifting clouds — multiple layers with variety */}
-        <g opacity="0.92" style={{ animation: 'cloudDriftA 110s linear infinite' }}>
-          <Cloud cx={120} cy={170} scale={1.2} fill="#ffe5b8" opacity={0.55} />
-          <Cloud cx={420} cy={140} scale={0.85} fill="#ffd8a8" opacity={0.5} />
-          <Cloud cx={680} cy={210} scale={1.1} fill="#ffe5b8" opacity={0.55} />
-        </g>
-        <g opacity="0.7" style={{ animation: 'cloudDriftB 160s linear infinite' }}>
-          <Cloud cx={200} cy={250} scale={0.9} fill="#fff0d0" opacity={0.45} />
-          <Cloud cx={520} cy={280} scale={1} fill="#ffd8a0" opacity={0.45} />
-          <Cloud cx={800} cy={240} scale={0.8} fill="#fff0d0" opacity={0.4} />
-        </g>
-        {/* CIRRUS wispy clouds — high up */}
-        <g opacity="0.55" style={{ animation: 'cloudDriftA 200s linear infinite' }}>
-          <CirrusCloud cx={300} cy={110} />
-          <CirrusCloud cx={500} cy={130} />
-        </g>
-        {/* god rays from sun through clouds */}
-        <g opacity="0.16" pointerEvents="none">
-          <path d="M 360 240 L 200 580 L 220 580 L 360 240 Z" fill="#fff0c0" />
-          <path d="M 360 240 L 280 580 L 296 580 L 360 240 Z" fill="#fff0c0" />
-          <path d="M 360 240 L 360 580 L 378 580 L 360 240 Z" fill="#fff0c0" />
-          <path d="M 360 240 L 440 580 L 460 580 L 360 240 Z" fill="#fff0c0" />
-          <path d="M 360 240 L 520 580 L 540 580 L 360 240 Z" fill="#fff0c0" />
-        </g>
+        {/* drifting clouds — sunshine/sunrise/rainbow get the warm cloudwork;
+            rainy/snowy/foggy get a thicker overcast band rendered as a darker layer below. */}
+        {weather !== 'foggy' && (
+          <>
+            <g opacity={weather === 'rainy' ? 0.7 : 0.92} style={{ animation: 'cloudDriftA 110s linear infinite' }}>
+              <Cloud cx={120} cy={170} scale={1.2} fill={weather === 'rainy' || weather === 'snowy' ? '#5a606a' : '#ffe5b8'} opacity={0.55} />
+              <Cloud cx={420} cy={140} scale={0.85} fill={weather === 'rainy' || weather === 'snowy' ? '#6a707a' : '#ffd8a8'} opacity={0.5} />
+              <Cloud cx={680} cy={210} scale={1.1} fill={weather === 'rainy' || weather === 'snowy' ? '#5a606a' : '#ffe5b8'} opacity={0.55} />
+            </g>
+            <g opacity="0.7" style={{ animation: 'cloudDriftB 160s linear infinite' }}>
+              <Cloud cx={200} cy={250} scale={0.9} fill={weather === 'rainy' || weather === 'snowy' ? '#6e7480' : '#fff0d0'} opacity={0.45} />
+              <Cloud cx={520} cy={280} scale={1}   fill={weather === 'rainy' || weather === 'snowy' ? '#5e6470' : '#ffd8a0'} opacity={0.45} />
+              <Cloud cx={800} cy={240} scale={0.8} fill={weather === 'rainy' || weather === 'snowy' ? '#6e7480' : '#fff0d0'} opacity={0.4} />
+            </g>
+          </>
+        )}
+        {/* CIRRUS wispy clouds — only on clear-ish weathers */}
+        {(weather === 'sunshine' || weather === 'sunrise' || weather === 'rainbow') && (
+          <g opacity="0.55" style={{ animation: 'cloudDriftA 200s linear infinite' }}>
+            <CirrusCloud cx={300} cy={110} />
+            <CirrusCloud cx={500} cy={130} />
+          </g>
+        )}
+        {/* god rays from sun through clouds — opacity from weather palette */}
+        {palette.godRays > 0 && (
+          <g opacity={palette.godRays} pointerEvents="none">
+            <path d="M 360 240 L 200 580 L 220 580 L 360 240 Z" fill="#fff0c0" />
+            <path d="M 360 240 L 280 580 L 296 580 L 360 240 Z" fill="#fff0c0" />
+            <path d="M 360 240 L 360 580 L 378 580 L 360 240 Z" fill="#fff0c0" />
+            <path d="M 360 240 L 440 580 L 460 580 L 360 240 Z" fill="#fff0c0" />
+            <path d="M 360 240 L 520 580 L 540 580 L 360 240 Z" fill="#fff0c0" />
+          </g>
+        )}
 
         {/* MALVERN HILLS */}
-        <MalvernHills seed={seed} />
+        <MalvernHills seed={seed} cottageGlow={palette.cottageGlow} />
 
-        {/* Birds drifting */}
-        <Birds />
+        {/* SNOW CAPS on hill tops */}
+        {weather === 'snowy' && <SnowCaps />}
 
-        {/* Solo bird arcing past the window with flapping wings */}
-        <WindowBird />
+        {/* RAINBOW arc — only in rainbow weather, drawn over the hills */}
+        {weather === 'rainbow' && <Rainbow />}
 
-        {/* Hot air balloon — rare, drifts across once in a while */}
-        <HotAirBalloon />
+        {/* HILL FADE — extra mist/snow over hills to push them back in distance */}
+        {palette.hillFade > 0 && (
+          <rect x="60" y="380" width="600" height="200" fill={weather === 'snowy' ? '#dde4ec' : '#cfd6dc'} opacity={palette.hillFade * 0.45} pointerEvents="none" />
+        )}
 
-        {/* Aircraft contrail across upper sky */}
-        <Contrail />
+        {/* Birds — in clear-ish weathers only */}
+        {(weather === 'sunshine' || weather === 'sunrise' || weather === 'rainbow') && <Birds />}
+        {(weather === 'sunshine' || weather === 'sunrise' || weather === 'rainbow') && <WindowBird />}
 
-        {/* Butterfly fluttering across window */}
-        <Butterfly />
+        {/* Hot air balloon — clear-weather only */}
+        {(weather === 'sunshine' || weather === 'sunrise' || weather === 'rainbow') && <HotAirBalloon />}
+
+        {/* Aircraft contrail — clear-weather only */}
+        {(weather === 'sunshine' || weather === 'sunrise' || weather === 'rainbow') && <Contrail />}
+
+        {/* Butterfly — clear-weather only */}
+        {(weather === 'sunshine' || weather === 'sunrise' || weather === 'rainbow') && <Butterfly />}
 
         {/* atmospheric haze */}
-        <rect x="60" y="80" width="600" height="380" fill="url(#hazeGrad)" pointerEvents="none" />
+        <rect x="60" y="80" width="600" height="380" fill="url(#hazeGrad)" opacity={palette.hazeOpacity} pointerEvents="none" />
 
-        {/* sunbeam through window */}
-        <path d="M 60 80 L 660 220 L 660 580 L 60 580 Z" fill="url(#sunbeam)" opacity="0.6" pointerEvents="none" />
+        {/* sunbeam through window — soft warm shaft, only when sun is out */}
+        {palette.sunOpacity > 0.5 && (
+          <path d="M 60 80 L 660 220 L 660 580 L 60 580 Z" fill="url(#sunbeam)" opacity="0.6" pointerEvents="none" />
+        )}
 
-        <RainDroplets active={hour < 9 || hour > 17} />
+        {weather === 'rainy' && <Rain />}
+        {weather === 'snowy' && <Snow />}
+        {weather === 'foggy' && <Fog />}
 
         <rect x="60" y="80" width="600" height="500" fill="url(#glassReflection)" pointerEvents="none" />
       </g>
@@ -522,7 +521,7 @@ function ShootingStar({ seed }: { seed: number }) {
   );
 }
 
-function MalvernHills({ seed }: { seed: number }) {
+function MalvernHills({ seed, cottageGlow = 0.7 }: { seed: number; cottageGlow?: number }) {
   const sheep = (seed % 3) + 3;
   return (
     <g transform="translate(0 30)">
@@ -559,8 +558,8 @@ function MalvernHills({ seed }: { seed: number }) {
           <rect x="66" y="-1" width="14" height="19" fill="#3a4858" />
           <path d="M 65 -1 L 73 -8 L 81 -1 Z" fill="#2a3340" />
         </g>
-        {/* tiny lit windows */}
-        <g fill="#ffe8a8" opacity="0.65">
+        {/* tiny lit windows — brighter when weather is moody */}
+        <g fill="#ffe8a8" opacity={Math.min(1, 0.45 + cottageGlow * 0.55)}>
           <rect x="164" y="416" width="1.6" height="2" />
           <rect x="170" y="416" width="1.6" height="2" />
           <rect x="178" y="416" width="1.4" height="2" />
@@ -603,8 +602,8 @@ function MalvernHills({ seed }: { seed: number }) {
       <g transform="translate(440 500)" opacity="0.85">
         <rect x="0" y="0" width="22" height="14" fill="#7a4a3a" />
         <path d="M -2 0 L 11 -10 L 24 0 Z" fill="#3a2418" />
-        <rect x="4" y="6" width="4" height="6" fill="#fce4a8" opacity="0.7" />
-        <rect x="14" y="6" width="4" height="6" fill="#fce4a8" opacity="0.7" />
+        <rect x="4" y="6" width="4" height="6" fill="#fce4a8" opacity={Math.min(1, 0.55 + cottageGlow * 0.45)} />
+        <rect x="14" y="6" width="4" height="6" fill="#fce4a8" opacity={Math.min(1, 0.55 + cottageGlow * 0.45)} />
         <rect x="2" y="0" width="3" height="-8" fill="#3a2418" transform="translate(0 8)" />
         <rect x="3" y="-12" width="3" height="6" fill="#3a2418" />
         <path className="steam-wisp" d="M 4.5 -12 q -2 -8 0 -14 q 2 -6 0 -10" stroke="#9a8a78" strokeWidth="1.4" fill="none" strokeLinecap="round" opacity="0.55"
@@ -774,27 +773,148 @@ function WindowBird() {
   );
 }
 
-function RainDroplets({ active }: { active: boolean }) {
-  if (!active) return null;
-  const drops = Array.from({ length: 14 }, (_, i) => ({
-    x: 80 + (i * 47) % 560,
-    y: 90 + (i * 31) % 200,
-    d: (i * 0.5) % 7,
-    dur: 6 + (i % 5),
+/* Rain — slanted streaks falling fast across the window, plus droplets
+   running down the glass. */
+function Rain() {
+  const streaks = Array.from({ length: 36 }, (_, i) => ({
+    x: 60 + (i * 73) % 600,
+    y: 80 + (i * 17) % 80 - 80,
+    delay: (i * 0.13) % 1.6,
+    dur: 0.7 + (i % 4) * 0.1,
+    op: 0.35 + (i % 3) * 0.12,
+  }));
+  const drops = Array.from({ length: 8 }, (_, i) => ({
+    x: 90 + (i * 73) % 540,
+    delay: (i * 1.3) % 4,
+    dur: 4 + (i % 3),
   }));
   return (
-    <g opacity="0.6">
-      {drops.map((dp, i) => (
-        <g key={i} style={{ animation: `dropSlide ${dp.dur}s linear infinite`, animationDelay: `${dp.d}s` }}>
-          <ellipse cx={dp.x} cy={dp.y} rx="1.3" ry="2.4" fill="#cfe6f0" opacity="0.7" />
-          <path d={`M ${dp.x} ${dp.y} Q ${dp.x - 1} ${dp.y + 8} ${dp.x} ${dp.y + 14}`}
-            stroke="#cfe6f0" strokeWidth="0.5" fill="none" opacity="0.45" />
-        </g>
+    <g pointerEvents="none">
+      {/* falling slanted streaks (sky rain) */}
+      <g>
+        {streaks.map((s, i) => (
+          <line
+            key={`s${i}`}
+            x1={s.x} y1={s.y}
+            x2={s.x - 6} y2={s.y + 24}
+            stroke="#cfe0ec" strokeWidth="0.7" strokeLinecap="round" opacity={s.op}
+            style={{ animation: `rainFall ${s.dur}s linear infinite`, animationDelay: `${s.delay}s` }}
+          />
+        ))}
+      </g>
+      {/* glass droplets running down (slower, beaded) */}
+      <g opacity="0.7">
+        {drops.map((d, i) => (
+          <g key={`d${i}`} style={{ animation: `glassDrop ${d.dur}s ease-in infinite`, animationDelay: `${d.delay}s` }}>
+            <ellipse cx={d.x} cy="80" rx="1.4" ry="2.2" fill="#cfe6f0" opacity="0.85" />
+            <path d={`M ${d.x} 80 L ${d.x} 92`} stroke="#cfe6f0" strokeWidth="0.5" fill="none" opacity="0.55" />
+          </g>
+        ))}
+      </g>
+    </g>
+  );
+}
+
+/* Snow — large soft flakes drifting and tumbling. */
+function Snow() {
+  const flakes = Array.from({ length: 80 }, (_, i) => ({
+    x: 40 + (i * 41) % 640,
+    delay: (i * 0.27) % 11,
+    dur: 9 + (i % 7) * 1.6,
+    r: 1.6 + ((i * 7) % 6) * 0.55,
+    drift: (i % 2 === 0 ? 1 : -1) * (6 + (i % 4) * 5),
+    op: 0.7 + (i % 4) * 0.1,
+  }));
+  return (
+    <g pointerEvents="none">
+      {flakes.map((f, i) => (
+        <circle
+          key={i}
+          cx={f.x} cy="60" r={f.r}
+          fill="#ffffff" opacity={f.op}
+          style={{
+            animation: `snowFall ${f.dur}s linear infinite`,
+            animationDelay: `${f.delay}s`,
+            ['--snow-drift' as string]: `${f.drift}px`,
+          }}
+        />
       ))}
-      {Array.from({ length: 24 }).map((_, i) => (
-        <circle key={`c${i}`} cx={80 + (i * 37) % 560} cy={90 + (i * 53) % 470}
-          r={0.6 + (i % 3) * 0.3} fill="#ffffff" opacity="0.18" />
+    </g>
+  );
+}
+
+/* Snow caps on the distant hill ridges — soft white blanket along the tops */
+function SnowCaps() {
+  return (
+    <g pointerEvents="none" opacity="0.78">
+      {/* far ridge */}
+      <path
+        d="M 60 386 L 60 390 L 110 370 L 160 356 L 200 350 L 240 338 L 280 316 L 320 294 L 360 272 L 390 256 L 420 260 L 450 276 L 480 292 L 520 308 L 560 324 L 600 340 L 640 360 L 660 374 L 660 380 Z"
+        fill="#f4f7fa"
+      />
+      {/* mid ridge */}
+      <path
+        d="M 60 422 L 60 418 L 100 406 L 140 392 L 180 378 L 230 366 L 270 358 L 310 348 L 350 336 L 390 326 L 430 334 L 470 348 L 510 368 L 550 388 L 590 406 L 630 420 L 660 432 L 660 426 Z"
+        fill="#fafcff" opacity="0.85"
+      />
+    </g>
+  );
+}
+
+/* Fog — soft horizontal veils that drift slowly across, layered for depth. */
+function Fog() {
+  return (
+    <g pointerEvents="none">
+      {/* deep distance veil */}
+      <ellipse cx="360" cy="380" rx="420" ry="80" fill="#dde2e8" opacity="0.55" />
+      {/* mid-band */}
+      <g style={{ animation: 'fogDriftA 90s ease-in-out infinite' }}>
+        <ellipse cx="360" cy="320" rx="380" ry="60" fill="#e6eaef" opacity="0.45" />
+        <ellipse cx="240" cy="340" rx="200" ry="40" fill="#dde2e8" opacity="0.4" />
+        <ellipse cx="500" cy="330" rx="240" ry="50" fill="#dde2e8" opacity="0.4" />
+      </g>
+      {/* near band — thicker, hugs the window */}
+      <g style={{ animation: 'fogDriftB 120s ease-in-out infinite' }}>
+        <ellipse cx="200" cy="460" rx="260" ry="52" fill="#e8ebef" opacity="0.6" />
+        <ellipse cx="520" cy="470" rx="240" ry="44" fill="#e8ebef" opacity="0.55" />
+        <ellipse cx="360" cy="500" rx="320" ry="38" fill="#eef1f4" opacity="0.5" />
+      </g>
+      {/* a faint front haze across the whole window */}
+      <rect x="60" y="80" width="600" height="500" fill="#dde2e8" opacity="0.18" />
+    </g>
+  );
+}
+
+/* Rainbow — half-arc spectrum lifting off the hills, mostly tucked behind
+   the countdown card. Both feet land on the distant hills. */
+function Rainbow() {
+  const cx = 360, cy = 460;
+  const bands = [
+    { r: 240, color: '#e58a8a' }, // red
+    { r: 232, color: '#e8a878' }, // orange
+    { r: 224, color: '#f0d090' }, // yellow
+    { r: 216, color: '#9ad08a' }, // green
+    { r: 208, color: '#8ab4d8' }, // blue
+    { r: 200, color: '#a892c6' }, // violet
+  ];
+  return (
+    <g pointerEvents="none">
+      {/* outer soft halo */}
+      <path
+        d={`M ${cx - 252} ${cy} A 252 252 0 0 1 ${cx + 252} ${cy}`}
+        fill="none" stroke="#fff8e8" strokeWidth="18" opacity="0.18" strokeLinecap="round"
+      />
+      {bands.map((b, i) => (
+        <path key={i}
+          d={`M ${cx - b.r} ${cy} A ${b.r} ${b.r} 0 0 1 ${cx + b.r} ${cy}`}
+          fill="none" stroke={b.color} strokeWidth="8" opacity="0.7" strokeLinecap="round"
+        />
       ))}
+      {/* inner shimmer */}
+      <path
+        d={`M ${cx - 192} ${cy} A 192 192 0 0 1 ${cx + 192} ${cy}`}
+        fill="none" stroke="#fff8e8" strokeWidth="2" opacity="0.4" strokeLinecap="round"
+      />
     </g>
   );
 }

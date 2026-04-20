@@ -4,6 +4,7 @@ import { Scene } from './Scene';
 import { LocationTracker } from './LocationTracker';
 import { NoteBoard } from './NoteBoard';
 import { RecentNotes } from './RecentNotes';
+import { pickWeather } from './weather';
 
 const RETURN = new Date('2026-06-04T00:00:00');
 const DEPARTURE = new Date('2026-04-16T00:00:00');
@@ -40,6 +41,8 @@ function App() {
   const [showMap, setShowMap] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const [notesVersion, setNotesVersion] = useState(0);
+  // Weather is picked once per page-load (or pinned via ?weather=)
+  const [weather] = useState(() => pickWeather(params.get('weather')));
   const audioCtxRef = useRef<AudioContext | null>(null);
   const stopAudioRef = useRef<(() => void) | null>(null);
 
@@ -157,7 +160,7 @@ function App() {
   return (
     <div className="stage">
       <div className="scene-frame fade-in">
-        <Scene now={now} daysRemaining={daysRemaining} daysSince={daysSince} totalDays={totalDays} onTapMurphy={handleTapMurphy} />
+        <Scene now={now} weather={weather} daysRemaining={daysRemaining} daysSince={daysSince} totalDays={totalDays} onTapMurphy={handleTapMurphy} />
         <div className="hearts-layer">
           {hearts.map((h) => (
             <span key={h.id} className="heart" style={{ left: `${h.x}%`, animationDelay: `${h.delay}ms` }}>💛</span>

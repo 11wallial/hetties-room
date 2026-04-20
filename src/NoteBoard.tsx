@@ -28,6 +28,8 @@ interface NoteBoardProps {
   author: string;
   /** Fired whenever notes are added or deleted, so the in-scene strip can refresh. */
   onChange?: () => void;
+  /** Fired when the user changes who they're pinning as via the byline tap. */
+  onAuthorChange?: (next: string) => void;
 }
 
 function formatAgo(iso: string): string {
@@ -85,7 +87,7 @@ function saveLocal(notes: Note[]): void {
   try { localStorage.setItem(LOCAL_KEY, JSON.stringify(notes)); } catch { /* quota? ignore */ }
 }
 
-export function NoteBoard({ onClose, author, onChange }: NoteBoardProps) {
+export function NoteBoard({ onClose, author, onChange, onAuthorChange }: NoteBoardProps) {
   const [notes, setNotes] = useState<Note[]>([]);
   const [newText, setNewText] = useState('');
   const [loading, setLoading] = useState(Boolean(NOTES_API));
@@ -284,7 +286,22 @@ export function NoteBoard({ onClose, author, onChange }: NoteBoardProps) {
             {submitting ? '…' : 'pin it'}
           </button>
         </div>
-        <div className="nb-byline">pinning as {author}</div>
+        <div className="nb-byline">
+          pinning as {author}
+          {onAuthorChange && (
+            <>
+              {' '}·{' '}
+              <button
+                type="button"
+                className="nb-byline-change"
+                onClick={() => {
+                  const next = window.prompt('who are you?', author);
+                  if (next !== null && next.trim()) onAuthorChange(next);
+                }}
+              >change</button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

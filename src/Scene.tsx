@@ -982,19 +982,26 @@ function Snow() {
   );
 }
 
-/* Snow caps on the distant hill ridges — soft white blanket along the tops */
+/* Snow caps — soft white stroke that traces the TOP edge of each existing
+   ridge. Wrapped in the same translate(0 30) the hills live in so it lines
+   up exactly. */
 function SnowCaps() {
   return (
-    <g pointerEvents="none" opacity="0.78">
-      {/* far ridge */}
+    <g transform="translate(0 30)" pointerEvents="none">
+      {/* Far ridge top — Worcestershire Beacon profile */}
       <path
-        d="M 60 386 L 60 390 L 110 370 L 160 356 L 200 350 L 240 338 L 280 316 L 320 294 L 360 272 L 390 256 L 420 260 L 450 276 L 480 292 L 520 308 L 560 324 L 600 340 L 640 360 L 660 374 L 660 380 Z"
-        fill="#f4f7fa"
+        d="M 60 360 L 110 340 L 160 326 L 200 320 L 240 308 L 280 286 L 320 264 L 360 242 L 390 226 L 420 230 L 450 246 L 480 262 L 520 278 L 560 294 L 600 310 L 640 330 L 660 344"
+        fill="none" stroke="#fafcff" strokeWidth="9" opacity="0.7" strokeLinejoin="round" strokeLinecap="round"
       />
-      {/* mid ridge */}
+      {/* sparkle highlight along the very crest */}
       <path
-        d="M 60 422 L 60 418 L 100 406 L 140 392 L 180 378 L 230 366 L 270 358 L 310 348 L 350 336 L 390 326 L 430 334 L 470 348 L 510 368 L 550 388 L 590 406 L 630 420 L 660 432 L 660 426 Z"
-        fill="#fafcff" opacity="0.85"
+        d="M 60 360 L 110 340 L 160 326 L 200 320 L 240 308 L 280 286 L 320 264 L 360 242 L 390 226 L 420 230 L 450 246 L 480 262 L 520 278 L 560 294 L 600 310 L 640 330 L 660 344"
+        fill="none" stroke="#ffffff" strokeWidth="2" opacity="0.9" strokeLinejoin="round" strokeLinecap="round"
+      />
+      {/* Mid ridge top — thinner, fades into the snowy haze below */}
+      <path
+        d="M 60 388 L 100 376 L 140 362 L 180 348 L 230 336 L 270 328 L 310 318 L 350 306 L 390 296 L 430 304 L 470 318 L 510 338 L 550 358 L 590 376 L 630 392 L 660 404"
+        fill="none" stroke="#eef2f7" strokeWidth="6" opacity="0.55" strokeLinejoin="round" strokeLinecap="round"
       />
     </g>
   );

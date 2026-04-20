@@ -21,11 +21,31 @@ function pickGreeting(daysRemaining: number, slot: number): string {
   return pool[slot % pool.length];
 }
 
+const IDENTITY_KEY = 'hetties-room:who';
+
+function resolveWho(params: URLSearchParams): string {
+  // 1. URL param wins (and is persisted for next visit)
+  const fromUrl = params.get('who')?.toLowerCase().trim();
+  if (fromUrl) {
+    try { localStorage.setItem(IDENTITY_KEY, fromUrl); } catch { /* ignore */ }
+    return fromUrl;
+  }
+  // 2. Stored from a previous visit
+  try {
+    const stored = localStorage.getItem(IDENTITY_KEY)?.toLowerCase().trim();
+    if (stored) return stored;
+  } catch { /* ignore */ }
+  // 3. Default
+  return 'xan';
+}
+
 function App() {
   const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
   const fakeHour = params.get('h');
-  // Identity — ?who=hettie (or anything else) labels the author for the pinboard
-  const who = ((params.get('who') ?? 'xan').toLowerCase().trim()) || 'xan';
+  // Identity — ?who=NAME sets it (and persists). Otherwise read the stored
+  // identity, falling back to 'xan'. This means once Hettie opens the
+  // ?who=hettie link once, her notes stay attributed to her on every reload.
+  const [who, setWho] = useState(() => resolveWho(params));
 
   const initialNow = (() => {
     if (!fakeHour) return new Date();
@@ -234,6 +254,11 @@ function App() {
           onClose={() => { setShowNotes(false); setNotesVersion((v) => v + 1); }}
           onChange={() => setNotesVersion((v) => v + 1)}
           author={who}
+          onAuthorChange={(next) => {
+            const v = next.toLowerCase().trim() || 'xan';
+            try { localStorage.setItem(IDENTITY_KEY, v); } catch { /* ignore */ }
+            setWho(v);
+          }}
         />
       )}
     </div>

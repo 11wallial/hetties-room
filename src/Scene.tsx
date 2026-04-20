@@ -13,8 +13,9 @@ interface SceneProps {
 
 export function Scene({ now, weather = 'sunshine', daysRemaining = 0, daysSince = 0, totalDays = 49, onTapMurphy }: SceneProps) {
   const hour = now.getHours() + now.getMinutes() / 60;
+  // Bucket by 5-minute increments so the palette doesn't recompute on every render.
   const hourBucket = Math.floor(hour * 12) / 12;
-  const palette = useMemo(() => getPalette(weather, hour), [weather, hourBucket]);
+  const palette = useMemo(() => getPalette(weather, hourBucket), [weather, hourBucket]);
   const isNight = palette.isNight;
   const isEvening = hour >= 17 && hour <= 21;
   const seed = now.getDate();
@@ -598,16 +599,133 @@ function MalvernHills({ seed, cottageGlow = 0.7 }: { seed: number; cottageGlow?:
         fill="none" stroke="#2a3a22" strokeWidth="3" opacity="0.45"
       />
 
-      {/* COTTAGE in mid-distance with smoke chimney */}
-      <g transform="translate(440 500)" opacity="0.85">
-        <rect x="0" y="0" width="22" height="14" fill="#7a4a3a" />
-        <path d="M -2 0 L 11 -10 L 24 0 Z" fill="#3a2418" />
-        <rect x="4" y="6" width="4" height="6" fill="#fce4a8" opacity={Math.min(1, 0.55 + cottageGlow * 0.45)} />
-        <rect x="14" y="6" width="4" height="6" fill="#fce4a8" opacity={Math.min(1, 0.55 + cottageGlow * 0.45)} />
-        <rect x="2" y="0" width="3" height="-8" fill="#3a2418" transform="translate(0 8)" />
-        <rect x="3" y="-12" width="3" height="6" fill="#3a2418" />
-        <path className="steam-wisp" d="M 4.5 -12 q -2 -8 0 -14 q 2 -6 0 -10" stroke="#9a8a78" strokeWidth="1.4" fill="none" strokeLinecap="round" opacity="0.55"
+      {/* DRYSTONE WALL — winding through the mid-ground, classic Malvern landmark */}
+      <g opacity="0.85">
+        {/* base stone wall — slightly arched line */}
+        <path d="M 60 528 Q 160 522 260 528 Q 360 534 460 530 Q 560 526 660 532 L 660 542 Q 560 538 460 540 Q 360 544 260 538 Q 160 532 60 540 Z"
+          fill="#a8a098" />
+        <path d="M 60 528 Q 160 522 260 528 Q 360 534 460 530 Q 560 526 660 532"
+          stroke="#c8c0b8" strokeWidth="1" fill="none" opacity="0.65" />
+        {/* individual stones — small vertical ticks suggest mortar lines */}
+        {Array.from({ length: 36 }).map((_, i) => {
+          const x = 64 + i * 17 + ((i * 7) % 5);
+          const yJitter = (i % 3) * 1;
+          return (
+            <line key={i} x1={x} y1={530 + yJitter} x2={x} y2={540 + yJitter}
+              stroke="#5a5048" strokeWidth="0.5" opacity="0.65" />
+          );
+        })}
+        {/* moss/lichen patches on wall */}
+        {Array.from({ length: 8 }).map((_, i) => {
+          const x = 90 + i * 75 + ((i * 3) % 12);
+          return (
+            <ellipse key={i} cx={x} cy="535" rx="3.5" ry="1.4" fill="#7a8a4a" opacity="0.5" />
+          );
+        })}
+      </g>
+
+      {/* MALVERN-STONE COTTAGE in mid-distance with chimney smoke */}
+      <g transform="translate(412 482)" opacity="0.95">
+        {/* shadow on ground */}
+        <ellipse cx="22" cy="42" rx="32" ry="3" fill="#1a0e08" opacity="0.4" />
+        {/* main cottage body — warm sandstone */}
+        <rect x="0" y="14" width="44" height="28" fill="#c89878" />
+        {/* stone texture — random irregular stones suggested by horizontal/vertical lines */}
+        <g stroke="#8a6a52" strokeWidth="0.4" opacity="0.55" fill="none">
+          <line x1="0" y1="22" x2="44" y2="22" />
+          <line x1="0" y1="30" x2="44" y2="30" />
+          <line x1="0" y1="36" x2="44" y2="36" />
+          <line x1="6" y1="14" x2="6" y2="22" />
+          <line x1="14" y1="22" x2="14" y2="30" />
+          <line x1="22" y1="14" x2="22" y2="22" />
+          <line x1="30" y1="22" x2="30" y2="30" />
+          <line x1="38" y1="30" x2="38" y2="36" />
+          <line x1="10" y1="36" x2="10" y2="42" />
+          <line x1="28" y1="36" x2="28" y2="42" />
+        </g>
+        {/* slate roof — dark blue-grey, slightly steeper for cottage feel */}
+        <path d="M -3 14 L 22 -2 L 47 14 Z" fill="#3e4252" />
+        {/* roof ridge highlight */}
+        <line x1="-3" y1="14" x2="47" y2="14" stroke="#5a5e6e" strokeWidth="0.6" opacity="0.7" />
+        {/* slate horizontal lines */}
+        <line x1="2" y1="11" x2="42" y2="11" stroke="#2a2e3a" strokeWidth="0.4" opacity="0.5" />
+        <line x1="6" y1="7"  x2="38" y2="7"  stroke="#2a2e3a" strokeWidth="0.4" opacity="0.5" />
+        <line x1="10" y1="3" x2="34" y2="3"  stroke="#2a2e3a" strokeWidth="0.4" opacity="0.5" />
+
+        {/* central wooden DOOR */}
+        <rect x="19" y="28" width="6" height="14" fill="#5a3424" />
+        <rect x="19" y="28" width="6" height="14" fill="none" stroke="#3a2418" strokeWidth="0.4" />
+        <circle cx="23.5" cy="35" r="0.4" fill="#fcd092" />
+        {/* door step — small stone */}
+        <rect x="17" y="42" width="10" height="1.4" fill="#6a6058" />
+
+        {/* WINDOWS — left & right of door, lattice panes */}
+        <g>
+          <rect x="6" y="22" width="7" height="8" fill="#fce4a8" opacity={Math.min(1, 0.5 + cottageGlow * 0.5)} />
+          <rect x="6" y="22" width="7" height="8" fill="none" stroke="#3a2418" strokeWidth="0.4" />
+          <line x1="9.5" y1="22" x2="9.5" y2="30" stroke="#3a2418" strokeWidth="0.3" />
+          <line x1="6" y1="26" x2="13" y2="26" stroke="#3a2418" strokeWidth="0.3" />
+          {/* sill */}
+          <rect x="5" y="29.5" width="9" height="1" fill="#8a7a6a" />
+        </g>
+        <g>
+          <rect x="31" y="22" width="7" height="8" fill="#fce4a8" opacity={Math.min(1, 0.5 + cottageGlow * 0.5)} />
+          <rect x="31" y="22" width="7" height="8" fill="none" stroke="#3a2418" strokeWidth="0.4" />
+          <line x1="34.5" y1="22" x2="34.5" y2="30" stroke="#3a2418" strokeWidth="0.3" />
+          <line x1="31" y1="26" x2="38" y2="26" stroke="#3a2418" strokeWidth="0.3" />
+          <rect x="30" y="29.5" width="9" height="1" fill="#8a7a6a" />
+        </g>
+
+        {/* CHIMNEY on left */}
+        <rect x="6" y="-4" width="5" height="8" fill="#9a7a62" />
+        <rect x="5.5" y="-5" width="6" height="2" fill="#7a5a42" />
+        <path className="steam-wisp" d="M 8.5 -5 q -2 -8 0 -14 q 2 -6 0 -10" stroke="#9a8a78" strokeWidth="1.4" fill="none" strokeLinecap="round" opacity="0.55"
           style={{ animation: 'steamRise 6s ease-out 1s infinite' }} />
+
+        {/* CLIMBING ROSE on right wall — small pink/red dots growing up */}
+        <g>
+          {/* trellis / stem */}
+          <path d="M 40 42 Q 41 32 39 22 Q 41 16 40 12" stroke="#4a6a38" strokeWidth="0.6" fill="none" />
+          {/* leaves + roses (small clusters of pink) */}
+          {[
+            { x: 39, y: 38, c: '#7aa860' }, { x: 41, y: 36, c: '#e8809a' },
+            { x: 38, y: 32, c: '#7aa860' }, { x: 40, y: 30, c: '#e8809a' },
+            { x: 42, y: 27, c: '#d86878' }, { x: 39, y: 24, c: '#7aa860' },
+            { x: 41, y: 22, c: '#e8809a' }, { x: 38, y: 18, c: '#d86878' },
+            { x: 40, y: 16, c: '#e8a0b4' },
+          ].map((p, i) => (
+            <circle key={i} cx={p.x} cy={p.y} r={p.c.startsWith('#7') ? 1.2 : 1.6} fill={p.c} opacity="0.85" />
+          ))}
+        </g>
+      </g>
+
+      {/* COTTAGE GARDEN flowers — front of cottage, cluster of warm cottage-garden colour */}
+      <g opacity="0.92">
+        {/* lavender clump in front */}
+        {[
+          { x: 392, y: 540, c: '#9a82c6' }, { x: 396, y: 542, c: '#a892c6' }, { x: 400, y: 540, c: '#8a72b0' },
+          { x: 404, y: 543, c: '#9a82c6' }, { x: 408, y: 540, c: '#a892c6' }, { x: 412, y: 542, c: '#8a72b0' },
+        ].map((f, i) => <ellipse key={`l${i}`} cx={f.x} cy={f.y} rx="2.6" ry="3.4" fill={f.c} />)}
+        {/* hollyhocks — taller stalks, deeper pink/red */}
+        {[
+          { x: 446, y: 520, h: 18, c: '#d86878' },
+          { x: 450, y: 522, h: 16, c: '#e8809a' },
+          { x: 454, y: 524, h: 14, c: '#a85070' },
+        ].map((h, i) => (
+          <g key={`h${i}`}>
+            <line x1={h.x} y1={h.y + h.h} x2={h.x} y2={h.y} stroke="#4a6a38" strokeWidth="0.6" />
+            <circle cx={h.x} cy={h.y} r="2.2" fill={h.c} />
+            <circle cx={h.x - 1} cy={h.y + 4} r="2" fill={h.c} opacity="0.85" />
+            <circle cx={h.x + 1} cy={h.y + 8} r="1.8" fill={h.c} opacity="0.7" />
+          </g>
+        ))}
+        {/* white daisies + foxgloves dotted around */}
+        {[
+          { x: 380, y: 548, c: '#fff8e0' }, { x: 422, y: 550, c: '#fff8e0' },
+          { x: 432, y: 546, c: '#e8a0d4' }, { x: 466, y: 548, c: '#fff8e0' },
+        ].map((f, i) => <circle key={`d${i}`} cx={f.x} cy={f.y} r="1.2" fill={f.c} />)}
+        {/* leaves carpet */}
+        <path d="M 380 548 Q 420 552 470 548" stroke="#4a6a38" strokeWidth="2" fill="none" opacity="0.55" />
       </g>
 
       {/* Foreground TREES — silhouettes for depth */}
@@ -651,6 +769,27 @@ function MalvernHills({ seed, cottageGlow = 0.7 }: { seed: number; cottageGlow?:
           <ellipse cx="0" cy="-2" rx="2" ry="4" fill="#3a4e2a" opacity="0.85" />
         </g>
       ))}
+
+      {/* TREE CLUSTER — small grove on mid ridge for depth */}
+      <g opacity="0.92">
+        {[
+          { x: 290, y: 470, w: 7,  h: 12, c: '#2e3e26' },
+          { x: 298, y: 472, w: 9,  h: 14, c: '#3a5230' },
+          { x: 308, y: 474, w: 6,  h: 11, c: '#2a3a22' },
+          { x: 316, y: 476, w: 8,  h: 13, c: '#36482c' },
+          { x: 324, y: 472, w: 7,  h: 12, c: '#3a5230' },
+          { x: 332, y: 474, w: 5,  h: 10, c: '#2e3e26' },
+        ].map((t, i) => (
+          <g key={`tc${i}`}>
+            {/* trunk hint */}
+            <line x1={t.x} y1={t.y + t.h - 1} x2={t.x} y2={t.y + t.h + 4} stroke="#1a1408" strokeWidth="1" opacity="0.7" />
+            {/* canopy — lozenge */}
+            <ellipse cx={t.x} cy={t.y + t.h / 2} rx={t.w / 2} ry={t.h / 2} fill={t.c} />
+            {/* highlight */}
+            <ellipse cx={t.x - t.w * 0.2} cy={t.y + t.h * 0.3} rx={t.w * 0.2} ry={t.h * 0.3} fill="#5a7242" opacity="0.4" />
+          </g>
+        ))}
+      </g>
 
       {/* Sheep */}
       {Array.from({ length: sheep }).map((_, i) => (

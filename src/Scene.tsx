@@ -788,68 +788,81 @@ function MalvernHills({ seed, cottageGlow = 0.7, weather = 'sunshine' }: { seed:
       {/* ========== VILLAGE — Priory church + Victorian villas ========== */}
       <VillageMalvern glow={glow} snow={isSnow} />
 
-      {/* ========== WINDING MOUNTAIN PATH — foreground approach + switchback climb up the peak ========== */}
+      {/* ========== WINDING PATH — single continuous road: foreground valley
+          through village edge, then climbing up the mountain slope.
+          Drawn as one path that tapers from wide (foreground) to thin (high altitude). ========== */}
       <g>
-        {/* SEGMENT A: foreground + village approach */}
+        {/* Path outline — wide at bottom, narrowing with altitude via tapering stroke groups */}
+        {/* Bottom/valley segment: foreground approach (wide) */}
         <path
-          d="M 652 590 Q 560 560 490 530 Q 430 500 380 480 Q 340 466 305 458"
-          stroke={isSnow ? '#6a7285' : '#8e714c'}
-          strokeWidth="28" fill="none" strokeLinecap="round" opacity="0.95"
+          d="M 652 590 Q 580 560 510 536 Q 450 514 396 494 Q 356 478 332 458"
+          stroke={isSnow ? '#5a6276' : '#8e714c'}
+          strokeWidth="26" fill="none" strokeLinecap="round" opacity="0.95"
         />
         <path
-          d="M 652 590 Q 560 560 490 530 Q 430 500 380 480 Q 340 466 305 458"
-          stroke={isSnow ? '#a4aec0' : '#ba9862'}
-          strokeWidth="13" fill="none" strokeLinecap="round" opacity="0.95"
+          d="M 652 590 Q 580 560 510 536 Q 450 514 396 494 Q 356 478 332 458"
+          stroke={isSnow ? '#96a0b2' : '#ba9862'}
+          strokeWidth="11" fill="none" strokeLinecap="round" opacity="0.95"
         />
 
-        {/* SEGMENT B: switchback climb up the mountain (darker for snow contrast) */}
+        {/* Bend/turn segment: where valley road turns up-mountain */}
         <path
-          d="M 380 478 Q 430 440 470 416 Q 500 380 508 344 Q 512 300 516 256 Q 518 210 512 178 Q 508 150 500 128"
+          d="M 332 458 Q 320 430 340 404 Q 374 376 412 350"
           stroke={isSnow ? '#5a6276' : '#8e714c'}
-          strokeWidth="19" fill="none" strokeLinecap="round" opacity="0.92"
+          strokeWidth="22" fill="none" strokeLinecap="round" opacity="0.92"
         />
         <path
-          d="M 380 478 Q 430 440 470 416 Q 500 380 508 344 Q 512 300 516 256 Q 518 210 512 178 Q 508 150 500 128"
-          stroke={isSnow ? '#8e96a8' : '#ba9862'}
-          strokeWidth="7.5" fill="none" strokeLinecap="round" opacity="0.95"
+          d="M 332 458 Q 320 430 340 404 Q 374 376 412 350"
+          stroke={isSnow ? '#96a0b2' : '#ba9862'}
+          strokeWidth="9.5" fill="none" strokeLinecap="round" opacity="0.95"
+        />
+
+        {/* Upper mountain climb (narrows with altitude) */}
+        <path
+          d="M 412 350 Q 452 318 478 276 Q 498 232 506 188 Q 508 148 500 120"
+          stroke={isSnow ? '#5a6276' : '#8e714c'}
+          strokeWidth="16" fill="none" strokeLinecap="round" opacity="0.9"
         />
         <path
-          d="M 380 478 Q 430 440 470 416 Q 500 380 508 344 Q 512 300 516 256 Q 518 210 512 178 Q 508 150 500 128"
+          d="M 412 350 Q 452 318 478 276 Q 498 232 506 188 Q 508 148 500 120"
+          stroke={isSnow ? '#96a0b2' : '#ba9862'}
+          strokeWidth="6.5" fill="none" strokeLinecap="round" opacity="0.92"
+        />
+
+        {/* dashed centre-line tracks running the whole length */}
+        <path
+          d="M 652 590 Q 580 560 510 536 Q 450 514 396 494 Q 356 478 332 458 Q 320 430 340 404 Q 374 376 412 350 Q 452 318 478 276 Q 498 232 506 188 Q 508 148 500 120"
           stroke={isSnow ? '#c4ccda' : '#9c7a46'}
-          strokeWidth="0.9" fill="none" opacity="0.55"
+          strokeWidth="0.9" fill="none" opacity="0.45"
           strokeDasharray="6 8"
         />
       </g>
 
-      {/* ========== COTTAGES along the valley road + one high on the mountain path ========== */}
-      <Cottage x={548} y={524} s={1.0} snow={isSnow} glow={glow} roofColor="#7a3c2a" />
-      <Cottage x={448} y={478} s={0.78} snow={isSnow} glow={glow} roofColor="#6a2e22" />
-      {/* mountain-path refuge cottages (smaller, receding up the slope) */}
-      <Cottage x={486} y={420} s={0.55} snow={isSnow} glow={glow} roofColor="#6a2e22" />
-      <Cottage x={518} y={342} s={0.42} snow={isSnow} glow={glow} roofColor="#7a3c2a" />
+      {/* ========== COTTAGES along the valley road + up the mountain climb ========== */}
+      <Cottage x={548} y={526} s={1.0} snow={isSnow} glow={glow} roofColor="#7a3c2a" />
+      <Cottage x={438} y={484} s={0.78} snow={isSnow} glow={glow} roofColor="#6a2e22" />
+      <Cottage x={396} y={364} s={0.55} snow={isSnow} glow={glow} roofColor="#6a2e22" />
+      <Cottage x={478} y={258} s={0.4} snow={isSnow} glow={glow} roofColor="#7a3c2a" />
 
-      {/* ========== LAMP POSTS — foreground row + climbing up the mountain path ========== */}
+      {/* ========== LAMP POSTS — spaced along the continuous path, shrinking with altitude ========== */}
       <g>
-        {/* foreground / valley road lamp posts */}
         {[
-          { x: 628, y: 582, s: 1.4 },
-          { x: 552, y: 552, s: 1.22 },
-          { x: 478, y: 520, s: 1.05 },
-          { x: 412, y: 494, s: 0.9 },
-          { x: 348, y: 472, s: 0.8 },
+          /* foreground / valley */
+          { x: 630, y: 582, s: 1.4 },
+          { x: 556, y: 552, s: 1.22 },
+          { x: 482, y: 520, s: 1.05 },
+          { x: 420, y: 494, s: 0.92 },
+          { x: 362, y: 472, s: 0.82 },
+          /* bend */
+          { x: 322, y: 434, s: 0.72 },
+          /* climbing */
+          { x: 360, y: 400, s: 0.64 },
+          { x: 410, y: 360, s: 0.54 },
+          { x: 456, y: 304, s: 0.46 },
+          { x: 490, y: 236, s: 0.38 },
+          { x: 504, y: 170, s: 0.3 },
         ].map((l, i) => (
           <LampPost key={`lp${i}`} x={l.x} y={l.y} s={l.s} lit={cottageGlow > 0.3} />
-        ))}
-        {/* switchback lamps climbing the mountain (smaller with altitude) */}
-        {[
-          { x: 446, y: 450, s: 0.7 },
-          { x: 488, y: 410, s: 0.6 },
-          { x: 510, y: 362, s: 0.52 },
-          { x: 520, y: 304, s: 0.44 },
-          { x: 518, y: 240, s: 0.36 },
-          { x: 510, y: 188, s: 0.3 },
-        ].map((l, i) => (
-          <LampPost key={`lm${i}`} x={l.x} y={l.y} s={l.s} lit={cottageGlow > 0.3} />
         ))}
         {/* village square lamps */}
         <LampPost x={210} y={462} s={0.78} lit={cottageGlow > 0.3} />

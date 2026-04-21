@@ -3324,9 +3324,6 @@ function Lamp() {
   // angled desk lamp (Pixar-style) with dramatic warm cone
   return (
     <g>
-      {/* DRAMATIC LIGHT CONE — wider, brighter, with soft scatter */}
-      <path d="M 152 720 L 56 902 L 332 902 L 232 720 Z" fill="url(#lampCone)" opacity="0.7" pointerEvents="none"
-        style={{ animation: 'flicker 5s ease-in-out infinite' }} />
       {/* secondary glow circle on desk surface */}
       <ellipse cx="200" cy="894" rx="200" ry="30" fill="url(#lampGlow)" opacity="0.9" pointerEvents="none" />
       <ellipse cx="200" cy="892" rx="160" ry="22" fill="#ffe6a8" opacity="0.55" pointerEvents="none" />

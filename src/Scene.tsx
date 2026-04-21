@@ -350,6 +350,19 @@ export function Scene({ now, weather = 'sunshine', daysRemaining = 0, daysSince 
         {weather === 'foggy' && <Fog />}
 
         <rect x="60" y="80" width="600" height="500" fill="url(#glassReflection)" pointerEvents="none" />
+
+        {/* Night darkening overlay — pulls the whole outside scene down into night,
+            with a hint of neon magenta/cyan bleed from the room spilling out through
+            the window for a Blade-Runner-y city-at-night feel. */}
+        {isNight && (
+          <>
+            <rect x="60" y="80" width="600" height="500" fill="#07081a" opacity="0.58" pointerEvents="none" />
+            <g style={{ mixBlendMode: 'screen' }} pointerEvents="none">
+              <ellipse cx="180" cy="440" rx="200" ry="120" fill="#ff4d8b" opacity="0.12" />
+              <ellipse cx="540" cy="460" rx="200" ry="120" fill="#00d4ff" opacity="0.1" />
+            </g>
+          </>
+        )}
       </g>
 
       {/* ============= WINDOW FRAME (front / mullions) ============= */}
@@ -371,8 +384,20 @@ export function Scene({ now, weather = 'sunshine', daysRemaining = 0, daysSince 
       <CornerClimber side="left" />
       <CornerClimber side="right" />
 
+      {/* ============= NEON ROOM WASHES (night only) — pink from left, cyan from right ============= */}
+      {isNight && (
+        <g pointerEvents="none" style={{ mixBlendMode: 'screen' }}>
+          <ellipse cx="60" cy="900" rx="320" ry="380" fill="#ff4d8b" opacity="0.22" />
+          <ellipse cx="680" cy="950" rx="300" ry="360" fill="#00d4ff" opacity="0.2" />
+          <ellipse cx="360" cy="1180" rx="280" ry="180" fill="#b84dff" opacity="0.12" />
+        </g>
+      )}
+
       {/* ============= FAIRY LIGHTS ============= */}
       <FairyLights isNight={isNight} />
+
+      {/* ============= NEON SIGN on the right wall (night only) ============= */}
+      <NeonSign isNight={isNight} />
 
       {/* ============= BUNTING above window ============= */}
       <Bunting />
@@ -1903,22 +1928,103 @@ function FairyLights({ isNight }: { isNight?: boolean }) {
     { x: 300, y: 90 }, { x: 360, y: 88 }, { x: 420, y: 90 }, { x: 480, y: 92 },
     { x: 540, y: 96 }, { x: 600, y: 92 }, { x: 660, y: 86 },
   ];
-  const glowR = isNight ? 16 : 11;
+  // At night, rotate through a neon palette (pink / cyan / purple / warm)
+  // for a Tokyo-izakaya string-light feel. Daytime stays warm white.
+  const neonPalette = ['#ff4d8b', '#00d4ff', '#b84dff', '#ffce58'];
+  const neonCore    = ['#ffc0d8', '#b8eeff', '#e0c8ff', '#fff2c8'];
+  const glowR = isNight ? 18 : 11;
   return (
     <g>
       <path d="M 50 76 Q 200 102 360 92 Q 520 82 670 88" stroke="#3a2418" strokeWidth="0.6" fill="none" opacity="0.65" />
-      {beads.map((b, i) => (
-        <g key={i}>
-          {isNight && (
-            <circle cx={b.x} cy={b.y} r="22" fill="url(#fairyGlow)" opacity="0.5"
-              style={{ animation: `fairyPulse ${3 + (i % 4) * 0.4}s ease-in-out infinite`, animationDelay: `${(i * 0.3) % 2}s` }} />
-          )}
-          <circle cx={b.x} cy={b.y} r={glowR} fill="url(#fairyGlow)"
-            style={{ animation: `fairyPulse ${2.5 + (i % 4) * 0.4}s ease-in-out infinite`, animationDelay: `${(i * 0.3) % 2}s` }} />
-          <circle cx={b.x} cy={b.y} r="2.8" fill="#fff4d6" />
-          <circle cx={b.x} cy={b.y} r="1.4" fill="#fff8e8" />
+      {beads.map((b, i) => {
+        const neon = neonPalette[i % neonPalette.length];
+        const core = neonCore[i % neonCore.length];
+        return (
+          <g key={i}>
+            {isNight && (
+              <>
+                {/* broad outer neon halo */}
+                <circle cx={b.x} cy={b.y} r="26" fill={neon} opacity="0.28"
+                  style={{ animation: `fairyPulse ${3 + (i % 4) * 0.4}s ease-in-out infinite`, animationDelay: `${(i * 0.3) % 2}s` }} />
+                {/* inner halo */}
+                <circle cx={b.x} cy={b.y} r="16" fill={neon} opacity="0.55"
+                  style={{ animation: `fairyPulse ${2.5 + (i % 4) * 0.4}s ease-in-out infinite`, animationDelay: `${(i * 0.3) % 2}s` }} />
+              </>
+            )}
+            {!isNight && (
+              <circle cx={b.x} cy={b.y} r={glowR} fill="url(#fairyGlow)"
+                style={{ animation: `fairyPulse ${2.5 + (i % 4) * 0.4}s ease-in-out infinite`, animationDelay: `${(i * 0.3) % 2}s` }} />
+            )}
+            {/* bulb */}
+            <circle cx={b.x} cy={b.y} r="2.8" fill={isNight ? core : '#fff4d6'} />
+            <circle cx={b.x} cy={b.y} r="1.4" fill="#ffffff" opacity={isNight ? 0.95 : 1} />
+          </g>
+        );
+      })}
+    </g>
+  );
+}
+
+/* Neon sign on the right wall — only visible at night.
+   Glowing pink script reading "hettie ♡" with a soft cyan secondary
+   halo and a little "LOVE" kanji-styled vertical sign tucked beside it. */
+function NeonSign({ isNight }: { isNight?: boolean }) {
+  if (!isNight) return null;
+  return (
+    <g style={{ animation: 'flicker 4.5s ease-in-out infinite' }} pointerEvents="none">
+      {/* ============ MAIN SIGN: "hettie ♡" in pink neon script ============ */}
+      <g transform="translate(520 830)">
+        {/* soft cyan halo behind for chromatic depth */}
+        <g style={{ mixBlendMode: 'screen' }} opacity="0.55">
+          <text x="2" y="2" fontSize="30" fill="#00d4ff" fontFamily="'Dancing Script', Caveat, cursive" fontStyle="italic"
+            stroke="#00d4ff" strokeWidth="4" opacity="0.4">hettie ♡</text>
         </g>
-      ))}
+        {/* outer pink neon glow */}
+        <g style={{ mixBlendMode: 'screen' }}>
+          <text x="0" y="0" fontSize="30" fill="none"
+            stroke="#ff4d8b" strokeWidth="7" opacity="0.35"
+            fontFamily="'Dancing Script', Caveat, cursive" fontStyle="italic">hettie ♡</text>
+          <text x="0" y="0" fontSize="30" fill="none"
+            stroke="#ff6aa0" strokeWidth="4" opacity="0.7"
+            fontFamily="'Dancing Script', Caveat, cursive" fontStyle="italic">hettie ♡</text>
+        </g>
+        {/* bright inner tube */}
+        <text x="0" y="0" fontSize="30" fill="none"
+          stroke="#ffd6e4" strokeWidth="1.8"
+          fontFamily="'Dancing Script', Caveat, cursive" fontStyle="italic">hettie ♡</text>
+        {/* hot core highlight */}
+        <text x="0" y="0" fontSize="30" fill="#ffffff" opacity="0.85"
+          stroke="#ffffff" strokeWidth="0.6"
+          fontFamily="'Dancing Script', Caveat, cursive" fontStyle="italic">hettie ♡</text>
+      </g>
+
+      {/* ============ SMALL VERTICAL "愛" (love) STYLE SIGN on left wall ============ */}
+      <g transform="translate(98 760)">
+        {/* sign backboard — dark with slight warm glow */}
+        <rect x="-12" y="-4" width="28" height="86" rx="3" fill="#0a0612" opacity="0.85" />
+        <rect x="-12" y="-4" width="28" height="86" rx="3" fill="none" stroke="#2a1422" strokeWidth="0.8" />
+        {/* cyan neon kana "ラブ" (loose romaji-style) — three short horizontal bars like kana strokes */}
+        <g style={{ mixBlendMode: 'screen' }}>
+          {/* top char */}
+          <line x1="-4" y1="10" x2="8" y2="10" stroke="#00d4ff" strokeWidth="8" opacity="0.28" strokeLinecap="round" />
+          <line x1="-4" y1="10" x2="8" y2="10" stroke="#7aecff" strokeWidth="4" opacity="0.6" strokeLinecap="round" />
+          <line x1="-4" y1="10" x2="8" y2="10" stroke="#ffffff" strokeWidth="1.6" strokeLinecap="round" />
+          <line x1="2" y1="5" x2="2" y2="18" stroke="#00d4ff" strokeWidth="6" opacity="0.28" strokeLinecap="round" />
+          <line x1="2" y1="5" x2="2" y2="18" stroke="#7aecff" strokeWidth="3" opacity="0.6" strokeLinecap="round" />
+          <line x1="2" y1="5" x2="2" y2="18" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" />
+          {/* middle char */}
+          <path d="M -4 30 L 8 30 L 8 42" fill="none" stroke="#ff4d8b" strokeWidth="7" opacity="0.3" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M -4 30 L 8 30 L 8 42" fill="none" stroke="#ffa0c4" strokeWidth="3.2" opacity="0.7" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M -4 30 L 8 30 L 8 42" fill="none" stroke="#ffffff" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+          {/* bottom char */}
+          <circle cx="2" cy="60" r="7" fill="none" stroke="#b84dff" strokeWidth="5" opacity="0.28" />
+          <circle cx="2" cy="60" r="7" fill="none" stroke="#d8a0ff" strokeWidth="2.6" opacity="0.65" />
+          <circle cx="2" cy="60" r="7" fill="none" stroke="#ffffff" strokeWidth="1.1" />
+          <line x1="-4" y1="72" x2="8" y2="76" stroke="#b84dff" strokeWidth="5" opacity="0.28" strokeLinecap="round" />
+          <line x1="-4" y1="72" x2="8" y2="76" stroke="#d8a0ff" strokeWidth="2.4" opacity="0.65" strokeLinecap="round" />
+          <line x1="-4" y1="72" x2="8" y2="76" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" />
+        </g>
+      </g>
     </g>
   );
 }

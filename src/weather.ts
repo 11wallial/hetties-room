@@ -113,9 +113,9 @@ const RAINY: Anchor[] = [
 ];
 
 const SNOWY: Anchor[] = [
-  { h: 0,  sky: ['#1a1e2a', '#2a2f40', '#3a4056'], sun: '#6a7288', sunY: 400, haze: '#3a4056', tint: '#09060f' },
-  { h: 12, sky: ['#cdd8e6', '#dce5ee', '#eaeff4'], sun: '#f4f7fa', sunY: 280, haze: '#bac6d4', tint: '#1a1820' },
-  { h: 24, sky: ['#1a1e2a', '#2a2f40', '#3a4056'], sun: '#6a7288', sunY: 400, haze: '#3a4056', tint: '#09060f' },
+  { h: 0,  sky: ['#161a24', '#262a38', '#3a3e4e'], sun: '#606a7e', sunY: 420, haze: '#3a3e4e', tint: '#07080e' },
+  { h: 12, sky: ['#8a98ae', '#a6b3c4', '#c2cdd8'], sun: '#d4dae4', sunY: 300, haze: '#96a3b4', tint: '#181c24' },
+  { h: 24, sky: ['#161a24', '#262a38', '#3a3e4e'], sun: '#606a7e', sunY: 420, haze: '#3a3e4e', tint: '#07080e' },
 ];
 
 // Rainbow = post-rain: still slightly cool and misty but brighter, with an arc overlay

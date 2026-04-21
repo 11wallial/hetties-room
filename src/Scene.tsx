@@ -541,67 +541,163 @@ function MalvernHills({ seed, cottageGlow = 0.7, weather = 'sunshine' }: { seed:
   const glow = Math.min(1, 0.45 + cottageGlow * 0.6);
   return (
     <g transform="translate(0 30)">
-      {/* ========== DISTANT BACKGROUND RIDGE (the second peak poking up behind) ========== */}
+      {/* ============================================================
+          ATMOSPHERIC DEPTH — six overlapping ridge/hill layers,
+          progressively warmer and more saturated as they come forward
+          ============================================================ */}
+
+      {/* === L1: ghostly far-distant ridge (almost fog) === */}
       <path
-        d="M 60 600 L 60 270 Q 160 240 260 220 Q 330 208 380 192 Q 420 178 450 160 Q 478 145 498 135 Q 525 148 552 180 Q 600 230 660 258 L 660 600 Z"
-        fill={isSnow ? '#b8c2d2' : '#7d8ea2'}
-        opacity={isSnow ? 0.88 : 0.72}
+        d="M 60 600 L 60 200 Q 140 170 220 158 Q 290 146 340 134 Q 380 120 420 102 Q 450 90 480 96 Q 520 120 560 150 Q 620 178 660 192 L 660 600 Z"
+        fill={isSnow ? '#bac3d2' : '#a4acbe'}
+        opacity={isSnow ? 0.6 : 0.42}
+      />
+
+      {/* === L2: secondary background peak (the one with the obelisk) === */}
+      <path
+        d="M 60 600 L 60 260 Q 150 220 230 200 Q 290 184 330 170 Q 370 150 400 128 Q 430 100 460 84 Q 490 76 512 100 Q 540 150 570 188 Q 610 220 660 244 L 660 600 Z"
+        fill={isSnow ? '#a7b2c5' : '#7b8ea0'}
+        opacity={isSnow ? 0.9 : 0.78}
       />
       {isSnow && (
         <path
-          d="M 60 270 Q 160 240 260 220 Q 330 208 380 192 Q 420 178 450 160 Q 478 145 498 135 Q 525 148 552 180 Q 600 230 660 258"
-          fill="none" stroke="#f4f7fa" strokeWidth="11" opacity="0.85" strokeLinejoin="round" strokeLinecap="round"
+          d="M 60 260 Q 150 220 230 200 Q 290 184 330 170 Q 370 150 400 128 Q 430 100 460 84 Q 490 76 512 100 Q 540 150 570 188 Q 610 220 660 244"
+          fill="none" stroke="#f4f7fa" strokeWidth="13" opacity="0.92" strokeLinejoin="round" strokeLinecap="round"
         />
       )}
 
-      {/* ========== MAIN MOUNTAIN — the dominant Worcestershire Beacon peak ========== */}
+      {/* === L3: mid-distance ridge (steeper, warmer/whiter face) === */}
       <path
-        d="M 60 600 L 60 410 Q 130 378 210 342 Q 280 306 340 264 Q 380 222 412 180 Q 432 138 454 110 Q 474 92 490 108 Q 508 148 524 198 Q 548 258 580 308 Q 620 338 660 356 L 660 600 Z"
-        fill={isSnow ? '#c8d3e1' : '#7a9166'}
+        d="M 60 600 L 60 340 Q 140 296 220 260 Q 290 228 340 200 Q 390 168 420 140 Q 450 120 468 136 Q 490 176 520 230 Q 562 290 660 326 L 660 600 Z"
+        fill={isSnow ? '#b5c0d0' : '#a0b376'}
+        opacity={isSnow ? 0.92 : 0.86}
       />
-
-      {/* warm golden highlight band catching sun (non-snow) */}
+      {/* L3 sunlit face highlight */}
       {!isSnow && (
         <path
-          d="M 100 402 Q 210 358 320 300 Q 380 260 420 220 Q 448 170 470 125"
-          fill="none" stroke="#d4dc8e" strokeWidth="24" opacity="0.28" strokeLinejoin="round" strokeLinecap="round"
+          d="M 90 332 Q 180 292 280 252 Q 340 226 400 200 Q 440 176 462 152"
+          fill="none" stroke="#d4dc8e" strokeWidth="22" opacity="0.42" strokeLinejoin="round" strokeLinecap="round"
         />
       )}
-
-      {/* snow blanket along main ridgeline */}
       {isSnow && (
+        <>
+          <path
+            d="M 60 340 Q 140 296 220 260 Q 290 228 340 200 Q 390 168 420 140 Q 450 120 468 136 Q 490 176 520 230 Q 562 290 660 326"
+            fill="none" stroke="#ffffff" strokeWidth="14" opacity="0.92" strokeLinejoin="round" strokeLinecap="round"
+          />
+          {/* snow shadow face (blue-purple cast on right flank) */}
+          <path
+            d="M 468 140 Q 488 188 512 240 Q 552 298 620 328"
+            fill="none" stroke="#8c98af" strokeWidth="22" opacity="0.35" strokeLinejoin="round" strokeLinecap="round"
+          />
+        </>
+      )}
+
+      {/* === L4: MAIN MOUNTAIN — dramatic alpine peak (steeper, sharper, taller) === */}
+      <path
+        d="M 60 600 L 60 420 Q 110 370 170 320 Q 220 272 260 240 Q 310 200 350 152 Q 390 96 430 64 Q 458 48 478 66 Q 500 118 520 178 Q 540 240 570 296 Q 610 330 660 352 L 660 600 Z"
+        fill={isSnow ? '#c4cfdd' : '#6e8a58'}
+      />
+
+      {/* warm golden highlight band on main peak catching sun */}
+      {!isSnow && (
         <path
-          d="M 60 410 Q 130 378 210 342 Q 280 306 340 264 Q 380 222 412 180 Q 432 138 454 110 Q 474 92 490 108 Q 508 148 524 198 Q 548 258 580 308 Q 620 338 660 356"
-          fill="none" stroke="#ffffff" strokeWidth="14" opacity="0.92" strokeLinejoin="round" strokeLinecap="round"
+          d="M 100 412 Q 200 350 300 270 Q 360 210 420 140 Q 448 80 470 66"
+          fill="none" stroke="#d4dc8e" strokeWidth="28" opacity="0.4" strokeLinejoin="round" strokeLinecap="round"
+        />
+      )}
+      {!isSnow && (
+        <path
+          d="M 494 80 Q 510 140 526 198 Q 548 258 572 300"
+          fill="none" stroke="#4e6a3c" strokeWidth="26" opacity="0.35" strokeLinejoin="round" strokeLinecap="round"
         />
       )}
 
-      {/* ========== TERRACED CONTOUR PATHS across the hillside (iconic Malvern walks) ========== */}
+      {/* snow blanket + deep shadow faces on main ridgeline (alpine contrast) */}
+      {isSnow && (
+        <>
+          {/* white ridge */}
+          <path
+            d="M 60 420 Q 110 370 170 320 Q 220 272 260 240 Q 310 200 350 152 Q 390 96 430 64 Q 458 48 478 66 Q 500 118 520 178 Q 540 240 570 296 Q 610 330 660 352"
+            fill="none" stroke="#ffffff" strokeWidth="16" opacity="0.95" strokeLinejoin="round" strokeLinecap="round"
+          />
+          {/* blue shadow face on the right flank (catches the light less) */}
+          <path
+            d="M 478 70 Q 502 128 522 186 Q 546 248 574 294"
+            fill="none" stroke="#7e8aa0" strokeWidth="34" opacity="0.38" strokeLinejoin="round" strokeLinecap="round"
+          />
+          {/* darker crevasse shadow below peak */}
+          <path
+            d="M 430 70 Q 442 110 454 158 Q 466 208 478 258"
+            fill="none" stroke="#5a6a84" strokeWidth="3" opacity="0.4" strokeLinejoin="round" strokeLinecap="round"
+          />
+          {/* highlight sparkle on the ridge crest */}
+          <path
+            d="M 260 240 Q 320 192 380 128 Q 410 86 440 62"
+            fill="none" stroke="#ffffff" strokeWidth="3" opacity="0.7" strokeLinejoin="round" strokeLinecap="round"
+          />
+        </>
+      )}
+
+      {/* ============================================================
+          SANDY WINDING PATHS — prominent cream ribbons across the hills
+          (the iconic Malvern hillside walks). Drawn wide + layered
+          (darker edge + bright core) so they read as real paths.
+          ============================================================ */}
       {!isSnow ? (
         <g>
-          <path d="M 80 408 Q 180 372 300 320 Q 370 282 420 240" stroke="#b4c270" strokeWidth="2.4" fill="none" strokeLinecap="round" opacity="0.55" />
-          <path d="M 80 408 Q 180 372 300 320 Q 370 282 420 240" stroke="#6a7a3a" strokeWidth="0.5" fill="none" opacity="0.55" />
-          <path d="M 120 440 Q 230 404 340 370 Q 408 348 456 322" stroke="#b4c270" strokeWidth="1.8" fill="none" strokeLinecap="round" opacity="0.5" />
-          <path d="M 462 172 Q 500 230 530 280 Q 560 320 590 348" stroke="#b4c270" strokeWidth="1.4" fill="none" strokeLinecap="round" opacity="0.45" />
+          {/* PATH A: across the mid-distance sunlit ridge (L3) — the hero path */}
+          <path d="M 80 350 Q 180 320 280 296 Q 350 278 408 256 Q 450 238 478 222"
+            stroke="#a4a260" strokeWidth="7.5" fill="none" strokeLinecap="round" opacity="0.7" />
+          <path d="M 80 350 Q 180 320 280 296 Q 350 278 408 256 Q 450 238 478 222"
+            stroke="#e9dfad" strokeWidth="4.5" fill="none" strokeLinecap="round" opacity="0.92" />
+          <path d="M 80 350 Q 180 320 280 296 Q 350 278 408 256 Q 450 238 478 222"
+            stroke="#f8eecb" strokeWidth="1.4" fill="none" strokeLinecap="round" opacity="0.9" />
+
+          {/* PATH B: lower on the main mountain, winding up and over the shoulder */}
+          <path d="M 100 408 Q 200 368 300 318 Q 360 282 408 248 Q 440 218 462 190"
+            stroke="#9a9a58" strokeWidth="5.4" fill="none" strokeLinecap="round" opacity="0.6" />
+          <path d="M 100 408 Q 200 368 300 318 Q 360 282 408 248 Q 440 218 462 190"
+            stroke="#ded3a4" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.88" />
+
+          {/* PATH C: lower foothill contour — drops toward the village */}
+          <path d="M 420 380 Q 340 390 270 406 Q 200 418 140 428"
+            stroke="#9a9a58" strokeWidth="4.2" fill="none" strokeLinecap="round" opacity="0.5" />
+          <path d="M 420 380 Q 340 390 270 406 Q 200 418 140 428"
+            stroke="#ded3a4" strokeWidth="2.4" fill="none" strokeLinecap="round" opacity="0.82" />
+
+          {/* PATH D: shorter track on the shadow (right) flank of the main peak */}
+          <path d="M 478 210 Q 518 258 546 300 Q 576 332 600 354"
+            stroke="#8e8c50" strokeWidth="3.8" fill="none" strokeLinecap="round" opacity="0.5" />
+          <path d="M 478 210 Q 518 258 546 300 Q 576 332 600 354"
+            stroke="#d8cd9e" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.78" />
         </g>
       ) : (
         <g>
-          <path d="M 80 408 Q 180 372 300 320 Q 370 282 420 240" stroke="#ffffff" strokeWidth="1.6" fill="none" strokeLinecap="round" opacity="0.6" />
-          <path d="M 120 440 Q 230 404 340 370 Q 408 348 456 322" stroke="#ffffff" strokeWidth="1.2" fill="none" strokeLinecap="round" opacity="0.45" />
+          <path d="M 80 350 Q 180 320 280 296 Q 350 278 408 256 Q 450 238 478 222"
+            stroke="#c8d2e2" strokeWidth="6" fill="none" strokeLinecap="round" opacity="0.6" />
+          <path d="M 80 350 Q 180 320 280 296 Q 350 278 408 256 Q 450 238 478 222"
+            stroke="#ffffff" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.85" />
+          <path d="M 100 408 Q 200 368 300 318 Q 360 282 408 248 Q 440 218 462 190"
+            stroke="#ffffff" strokeWidth="2.6" fill="none" strokeLinecap="round" opacity="0.7" />
+          <path d="M 420 380 Q 340 390 270 406 Q 200 418 140 428"
+            stroke="#ffffff" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.7" />
+          <path d="M 478 210 Q 518 258 546 300 Q 576 332 600 354"
+            stroke="#ffffff" strokeWidth="2" fill="none" strokeLinecap="round" opacity="0.65" />
         </g>
       )}
 
-      {/* ridge-line rock shading */}
-      <g opacity={isSnow ? 0.25 : 0.35}>
-        <path d="M 470 120 Q 490 170 502 226" stroke={isSnow ? '#6a7282' : '#4a5a38'} strokeWidth="1.2" fill="none" opacity="0.65" />
-        <path d="M 440 200 Q 462 252 468 310" stroke={isSnow ? '#6a7282' : '#4a5a38'} strokeWidth="0.9" fill="none" opacity="0.55" />
+      {/* ridge-line rock shading on main peak */}
+      <g opacity={isSnow ? 0.25 : 0.38}>
+        <path d="M 470 120 Q 490 170 502 226" stroke={isSnow ? '#6a7282' : '#3e5234'} strokeWidth="1.4" fill="none" opacity="0.7" />
+        <path d="M 440 200 Q 462 252 468 310" stroke={isSnow ? '#6a7282' : '#3e5234'} strokeWidth="0.9" fill="none" opacity="0.55" />
       </g>
 
       {/* ========== MONUMENT / OBELISK on the distant secondary peak (iconic Malvern flavour) ========== */}
       <g opacity={isSnow ? 0.82 : 0.9}>
-        <rect x="495" y="122" width="2.6" height="13" fill={isSnow ? '#f4f7fa' : '#3a3a42'} />
-        <path d="M 493.8 122 L 496.3 116 L 498.8 122 Z" fill={isSnow ? '#f4f7fa' : '#3a3a42'} />
-        <rect x="493.5" y="135" width="5.6" height="1.6" fill={isSnow ? '#d4dae2' : '#2a2a30'} />
+        <rect x="458" y="70" width="2.6" height="13" fill={isSnow ? '#3a3a42' : '#3a3a42'} />
+        <path d="M 456.8 70 L 459.3 64 L 461.8 70 Z" fill={isSnow ? '#3a3a42' : '#3a3a42'} />
+        <rect x="456.5" y="83" width="5.6" height="1.6" fill={isSnow ? '#2a2a30' : '#2a2a30'} />
       </g>
 
       {/* ========== NEAR HILL / FOOTHILLS (where the village sits) ========== */}
@@ -658,45 +754,102 @@ function MalvernHills({ seed, cottageGlow = 0.7, weather = 'sunshine' }: { seed:
         ))}
       </g>
 
+      {/* ========== DECIDUOUS TREE CLUMPS — rounder leafy canopies, mixed w/ firs ========== */}
+      <g>
+        {/* cluster on the upper slope of the main peak (mid-distance) */}
+        {[
+          { x: 196, y: 342, s: 0.9,  t: 'mid'   as const },
+          { x: 212, y: 352, s: 0.78, t: 'light' as const },
+          { x: 226, y: 358, s: 0.72, t: 'mid'   as const },
+          { x: 246, y: 362, s: 0.65, t: 'dark'  as const },
+        ].map((t, i) => (
+          <RoundTree key={`rm${i}`} x={t.x} y={t.y} s={t.s} snow={isSnow} tone={t.t} />
+        ))}
+        {/* deciduous line above the village */}
+        {[
+          { x: 282, y: 380, s: 0.85, t: 'mid'   as const },
+          { x: 302, y: 388, s: 0.75, t: 'light' as const },
+          { x: 148, y: 400, s: 0.82, t: 'dark'  as const },
+          { x: 172, y: 408, s: 0.72, t: 'mid'   as const },
+          { x: 248, y: 412, s: 0.78, t: 'light' as const },
+        ].map((t, i) => (
+          <RoundTree key={`rv${i}`} x={t.x} y={t.y} s={t.s} snow={isSnow} tone={t.t} />
+        ))}
+        {/* deciduous scatter on the right foothill (between the village and the road) */}
+        {[
+          { x: 500, y: 404, s: 0.92, t: 'mid'   as const },
+          { x: 520, y: 416, s: 0.78, t: 'dark'  as const },
+          { x: 540, y: 424, s: 0.7,  t: 'light' as const },
+        ].map((t, i) => (
+          <RoundTree key={`rr${i}`} x={t.x} y={t.y} s={t.s} snow={isSnow} tone={t.t} />
+        ))}
+      </g>
+
       {/* ========== VILLAGE — Priory church + Victorian villas ========== */}
       <VillageMalvern glow={glow} snow={isSnow} />
 
-      {/* ========== WINDING ROAD (wider, S-curve from foreground into the hills) ========== */}
+      {/* ========== WINDING MOUNTAIN PATH — foreground approach + switchback climb up the peak ========== */}
       <g>
+        {/* SEGMENT A: foreground + village approach */}
         <path
-          d="M 652 590 Q 560 560 490 530 Q 430 500 380 478 Q 330 460 290 454 Q 250 450 222 452"
-          stroke={isSnow ? '#b0b8c8' : '#8e714c'}
-          strokeWidth="28" fill="none" strokeLinecap="round" opacity="0.96"
+          d="M 652 590 Q 560 560 490 530 Q 430 500 380 480 Q 340 466 305 458"
+          stroke={isSnow ? '#6a7285' : '#8e714c'}
+          strokeWidth="28" fill="none" strokeLinecap="round" opacity="0.95"
         />
         <path
-          d="M 652 590 Q 560 560 490 530 Q 430 500 380 478 Q 330 460 290 454 Q 250 450 222 452"
-          stroke={isSnow ? '#e6ecf5' : '#ba9862'}
-          strokeWidth="11" fill="none" strokeLinecap="round" opacity="0.85"
+          d="M 652 590 Q 560 560 490 530 Q 430 500 380 480 Q 340 466 305 458"
+          stroke={isSnow ? '#a4aec0' : '#ba9862'}
+          strokeWidth="13" fill="none" strokeLinecap="round" opacity="0.95"
+        />
+
+        {/* SEGMENT B: switchback climb up the mountain (darker for snow contrast) */}
+        <path
+          d="M 380 478 Q 430 440 470 416 Q 500 380 508 344 Q 512 300 516 256 Q 518 210 512 178 Q 508 150 500 128"
+          stroke={isSnow ? '#5a6276' : '#8e714c'}
+          strokeWidth="19" fill="none" strokeLinecap="round" opacity="0.92"
         />
         <path
-          d="M 652 590 Q 560 560 490 530 Q 430 500 380 478 Q 330 460 290 454 Q 250 450 222 452"
-          stroke={isSnow ? '#c8d0dc' : '#9c7a46'}
-          strokeWidth="1.3" fill="none" opacity="0.45"
-          strokeDasharray="8 10"
+          d="M 380 478 Q 430 440 470 416 Q 500 380 508 344 Q 512 300 516 256 Q 518 210 512 178 Q 508 150 500 128"
+          stroke={isSnow ? '#8e96a8' : '#ba9862'}
+          strokeWidth="7.5" fill="none" strokeLinecap="round" opacity="0.95"
+        />
+        <path
+          d="M 380 478 Q 430 440 470 416 Q 500 380 508 344 Q 512 300 516 256 Q 518 210 512 178 Q 508 150 500 128"
+          stroke={isSnow ? '#c4ccda' : '#9c7a46'}
+          strokeWidth="0.9" fill="none" opacity="0.55"
+          strokeDasharray="6 8"
         />
       </g>
 
-      {/* ========== COTTAGES along the road ========== */}
+      {/* ========== COTTAGES along the valley road + one high on the mountain path ========== */}
       <Cottage x={548} y={524} s={1.0} snow={isSnow} glow={glow} roofColor="#7a3c2a" />
-      <Cottage x={442} y={488} s={0.84} snow={isSnow} glow={glow} roofColor="#6a2e22" />
-      <Cottage x={356} y={462} s={0.7} snow={isSnow} glow={glow} roofColor="#7a3c2a" />
+      <Cottage x={448} y={478} s={0.78} snow={isSnow} glow={glow} roofColor="#6a2e22" />
+      {/* mountain-path refuge cottages (smaller, receding up the slope) */}
+      <Cottage x={486} y={420} s={0.55} snow={isSnow} glow={glow} roofColor="#6a2e22" />
+      <Cottage x={518} y={342} s={0.42} snow={isSnow} glow={glow} roofColor="#7a3c2a" />
 
-      {/* ========== LAMP POSTS along the road ========== */}
+      {/* ========== LAMP POSTS — foreground row + climbing up the mountain path ========== */}
       <g>
+        {/* foreground / valley road lamp posts */}
         {[
-          { x: 630, y: 584, s: 1.35 },
-          { x: 554, y: 554, s: 1.2 },
-          { x: 478, y: 524, s: 1.05 },
-          { x: 416, y: 500, s: 0.92 },
-          { x: 356, y: 478, s: 0.82 },
-          { x: 306, y: 464, s: 0.74 },
+          { x: 628, y: 582, s: 1.4 },
+          { x: 552, y: 552, s: 1.22 },
+          { x: 478, y: 520, s: 1.05 },
+          { x: 412, y: 494, s: 0.9 },
+          { x: 348, y: 472, s: 0.8 },
         ].map((l, i) => (
           <LampPost key={`lp${i}`} x={l.x} y={l.y} s={l.s} lit={cottageGlow > 0.3} />
+        ))}
+        {/* switchback lamps climbing the mountain (smaller with altitude) */}
+        {[
+          { x: 446, y: 450, s: 0.7 },
+          { x: 488, y: 410, s: 0.6 },
+          { x: 510, y: 362, s: 0.52 },
+          { x: 520, y: 304, s: 0.44 },
+          { x: 518, y: 240, s: 0.36 },
+          { x: 510, y: 188, s: 0.3 },
+        ].map((l, i) => (
+          <LampPost key={`lm${i}`} x={l.x} y={l.y} s={l.s} lit={cottageGlow > 0.3} />
         ))}
         {/* village square lamps */}
         <LampPost x={210} y={462} s={0.78} lit={cottageGlow > 0.3} />
@@ -712,6 +865,20 @@ function MalvernHills({ seed, cottageGlow = 0.7, weather = 'sunshine' }: { seed:
           <line x1="1.4" y1="1.5" x2="1.4" y2="2.4" stroke="#3a2418" strokeWidth="0.4" />
         </g>
       ))}
+
+      {/* ========== FOREGROUND BUSHES & DETAIL GRASS — meadow texture ========== */}
+      <g>
+        <Bush x={108} y={508} s={1.1} snow={isSnow} />
+        <Bush x={80} y={522} s={0.82} snow={isSnow} />
+        <Bush x={168} y={518} s={0.78} snow={isSnow} />
+        <Bush x={260} y={514} s={0.72} snow={isSnow} />
+        <Bush x={488} y={518} s={0.9} snow={isSnow} />
+        <Bush x={600} y={520} s={0.78} snow={isSnow} />
+      </g>
+      {/* big foreground deciduous tree on the far right — framing element */}
+      <g>
+        <RoundTree x={648} y={538} s={2.4} snow={isSnow} tone="dark" />
+      </g>
 
       {/* ========== FOREGROUND GRASS TUFTS or SNOW DRIFTS ========== */}
       {!isSnow ? (
@@ -749,6 +916,47 @@ function FirTree({ x, y, s, snow }: { x: number; y: number; s: number; snow?: bo
           <path d="M 0 -6 L -5 1 L 5 1 Z" fill="#f4f7fa" opacity="0.45" />
         </>
       )}
+    </g>
+  );
+}
+
+/* Deciduous tree — rounded leafy canopy, mixed with firs for natural variety */
+function RoundTree({ x, y, s, snow, tone = 'mid' }: { x: number; y: number; s: number; snow?: boolean; tone?: 'dark' | 'mid' | 'light' }) {
+  const canopy = snow
+    ? '#c8d0dc'
+    : tone === 'dark' ? '#3e5a30'
+    : tone === 'light' ? '#7aa04e'
+    : '#567a3c';
+  const shade = snow
+    ? '#a8b2c4'
+    : tone === 'dark' ? '#2a3e20'
+    : tone === 'light' ? '#568736'
+    : '#3c5a2a';
+  const highlight = snow ? '#ffffff' : tone === 'light' ? '#a8c470' : '#7a9e4e';
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      {/* trunk */}
+      <rect x="-0.7" y="-2" width="1.4" height="6" fill="#2a1a0e" opacity="0.85" />
+      {/* canopy lobes */}
+      <ellipse cx="0" cy="-7" rx="6.5" ry="6" fill={shade} />
+      <ellipse cx="-3.5" cy="-6" rx="3.6" ry="3.4" fill={canopy} />
+      <ellipse cx="3.2" cy="-7" rx="3.4" ry="3.2" fill={canopy} />
+      <ellipse cx="0" cy="-10" rx="3.2" ry="2.8" fill={canopy} />
+      {/* highlight catching sun */}
+      <ellipse cx="-2" cy="-9" rx="1.8" ry="1.4" fill={highlight} opacity={snow ? 0.65 : 0.55} />
+    </g>
+  );
+}
+
+/* Small foreground bush — for meadow texture */
+function Bush({ x, y, s, snow }: { x: number; y: number; s: number; snow?: boolean }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <ellipse cx="0" cy="0.2" rx="5" ry="1.4" fill="#1a0e08" opacity="0.3" />
+      <ellipse cx="-1" cy="-2" rx="4" ry="3" fill={snow ? '#cdd4e0' : '#4e6e36'} />
+      <ellipse cx="2" cy="-1.5" rx="3" ry="2.4" fill={snow ? '#d8dfea' : '#5e8040'} />
+      <ellipse cx="-2" cy="-3" rx="2" ry="1.8" fill={snow ? '#e8ecf3' : '#6e924a'} opacity="0.85" />
+      {snow && <ellipse cx="0" cy="-3.5" rx="3.8" ry="1" fill="#ffffff" opacity="0.85" />}
     </g>
   );
 }
@@ -1042,6 +1250,71 @@ function VillageMalvern({ glow, snow }: { glow: number; snow: boolean }) {
         <rect x="261" y="48" width="2.4" height="5" fill={snow ? '#9ea7b6' : '#5a4038'} />
       </g>
 
+      {/* ================================================
+          BACK ROW — smaller houses stepping up the hillside behind the church
+          ================================================ */}
+      <g opacity="0.95">
+        {/* back L1 (behind villa L1) */}
+        <rect x="-16" y="48" width="16" height="16" fill={wallStucco} />
+        <path d="M -18 48 L -8 38 L 2 48 Z" fill={roof('#5c2a1e')} />
+        {snow && <path d="M -18 48 L -8 38 L 2 48" fill="none" stroke="#fff" strokeWidth="2" strokeLinejoin="round" opacity="0.95" />}
+        <rect x="-13" y="54" width="2.6" height="3" fill="#fce4a8" opacity={glow * 0.85} />
+        <rect x="-6" y="54" width="2.6" height="3" fill="#fce4a8" opacity={glow * 0.85} />
+        <rect x="-1" y="36" width="2" height="4" fill={snow ? '#9ea7b6' : '#5a4038'} />
+
+        {/* back L2 (behind villa L2) */}
+        <rect x="8" y="44" width="14" height="14" fill={wallSand} />
+        <path d="M 6 44 L 15 34 L 24 44 Z" fill={roof('#7a3022')} />
+        {snow && <path d="M 6 44 L 15 34 L 24 44" fill="none" stroke="#fff" strokeWidth="2" strokeLinejoin="round" opacity="0.95" />}
+        <rect x="11" y="50" width="2.4" height="2.8" fill="#fce4a8" opacity={glow * 0.85} />
+        <rect x="17" y="50" width="2.4" height="2.8" fill="#fce4a8" opacity={glow * 0.85} />
+
+        {/* back R1 (behind villa R1) */}
+        <rect x="188" y="50" width="18" height="16" fill={wallCream} />
+        <path d="M 186 50 L 197 40 L 208 50 Z" fill={roof('#6e3022')} />
+        {snow && <path d="M 186 50 L 197 40 L 208 50" fill="none" stroke="#fff" strokeWidth="2" strokeLinejoin="round" opacity="0.95" />}
+        <rect x="193" y="56" width="2.5" height="3" fill="#fce4a8" opacity={glow * 0.85} />
+        <rect x="200" y="56" width="2.5" height="3" fill="#fce4a8" opacity={glow * 0.85} />
+
+        {/* back R2 (behind villa R2) */}
+        <rect x="216" y="44" width="14" height="14" fill={wallStucco} />
+        <path d="M 214 44 L 223 34 L 232 44 Z" fill={roof('#5e2a22')} />
+        {snow && <path d="M 214 44 L 223 34 L 232 44" fill="none" stroke="#fff" strokeWidth="2" strokeLinejoin="round" opacity="0.95" />}
+        <rect x="219" y="49" width="2.2" height="2.6" fill="#fce4a8" opacity={glow * 0.85} />
+        <rect x="225" y="49" width="2.2" height="2.6" fill="#fce4a8" opacity={glow * 0.85} />
+      </g>
+
+      {/* ================================================
+          FRONT ROW EXTENSIONS — more densely packed terraced houses
+          tucked between existing villas (stepped forward)
+          ================================================ */}
+      <g>
+        {/* tight terrace between L2 and church — very narrow */}
+        <rect x="44" y="62" width="10" height="28" fill={wallSand} />
+        <path d="M 42 62 L 49 54 L 56 62 Z" fill={roof('#622c20')} />
+        {snow && <path d="M 42 62 L 49 54 L 56 62" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinejoin="round" opacity="0.95" />}
+        <rect x="46" y="68" width="2" height="3" fill="#fce4a8" opacity={glow} />
+        <rect x="51" y="68" width="2" height="3" fill="#fce4a8" opacity={glow} />
+        <rect x="48" y="74" width="3" height="7" fill="#3a2418" />
+
+        {/* tight terrace between side aisle and R1 */}
+        <rect x="186" y="68" width="10" height="22" fill={wallCream} />
+        <path d="M 184 68 L 191 60 L 198 68 Z" fill={roof('#74301f')} />
+        {snow && <path d="M 184 68 L 191 60 L 198 68" fill="none" stroke="#fff" strokeWidth="1.8" strokeLinejoin="round" opacity="0.95" />}
+        <rect x="188" y="72" width="2" height="2.8" fill="#fce4a8" opacity={glow} />
+        <rect x="193" y="72" width="2" height="2.8" fill="#fce4a8" opacity={glow} />
+        <rect x="190" y="80" width="3" height="10" fill="#3a2418" />
+
+        {/* far-right cottage beyond R3 — caps the village on the right */}
+        <rect x="268" y="70" width="16" height="20" fill={wallStucco} />
+        <path d="M 266 70 L 276 60 L 286 70 Z" fill={roof('#7a3626')} />
+        {snow && <path d="M 266 70 L 276 60 L 286 70" fill="none" stroke="#fff" strokeWidth="1.9" strokeLinejoin="round" opacity="0.95" />}
+        <rect x="272" y="74" width="2.2" height="2.6" fill="#fce4a8" opacity={glow} />
+        <rect x="279" y="74" width="2.2" height="2.6" fill="#fce4a8" opacity={glow} />
+        <rect x="274" y="82" width="3" height="8" fill="#3a2418" />
+        <rect x="283" y="58" width="2.2" height="4.5" fill={snow ? '#9ea7b6' : '#5a4038'} />
+      </g>
+
       {/* chimney smoke (only when not snowing) */}
       {!snow && (
         <>
@@ -1051,6 +1324,8 @@ function VillageMalvern({ glow, snow }: { glow: number; snow: boolean }) {
             style={{ animation: 'steamRise2 8s ease-out infinite' }} />
           <path className="steam-wisp" d="M 218 42 q -2 -8 0 -12" stroke="#a8a098" strokeWidth="1.1" fill="none" strokeLinecap="round" opacity="0.55"
             style={{ animation: 'steamRise 9s ease-out infinite' }} />
+          <path className="steam-wisp" d="M 284 58 q 2 -8 0 -12" stroke="#a8a098" strokeWidth="1" fill="none" strokeLinecap="round" opacity="0.5"
+            style={{ animation: 'steamRise2 10s ease-out infinite' }} />
         </>
       )}
     </g>

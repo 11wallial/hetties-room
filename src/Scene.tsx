@@ -700,27 +700,33 @@ function MalvernHills({ seed, cottageGlow = 0.7, weather = 'sunshine' }: { seed:
         <rect x="456.5" y="83" width="5.6" height="1.6" fill={isSnow ? '#2a2a30' : '#2a2a30'} />
       </g>
 
-      {/* ========== NEAR HILL / FOOTHILLS (where the village sits) ========== */}
+      {/* ========== NEAR HILL / FOOTHILLS (where the village sits) — now
+          with rolling dips and rises so the mountain base isn't a flat line ========== */}
       <path
-        d="M 60 600 L 60 430 Q 160 418 260 412 Q 330 408 390 406 Q 470 402 540 398 Q 610 396 660 394 L 660 600 Z"
+        d="M 60 600 L 60 430 Q 110 414 170 422 Q 230 430 280 416 Q 330 402 378 408 Q 428 414 480 402 Q 530 388 582 396 Q 624 402 660 400 L 660 600 Z"
         fill={isSnow ? '#d8dfe8' : '#8b9e5c'}
       />
-      {/* foothill highlight */}
+      {/* foothill highlight — traces the new rolling profile */}
       {!isSnow && (
         <path
-          d="M 60 438 Q 200 422 360 416 Q 520 412 660 410"
+          d="M 60 438 Q 130 422 200 428 Q 280 434 350 418 Q 420 406 490 412 Q 560 418 660 410"
           fill="none" stroke="#b8c472" strokeWidth="14" opacity="0.3" strokeLinecap="round" strokeLinejoin="round"
         />
       )}
-
-      {/* ========== NEAR MEADOW — foreground strip, reduced so scene breathes ========== */}
+      {/* subtle darker crease where foothill meets mountain (reads as a valley dip) */}
       <path
-        d="M 60 600 L 60 494 Q 170 484 280 480 Q 380 478 460 476 Q 540 474 660 472 L 660 600 Z"
+        d="M 260 414 Q 340 406 420 412 Q 500 418 580 402"
+        fill="none" stroke={isSnow ? '#9aa6b8' : '#647248'} strokeWidth="1.2" opacity="0.4"
+      />
+
+      {/* ========== NEAR MEADOW — rolling front field ========== */}
+      <path
+        d="M 60 600 L 60 498 Q 130 486 200 494 Q 270 500 340 486 Q 410 474 480 482 Q 550 490 600 478 Q 640 472 660 476 L 660 600 Z"
         fill={isSnow ? '#e9eff6' : '#b2a96a'}
       />
       {!isSnow && (
         <path
-          d="M 60 508 Q 200 494 360 492 Q 520 490 660 488"
+          d="M 60 512 Q 150 498 260 506 Q 360 512 460 498 Q 560 488 660 494"
           fill="none" stroke="#d8c672" strokeWidth="20" opacity="0.3" strokeLinecap="round" strokeLinejoin="round"
         />
       )}
@@ -788,55 +794,62 @@ function MalvernHills({ seed, cottageGlow = 0.7, weather = 'sunshine' }: { seed:
       {/* ========== VILLAGE — Priory church + Victorian villas ========== */}
       <VillageMalvern glow={glow} snow={isSnow} />
 
-      {/* ========== WINDING PATH — single continuous road: foreground valley
-          through village edge, then climbing up the mountain slope.
-          Drawn as one path that tapers from wide (foreground) to thin (high altitude). ========== */}
+      {/* ========== WINDING PATH — single continuous road with aggressive
+          perspective taper (wide foreground → vanishing point near the peak).
+          Drawn in five stroke-width bands for a smooth receding effect. ========== */}
       <g>
-        {/* Path outline — wide at bottom, narrowing with altitude via tapering stroke groups */}
-        {/* Bottom/valley segment: foreground approach (wide) */}
-        <path
-          d="M 652 590 Q 580 560 510 536 Q 450 514 396 494 Q 356 478 332 458"
-          stroke={isSnow ? '#5a6276' : '#8e714c'}
-          strokeWidth="26" fill="none" strokeLinecap="round" opacity="0.95"
-        />
-        <path
-          d="M 652 590 Q 580 560 510 536 Q 450 514 396 494 Q 356 478 332 458"
-          stroke={isSnow ? '#96a0b2' : '#ba9862'}
-          strokeWidth="11" fill="none" strokeLinecap="round" opacity="0.95"
-        />
+        {/* Band 1: foreground — widest */}
+        <path d="M 652 590 Q 578 558 504 532"
+          stroke={isSnow ? '#5a6276' : '#8e714c'} strokeWidth="32" fill="none" strokeLinecap="round" opacity="0.95" />
+        <path d="M 652 590 Q 578 558 504 532"
+          stroke={isSnow ? '#9aa3b5' : '#ba9862'} strokeWidth="14" fill="none" strokeLinecap="round" opacity="0.95" />
 
-        {/* Bend/turn segment: where valley road turns up-mountain */}
-        <path
-          d="M 332 458 Q 320 430 340 404 Q 374 376 412 350"
-          stroke={isSnow ? '#5a6276' : '#8e714c'}
-          strokeWidth="22" fill="none" strokeLinecap="round" opacity="0.92"
-        />
-        <path
-          d="M 332 458 Q 320 430 340 404 Q 374 376 412 350"
-          stroke={isSnow ? '#96a0b2' : '#ba9862'}
-          strokeWidth="9.5" fill="none" strokeLinecap="round" opacity="0.95"
-        />
+        {/* Band 2: mid-valley */}
+        <path d="M 504 532 Q 440 504 382 484"
+          stroke={isSnow ? '#5a6276' : '#8e714c'} strokeWidth="24" fill="none" strokeLinecap="round" opacity="0.94" />
+        <path d="M 504 532 Q 440 504 382 484"
+          stroke={isSnow ? '#96a0b2' : '#ba9862'} strokeWidth="10" fill="none" strokeLinecap="round" opacity="0.95" />
 
-        {/* Upper mountain climb (narrows with altitude) */}
-        <path
-          d="M 412 350 Q 452 318 478 276 Q 498 232 506 188 Q 508 148 500 120"
-          stroke={isSnow ? '#5a6276' : '#8e714c'}
-          strokeWidth="16" fill="none" strokeLinecap="round" opacity="0.9"
-        />
-        <path
-          d="M 412 350 Q 452 318 478 276 Q 498 232 506 188 Q 508 148 500 120"
-          stroke={isSnow ? '#96a0b2' : '#ba9862'}
-          strokeWidth="6.5" fill="none" strokeLinecap="round" opacity="0.92"
-        />
+        {/* Band 3: bend — where road pivots toward the mountain */}
+        <path d="M 382 484 Q 344 462 330 436 Q 326 410 350 390"
+          stroke={isSnow ? '#5a6276' : '#8e714c'} strokeWidth="18" fill="none" strokeLinecap="round" opacity="0.93" />
+        <path d="M 382 484 Q 344 462 330 436 Q 326 410 350 390"
+          stroke={isSnow ? '#90998a' : '#ba9862'} strokeWidth="7.5" fill="none" strokeLinecap="round" opacity="0.92" />
+
+        {/* Band 4: mid-mountain climb */}
+        <path d="M 350 390 Q 396 358 438 322 Q 472 286 492 244"
+          stroke={isSnow ? '#5a6276' : '#8e714c'} strokeWidth="11" fill="none" strokeLinecap="round" opacity="0.88" />
+        <path d="M 350 390 Q 396 358 438 322 Q 472 286 492 244"
+          stroke={isSnow ? '#8a93a6' : '#ba9862'} strokeWidth="4.6" fill="none" strokeLinecap="round" opacity="0.9" />
+
+        {/* Band 5: upper mountain — narrowest (vanishing point) */}
+        <path d="M 492 244 Q 506 198 508 160 Q 506 134 498 114"
+          stroke={isSnow ? '#5a6276' : '#8e714c'} strokeWidth="6" fill="none" strokeLinecap="round" opacity="0.82" />
+        <path d="M 492 244 Q 506 198 508 160 Q 506 134 498 114"
+          stroke={isSnow ? '#84899c' : '#ba9862'} strokeWidth="2.4" fill="none" strokeLinecap="round" opacity="0.85" />
 
         {/* dashed centre-line tracks running the whole length */}
         <path
-          d="M 652 590 Q 580 560 510 536 Q 450 514 396 494 Q 356 478 332 458 Q 320 430 340 404 Q 374 376 412 350 Q 452 318 478 276 Q 498 232 506 188 Q 508 148 500 120"
+          d="M 652 590 Q 578 558 504 532 Q 440 504 382 484 Q 344 462 330 436 Q 326 410 350 390 Q 396 358 438 322 Q 472 286 492 244 Q 506 198 508 160 Q 506 134 498 114"
           stroke={isSnow ? '#c4ccda' : '#9c7a46'}
-          strokeWidth="0.9" fill="none" opacity="0.45"
-          strokeDasharray="6 8"
+          strokeWidth="0.8" fill="none" opacity="0.4"
+          strokeDasharray="5 7"
         />
       </g>
+
+      {/* ========== ATMOSPHERIC HAZE at the base of the mountain —
+          soft radial blur that softens the foothill/mountain seam on the
+          right side (where the road climbs) so the base isn't a hard line.
+          Excludes the left half where the village sits. ========== */}
+      <defs>
+        <radialGradient id="baseHaze" cx="0.55" cy="0.55" r="0.6">
+          <stop offset="0%"  stopColor={isSnow ? '#eef3fa' : '#dbe3c8'} stopOpacity={isSnow ? 0.55 : 0.42} />
+          <stop offset="60%" stopColor={isSnow ? '#eef3fa' : '#dbe3c8'} stopOpacity={isSnow ? 0.3  : 0.22} />
+          <stop offset="100%" stopColor={isSnow ? '#eef3fa' : '#dbe3c8'} stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <ellipse cx="470" cy="398" rx="220" ry="28"
+        fill="url(#baseHaze)" pointerEvents="none" />
 
       {/* ========== COTTAGES along the valley road + up the mountain climb ========== */}
       <Cottage x={548} y={526} s={1.0} snow={isSnow} glow={glow} roofColor="#7a3c2a" />

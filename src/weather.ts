@@ -99,11 +99,12 @@ const SUNSHINE: Anchor[] = [
   { h: 24, sky: ['#0d1530', '#1b1640', '#2a1d44'], sun: '#5a4a7a', sunY: 380, haze: '#3a2848', tint: '#09060f' },
 ];
 
-// Sunrise — warm peach/coral sky, sun low on horizon (peeking just above hills)
+// Sunrise / sunset — warm peach / coral / magenta sky, sun low on horizon.
+// Tint lands on the warm side so the scene glows golden-hour rather than going muddy.
 const SUNRISE_ANCHORS: Anchor[] = [
-  { h: 0,  sky: ['#2a1a3c', '#7e3e58', '#e89a6a'], sun: '#ffd09c', sunY: 280, haze: '#c47868', tint: '#1a0e1f' },
-  { h: 12, sky: ['#4a2a52', '#c86878', '#ffc890'], sun: '#fff0c0', sunY: 240, haze: '#d88878', tint: '#2a1620' },
-  { h: 24, sky: ['#2a1a3c', '#7e3e58', '#e89a6a'], sun: '#ffd09c', sunY: 280, haze: '#c47868', tint: '#1a0e1f' },
+  { h: 0,  sky: ['#3a1c4c', '#9a4464', '#ee9e6e'], sun: '#ffd09c', sunY: 320, haze: '#cc7a66', tint: '#d86a5a' },
+  { h: 12, sky: ['#6a3a78', '#e87486', '#ffbe82'], sun: '#fff2b4', sunY: 340, haze: '#ec9070', tint: '#f4a070' },
+  { h: 24, sky: ['#3a1c4c', '#9a4464', '#ee9e6e'], sun: '#ffd09c', sunY: 320, haze: '#cc7a66', tint: '#d86a5a' },
 ];
 
 const RAINY: Anchor[] = [
@@ -151,7 +152,7 @@ export function getPalette(weather: Weather, hour: number): WeatherPalette {
   // Weather-specific visibility & atmosphere tuning
   const tuning: Record<Weather, Pick<WeatherPalette, 'sunOpacity' | 'sunGlowOpacity' | 'hazeOpacity' | 'godRays' | 'hillFade' | 'cottageGlow'>> = {
     sunshine: { sunOpacity: 0.95, sunGlowOpacity: 1.0, hazeOpacity: 0.85, godRays: 0.16, hillFade: 0.0,  cottageGlow: 0.35 },
-    sunrise:  { sunOpacity: 1.0,  sunGlowOpacity: 1.0, hazeOpacity: 0.78, godRays: 0.22, hillFade: 0.18, cottageGlow: 0.5  },
+    sunrise:  { sunOpacity: 1.0,  sunGlowOpacity: 1.15, hazeOpacity: 0.62, godRays: 0.38, hillFade: 0.22, cottageGlow: 0.6  },
     rainy:    { sunOpacity: 0.0,  sunGlowOpacity: 0.12, hazeOpacity: 0.55, godRays: 0.0, hillFade: 0.45, cottageGlow: 0.95 },
     snowy:    { sunOpacity: 0.3,  sunGlowOpacity: 0.35, hazeOpacity: 0.42, godRays: 0.0, hillFade: 0.5,  cottageGlow: 0.85 },
     rainbow:  { sunOpacity: 0.85, sunGlowOpacity: 0.9, hazeOpacity: 0.52, godRays: 0.1,  hillFade: 0.28, cottageGlow: 0.55 },

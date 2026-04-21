@@ -17,7 +17,6 @@ export function Scene({ now, weather = 'sunshine', daysRemaining = 0, daysSince 
   const hourBucket = Math.floor(hour * 12) / 12;
   const palette = useMemo(() => getPalette(weather, hourBucket), [weather, hourBucket]);
   const isNight = palette.isNight;
-  const isEvening = hour >= 17 && hour <= 21;
   const seed = now.getDate();
 
   return (
@@ -130,18 +129,19 @@ export function Scene({ now, weather = 'sunshine', daysRemaining = 0, daysSince 
           <stop offset="100%" stopColor="#a08470" />
         </linearGradient>
 
-        {/* MURPHY — warmer chocolate coat (not pitch-black) so his face reads */}
-        <linearGradient id="murphyCoat" x1="0" y1="0" x2="0.7" y2="0.7">
-          <stop offset="0%" stopColor="#5a3a2a" />
-          <stop offset="50%" stopColor="#3a2418" />
-          <stop offset="100%" stopColor="#1a0e08" />
+        {/* MURPHY — solid glossy black sprocker coat. Deep black base, warm-brown tinted highs so he doesn't go flat against the window. */}
+        <linearGradient id="murphyCoat" x1="0" y1="0" x2="0.5" y2="1">
+          <stop offset="0%" stopColor="#2a1a12" />
+          <stop offset="55%" stopColor="#130a06" />
+          <stop offset="100%" stopColor="#070403" />
         </linearGradient>
-        <linearGradient id="murphyBelly" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#3a2418" />
-          <stop offset="100%" stopColor="#6a4a32" />
+        {/* Specular sheen — the gloss strokes on a shiny black coat. Warm brown, not grey. */}
+        <linearGradient id="murphySheen" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#8a6a4a" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="#3a281c" stopOpacity="0" />
         </linearGradient>
         <linearGradient id="murphyRim" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#ffd896" stopOpacity="0.85" />
+          <stop offset="0%" stopColor="#ffd896" stopOpacity="0.9" />
           <stop offset="100%" stopColor="#ffa060" stopOpacity="0" />
         </linearGradient>
         {/* Eyes — warm amber iris with dark pupil drawn over */}
@@ -150,15 +150,6 @@ export function Scene({ now, weather = 'sunshine', daysRemaining = 0, daysSince 
           <stop offset="60%" stopColor="#a86a2a" />
           <stop offset="100%" stopColor="#3a1a08" />
         </radialGradient>
-        {/* Tan markings — eyebrow spots, muzzle underside, paws — for a rottweiler-ish warmth */}
-        <linearGradient id="murphyTan" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#c9843a" />
-          <stop offset="100%" stopColor="#7a4a1c" />
-        </linearGradient>
-        <linearGradient id="murphyCream" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#fff4d8" />
-          <stop offset="100%" stopColor="#e6d4a8" />
-        </linearGradient>
 
         {/* DESK */}
         <linearGradient id="deskGrad" x1="0" y1="0" x2="0" y2="1">
@@ -359,8 +350,8 @@ export function Scene({ now, weather = 'sunshine', daysRemaining = 0, daysSince 
       <WindowSill />
 
       {/* ============= MURPHY ON SILL ============= */}
-      {/* Murphy temporarily hidden while tuning the scene — uncomment to restore */}
-      {false && <MurphyOnSill alert={isEvening} onTap={onTapMurphy} />}
+      <MurphyOnSill onTap={onTapMurphy} />
+
 
       {/* ============= CURTAINS ============= */}
       <Curtains />
@@ -1707,150 +1698,158 @@ function WindowSill() {
   );
 }
 
-function MurphyOnSill({ alert: _alert, onTap }: { alert: boolean; onTap?: () => void }) {
-  // Murphy sits upright on the LEFT half of the sill, in 3/4 view facing slightly right (toward viewer / Hettie below).
-  // Sill top is at y=582. Murphy's bum on sill at y=580, body extends up to y=440, head at y=440-510.
+function MurphyOnSill({ onTap }: { onTap?: () => void }) {
+  // Murphy = black sprocker (cocker spaniel × lab). Front-facing on the LEFT of the sill so his big ears + muzzle read cleanly at sprite scale.
+  // Sill top y=582. Paws on sill y≈580, chest y=520-580, skull y=440-500, ears drop to y≈560.
   return (
     <g
       onClick={onTap}
-      style={{ cursor: onTap ? 'pointer' : 'default', transformOrigin: '200px 540px', animation: 'breathe 5s ease-in-out infinite' }}
+      style={{ cursor: onTap ? 'pointer' : 'default', transformOrigin: '210px 540px', animation: 'breathe 5s ease-in-out infinite' }}
       tabIndex={onTap ? 0 : undefined}
       role={onTap ? 'button' : undefined}
       aria-label={onTap ? 'pet Murphy' : undefined}
       onKeyDown={(e) => { if (onTap && (e.key === 'Enter' || e.key === ' ')) onTap(); }}
     >
-      {/* TAIL — peeking from his right side, curled up */}
-      <g style={{ transformOrigin: '290px 580px', animation: 'tailSwishGentle 4.5s ease-in-out infinite' }}>
-        <path d="M 270 588 Q 296 568 310 540 Q 314 530 304 530 Q 286 552 268 580 Q 264 586 270 588 Z" fill="url(#murphyCoat)" />
-        <path d="M 296 552 Q 302 548 308 540" stroke="#0a0605" strokeWidth="0.7" fill="none" opacity="0.6" />
+      {/* TAIL — peeking from behind on his right side */}
+      <g style={{ transformOrigin: '268px 558px', animation: 'tailSwishGentle 4.5s ease-in-out infinite' }}>
+        <path d="M 258 558 Q 278 546 290 522 Q 294 514 286 514 Q 272 530 256 556 Q 254 562 258 558 Z" fill="url(#murphyCoat)" />
+        <path d="M 268 540 Q 278 530 286 518" stroke="url(#murphySheen)" strokeWidth="1.2" fill="none" opacity="0.5" strokeLinecap="round" />
       </g>
 
-      {/* BACK / RUMP sitting on sill */}
-      <ellipse cx="240" cy="568" rx="56" ry="20" fill="url(#murphyCoat)" />
+      {/* CHEST/BODY — narrower than before; clear V-taper from shoulders to paws */}
+      <path
+        d="M 188 510
+           Q 178 538 186 578
+           L 240 578
+           Q 250 538 240 510
+           Q 228 498 212 498
+           Q 196 500 188 510 Z"
+        fill="url(#murphyCoat)"
+      />
+      {/* chest midline sheen — the glossy V */}
+      <path d="M 214 510 Q 212 540 212 574" stroke="url(#murphySheen)" strokeWidth="2.4" fill="none" opacity="0.4" strokeLinecap="round" />
+      <path d="M 214 512 Q 213 540 213 572" stroke="url(#murphySheen)" strokeWidth="0.9" fill="none" opacity="0.4" strokeLinecap="round" />
+      {/* shoulder sheen catches */}
+      <path d="M 192 512 Q 196 506 208 502" stroke="url(#murphySheen)" strokeWidth="1.4" fill="none" opacity="0.5" strokeLinecap="round" />
+      <path d="M 232 512 Q 228 506 218 502" stroke="url(#murphySheen)" strokeWidth="1.4" fill="none" opacity="0.5" strokeLinecap="round" />
 
-      {/* SITTING BODY — torso rising from rump up to neck */}
-      <path d="M 184 564 Q 156 540 156 506 Q 156 472 178 460 Q 218 452 240 466 Q 264 478 268 510 Q 268 540 252 562 Q 220 580 184 564 Z" fill="url(#murphyCoat)" />
-      {/* belly shading */}
-      <path d="M 188 524 Q 210 510 240 516 Q 258 524 256 548 Q 232 562 200 558 Q 184 548 188 524 Z" fill="url(#murphyBelly)" opacity="0.85" />
-
-      {/* HEAD — slightly cocked to viewer's right */}
-      <g style={{ transformOrigin: '212px 478px', animation: 'headTilt 12s ease-in-out infinite' }}>
-        {/* skull — a touch smaller so body reads */}
-        <ellipse cx="212" cy="472" rx="40" ry="36" fill="url(#murphyCoat)" />
-        {/* lighter crown highlight */}
-        <ellipse cx="216" cy="452" rx="20" ry="9" fill="#6a4430" opacity="0.65" />
-
-        {/* TAN EYEBROW SPOTS — rottweiler-style warmth, reads against dark coat */}
-        <ellipse cx="196" cy="460" rx="4.5" ry="2.8" fill="url(#murphyTan)" opacity="0.85" transform="rotate(-12 196 460)" />
-        <ellipse cx="234" cy="458" rx="5" ry="3" fill="url(#murphyTan)" opacity="0.9" transform="rotate(8 234 458)" />
-
-        {/* MUZZLE — pointing forward-right, with tan underside for contrast */}
-        <path d="M 222 488 Q 256 488 270 502 Q 270 518 256 522 Q 232 522 218 514 Q 212 502 222 488 Z" fill="#2a1810" />
-        {/* warm tan underside — lifts the face out of the shadow */}
-        <path d="M 224 506 Q 248 512 264 510 Q 262 520 250 522 Q 230 522 220 516 Q 218 510 224 506 Z" fill="url(#murphyTan)" opacity="0.6" />
-        {/* muzzle crease */}
-        <path d="M 232 514 Q 252 520 268 514" stroke="#0a0605" strokeWidth="0.8" fill="none" opacity="0.55" />
-        {/* nose — glossy */}
-        <ellipse cx="266" cy="500" rx="7" ry="5.5" fill="#1a0e08" />
-        <ellipse cx="264" cy="498" rx="2.4" ry="1.4" fill="#8a6a4a" opacity="0.75" />
-        {/* mouth */}
-        <path d="M 248 514 Q 256 522 264 516" stroke="#0a0605" strokeWidth="1.3" fill="none" strokeLinecap="round" opacity="0.75" />
-        {/* tongue */}
-        <ellipse cx="256" cy="520" rx="3" ry="1.6" fill="#d46a5a" opacity="0.75" />
-
-        {/* EYES — bright amber iris, visible against dark coat */}
-        <g style={{ transformOrigin: '218px 470px', animation: 'eyeBreathDog 11s ease-in-out infinite' }}>
-          {/* left eye (further from viewer, smaller) */}
-          <g>
-            <ellipse cx="200" cy="470" rx="6" ry="4.5" fill="#fff4d8" opacity="0.55" />
-            <ellipse cx="200" cy="471" rx="4.6" ry="3.7" fill="url(#murphyEye)" />
-            <circle cx="200" cy="471" r="1.8" fill="#0a0605" />
-            <circle cx="201" cy="469.5" r="1" fill="#fff8e0" />
-            <circle cx="199.5" cy="472" r="0.5" fill="#fff" opacity="0.75" />
-          </g>
-          {/* right eye (closer to viewer, larger) */}
-          <g>
-            <ellipse cx="234" cy="468" rx="7" ry="5" fill="#fff4d8" opacity="0.55" />
-            <ellipse cx="234" cy="469" rx="5.5" ry="4.1" fill="url(#murphyEye)" />
-            <circle cx="234" cy="469" r="2.2" fill="#0a0605" />
-            <circle cx="235.5" cy="467" r="1.3" fill="#fff8e0" />
-            <circle cx="233" cy="470.5" r="0.6" fill="#fff" opacity="0.8" />
-          </g>
-        </g>
-
-        {/* eyebrows — subtle arches above tan spots */}
-        <path d="M 190 458 Q 200 454 210 458" stroke="#1a0e08" strokeWidth="1" fill="none" opacity="0.5" />
-        <path d="M 224 456 Q 234 452 244 456" stroke="#1a0e08" strokeWidth="1.1" fill="none" opacity="0.55" />
-
-        {/* whiskers */}
-        <path d="M 220 504 L 200 500 M 220 508 L 198 510 M 222 512 L 200 516" stroke="#8a6a4a" strokeWidth="0.4" opacity="0.7" />
-
-        {/* BIG FLOPPY EARS — hanging down beside face */}
-        <g style={{ transformOrigin: '170px 446px', animation: 'earSway 6s ease-in-out infinite' }}>
-          <path
-            d="M 168 444
-               Q 138 478 132 540
-               Q 130 562 154 568
-               Q 184 562 196 530
-               Q 202 488 196 444 Z"
-            fill="url(#murphyCoat)"
-          />
-          <path d="M 144 552 Q 138 562 148 572 M 158 558 Q 152 568 162 574 M 174 552 Q 170 562 174 568" stroke="#0a0605" strokeWidth="0.8" fill="none" opacity="0.55" />
-          <path d="M 168 462 Q 152 502 152 548" stroke="#0a0605" strokeWidth="1" fill="none" opacity="0.5" />
-          <path d="M 180 462 Q 170 500 168 540" stroke="#3a2e26" strokeWidth="0.7" fill="none" opacity="0.6" />
-        </g>
-        <g style={{ transformOrigin: '252px 446px', animation: 'earSwayB 7s ease-in-out infinite' }}>
-          <path
-            d="M 250 444
-               Q 280 478 286 530
-               Q 290 552 270 558
-               Q 252 552 244 528
-               Q 240 488 246 444 Z"
-            fill="url(#murphyCoat)"
-          />
-          <path d="M 256 462 Q 268 500 270 538" stroke="#0a0605" strokeWidth="0.8" fill="none" opacity="0.5" />
-        </g>
-      </g>
-
-      {/* WHITE/CREAM CHEST — visible bib */}
-      <path d="M 200 526 Q 220 520 240 526 Q 248 546 232 560 Q 214 564 198 556 Q 190 540 200 526 Z" fill="url(#murphyCream)" opacity="0.95" />
-      <path d="M 208 540 Q 222 540 232 542" stroke="#c8b090" strokeWidth="0.5" fill="none" opacity="0.6" />
-
-      {/* FRONT PAWS — resting on sill, with visible toes and cream pads */}
+      {/* FRONT PAWS on sill */}
       <g>
-        {/* left paw */}
-        <ellipse cx="206" cy="580" rx="14" ry="7.5" fill="url(#murphyCoat)" />
-        <ellipse cx="208" cy="584" rx="9" ry="3.2" fill="url(#murphyCream)" opacity="0.95" />
-        <path d="M 200 576 Q 199 584 202 588 M 206 574 Q 205 584 208 588 M 212 576 Q 212 584 214 588" stroke="#2a1810" strokeWidth="0.7" fill="none" opacity="0.7" />
-        {/* tan accent on the toes */}
-        <ellipse cx="206" cy="584" rx="5" ry="1.2" fill="url(#murphyTan)" opacity="0.35" />
-
-        {/* right paw */}
-        <ellipse cx="244" cy="580" rx="14" ry="7.5" fill="url(#murphyCoat)" />
-        <ellipse cx="248" cy="584" rx="9" ry="3.2" fill="url(#murphyCream)" opacity="0.95" />
-        <path d="M 238 576 Q 237 584 240 588 M 244 574 Q 244 584 246 588 M 250 576 Q 250 584 252 588" stroke="#2a1810" strokeWidth="0.7" fill="none" opacity="0.7" />
-        <ellipse cx="246" cy="584" rx="5" ry="1.2" fill="url(#murphyTan)" opacity="0.35" />
+        <ellipse cx="196" cy="581" rx="12" ry="5" fill="url(#murphyCoat)" />
+        <ellipse cx="230" cy="581" rx="12" ry="5" fill="url(#murphyCoat)" />
+        {/* toe seams */}
+        <path d="M 191 578 Q 191 584 193 586 M 196 577 Q 196 584 198 586 M 201 578 Q 201 584 203 586" stroke="#000" strokeWidth="0.55" fill="none" opacity="0.6" />
+        <path d="M 225 578 Q 225 584 227 586 M 230 577 Q 230 584 232 586 M 235 578 Q 235 584 237 586" stroke="#000" strokeWidth="0.55" fill="none" opacity="0.6" />
       </g>
 
-      {/* COLLAR with round brass name tag */}
-      <path d="M 188 522 Q 220 532 250 522" stroke="#c75a4a" strokeWidth="3.4" fill="none" />
-      <path d="M 188 522 Q 220 532 250 522" stroke="#a84030" strokeWidth="1.2" fill="none" opacity="0.5" />
-      {/* small brass disc */}
-      <g transform="translate(220 540)">
-        <line x1="0" y1="-8" x2="0" y2="-4" stroke="#a87030" strokeWidth="0.6" />
-        <circle r="5" fill="#fcd092" stroke="#a87030" strokeWidth="0.5" />
-        <circle r="5" fill="url(#murphyRim)" opacity="0.4" />
-        <text x="0" y="1.6" textAnchor="middle" fontSize="4.5" fill="#5a3424" fontFamily="'Cormorant Garamond', Georgia, serif" fontWeight="500">M</text>
+      {/* COLLAR with silver tag */}
+      <path d="M 194 512 Q 214 522 232 512" stroke="#3a2418" strokeWidth="3.6" fill="none" strokeLinecap="round" />
+      <path d="M 194 512 Q 214 522 232 512" stroke="#5a3a24" strokeWidth="0.9" fill="none" opacity="0.55" strokeLinecap="round" />
+      <g transform="translate(214 528)">
+        <line x1="0" y1="-8" x2="0" y2="-4" stroke="#8a8a92" strokeWidth="0.6" />
+        <circle r="4.4" fill="#e0e0e6" stroke="#7a7a82" strokeWidth="0.5" />
+        <circle r="4.4" fill="url(#murphyRim)" opacity="0.35" />
+        <circle cx="-1.3" cy="-1.5" r="1.2" fill="#fff" opacity="0.85" />
       </g>
 
-      {/* RIM LIGHT from sky behind */}
-      <path d="M 252 446 Q 286 480 290 540" stroke="url(#murphyRim)" strokeWidth="6" fill="none" opacity="0.85" />
-      <path d="M 270 560 Q 280 570 290 580" stroke="url(#murphyRim)" strokeWidth="3" fill="none" opacity="0.55" />
-      <path d="M 232 444 Q 250 440 264 444" stroke="#fff4d8" strokeWidth="1.4" fill="none" opacity="0.55" strokeLinecap="round" />
+      {/* LEFT EAR (viewer's left) — drawn BEFORE head so skull overlaps the root */}
+      <g style={{ transformOrigin: '176px 460px', animation: 'earSway 7s ease-in-out infinite' }}>
+        <path
+          d="M 176 452
+             Q 148 470 138 506
+             Q 134 540 150 556
+             Q 170 556 184 538
+             Q 192 504 194 462 Z"
+          fill="url(#murphyCoat)"
+        />
+        {/* silky sheen down the front face of the ear */}
+        <path d="M 170 470 Q 156 500 150 536" stroke="url(#murphySheen)" strokeWidth="2" fill="none" opacity="0.5" strokeLinecap="round" />
+        <path d="M 182 474 Q 170 504 166 534" stroke="url(#murphySheen)" strokeWidth="0.8" fill="none" opacity="0.35" strokeLinecap="round" />
+      </g>
+
+      {/* RIGHT EAR (viewer's right) — mirror */}
+      <g style={{ transformOrigin: '248px 460px', animation: 'earSwayB 6s ease-in-out infinite' }}>
+        <path
+          d="M 248 452
+             Q 276 470 286 506
+             Q 290 540 274 556
+             Q 254 556 240 538
+             Q 232 504 230 462 Z"
+          fill="url(#murphyCoat)"
+        />
+        <path d="M 254 470 Q 268 500 274 536" stroke="url(#murphySheen)" strokeWidth="2" fill="none" opacity="0.55" strokeLinecap="round" />
+        <path d="M 242 474 Q 254 504 258 534" stroke="url(#murphySheen)" strokeWidth="0.8" fill="none" opacity="0.35" strokeLinecap="round" />
+      </g>
+
+      {/* HEAD GROUP — front-facing, slight tilt */}
+      <g style={{ transformOrigin: '212px 474px', animation: 'headTilt 12s ease-in-out infinite' }}>
+        {/* skull — rounded dome, narrower than the body */}
+        <path
+          d="M 184 466
+             Q 184 440 212 436
+             Q 240 440 240 466
+             Q 240 490 228 500
+             Q 212 506 196 500
+             Q 184 490 184 466 Z"
+          fill="url(#murphyCoat)"
+        />
+        {/* crown sheen — the glossy top of the head */}
+        <path d="M 198 442 Q 212 436 226 442" stroke="url(#murphySheen)" strokeWidth="3" fill="none" opacity="0.55" strokeLinecap="round" />
+        <path d="M 194 450 Q 212 444 230 450" stroke="url(#murphySheen)" strokeWidth="1.1" fill="none" opacity="0.4" strokeLinecap="round" />
+        {/* side-of-head highlights — tell the ear from the skull */}
+        <path d="M 190 470 Q 190 484 196 494" stroke="url(#murphySheen)" strokeWidth="1.3" fill="none" opacity="0.45" strokeLinecap="round" />
+        <path d="M 234 470 Q 234 484 228 494" stroke="url(#murphySheen)" strokeWidth="1.3" fill="none" opacity="0.45" strokeLinecap="round" />
+
+        {/* MUZZLE — short blocky front-facing snout */}
+        <path
+          d="M 200 492
+             Q 200 508 212 512
+             Q 224 512 224 500
+             Q 224 492 220 488
+             Q 212 486 204 488
+             Q 200 490 200 492 Z"
+          fill="url(#murphyCoat)"
+        />
+        {/* muzzle bridge highlight — warm gloss down the nose bridge */}
+        <path d="M 212 492 Q 212 500 212 508" stroke="url(#murphySheen)" strokeWidth="1.4" fill="none" opacity="0.5" strokeLinecap="round" />
+
+        {/* NOSE — warm dark brown with specular */}
+        <ellipse cx="212" cy="500" rx="5.2" ry="3.6" fill="#2a1a12" />
+        <ellipse cx="211" cy="499" rx="1.6" ry="1" fill="#8a6a4a" opacity="0.85" />
+        {/* nostrils */}
+        <ellipse cx="210" cy="501.4" rx="0.8" ry="0.6" fill="#000" opacity="0.7" />
+        <ellipse cx="214" cy="501.4" rx="0.8" ry="0.6" fill="#000" opacity="0.7" />
+
+        {/* MOUTH — tiny w for jowls */}
+        <path d="M 212 504 Q 212 510 208 512 Q 212 514 216 512 Q 212 510 212 504" stroke="#000" strokeWidth="0.8" fill="none" strokeLinecap="round" opacity="0.7" />
+
+        {/* EYES — wide-set, warm amber. Dark lid tucked over the top half of the iris so they don't glow. */}
+        <g style={{ transformOrigin: '212px 472px', animation: 'eyeBreathDog 11s ease-in-out infinite' }}>
+          {/* left eye */}
+          <g>
+            <ellipse cx="198" cy="475" rx="4.8" ry="3.4" fill="url(#murphyEye)" />
+            {/* upper lid shadow — tucks the top of the iris */}
+            <path d="M 193 473 Q 198 470.5 203 473 Q 202 475 198 475 Q 194 475 193 473 Z" fill="#050302" opacity="0.95" />
+            <circle cx="198" cy="475.6" r="1.5" fill="#050302" />
+            <circle cx="199.1" cy="474.4" r="0.7" fill="#fff4d8" opacity="0.95" />
+          </g>
+          {/* right eye */}
+          <g>
+            <ellipse cx="226" cy="475" rx="4.8" ry="3.4" fill="url(#murphyEye)" />
+            <path d="M 221 473 Q 226 470.5 231 473 Q 230 475 226 475 Q 222 475 221 473 Z" fill="#050302" opacity="0.95" />
+            <circle cx="226" cy="475.6" r="1.5" fill="#050302" />
+            <circle cx="227.1" cy="474.4" r="0.7" fill="#fff4d8" opacity="0.95" />
+          </g>
+        </g>
+      </g>
+
+      {/* RIM LIGHT — warm backlight from the window along his outer silhouette only (no halo over the top of the head) */}
+      <path d="M 286 476 Q 292 502 290 528" stroke="url(#murphyRim)" strokeWidth="4" fill="none" opacity="0.7" strokeLinecap="round" />
+      <path d="M 140 476 Q 134 502 138 528" stroke="url(#murphyRim)" strokeWidth="3.2" fill="none" opacity="0.55" strokeLinecap="round" />
 
       {/* tiny pulsing "tap me" heart hint above Murphy */}
       <g style={{ animation: 'pulseHeart 6s ease-in-out infinite' }} pointerEvents="none">
-        <text x="320" y="428" fontSize="14" fill="#c75a4a" fontFamily="serif" opacity="0.6">♥</text>
+        <text x="300" y="424" fontSize="14" fill="#c75a4a" fontFamily="serif" opacity="0.6">♥</text>
       </g>
     </g>
   );

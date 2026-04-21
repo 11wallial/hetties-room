@@ -359,7 +359,8 @@ export function Scene({ now, weather = 'sunshine', daysRemaining = 0, daysSince 
       <WindowSill />
 
       {/* ============= MURPHY ON SILL ============= */}
-      <MurphyOnSill alert={isEvening} onTap={onTapMurphy} />
+      {/* Murphy temporarily hidden while tuning the scene — uncomment to restore */}
+      {false && <MurphyOnSill alert={isEvening} onTap={onTapMurphy} />}
 
       {/* ============= CURTAINS ============= */}
       <Curtains />
@@ -540,165 +541,184 @@ function MalvernHills({ seed, cottageGlow = 0.7, weather = 'sunshine' }: { seed:
   const glow = Math.min(1, 0.45 + cottageGlow * 0.6);
   return (
     <g transform="translate(0 30)">
-      {/* ========== DISTANT FAR RIDGE — hazy sweep with prominent peak ========== */}
+      {/* ========== DISTANT BACKGROUND RIDGE (the second peak poking up behind) ========== */}
       <path
-        d="M 60 600 L 60 360 Q 140 336 220 322 Q 290 308 350 296 Q 400 282 440 270 Q 470 254 490 232 L 510 218 Q 530 234 560 266 Q 600 288 660 302 L 660 600 Z"
-        fill={isSnow ? '#b8c2d2' : '#7c8da0'}
-        opacity={isSnow ? 0.95 : 0.78}
+        d="M 60 600 L 60 270 Q 160 240 260 220 Q 330 208 380 192 Q 420 178 450 160 Q 478 145 498 135 Q 525 148 552 180 Q 600 230 660 258 L 660 600 Z"
+        fill={isSnow ? '#b8c2d2' : '#7d8ea2'}
+        opacity={isSnow ? 0.88 : 0.72}
       />
       {isSnow && (
         <path
-          d="M 60 360 Q 140 336 220 322 Q 290 308 350 296 Q 400 282 440 270 Q 470 254 490 232 L 510 218 Q 530 234 560 266 Q 600 288 660 302"
-          fill="none" stroke="#f4f7fa" strokeWidth="14" opacity="0.92" strokeLinejoin="round" strokeLinecap="round"
-        />
-      )}
-      {!isSnow && (
-        <path
-          d="M 60 360 Q 140 336 220 322 Q 290 308 350 296 Q 400 282 440 270 Q 470 254 490 232 L 510 218 Q 530 234 560 266 Q 600 288 660 302"
-          fill="none" stroke="#bcced9" strokeWidth="1.8" opacity="0.55" strokeLinejoin="round" strokeLinecap="round"
+          d="M 60 270 Q 160 240 260 220 Q 330 208 380 192 Q 420 178 450 160 Q 478 145 498 135 Q 525 148 552 180 Q 600 230 660 258"
+          fill="none" stroke="#f4f7fa" strokeWidth="11" opacity="0.85" strokeLinejoin="round" strokeLinecap="round"
         />
       )}
 
-      {/* ========== MAIN MOUNTAIN — dominant peak on right ========== */}
+      {/* ========== MAIN MOUNTAIN — the dominant Worcestershire Beacon peak ========== */}
       <path
-        d="M 60 600 L 60 428 Q 150 406 230 392 Q 300 380 360 364 Q 410 348 450 322 Q 475 296 495 268 Q 514 252 530 272 Q 558 308 592 338 Q 622 354 660 364 L 660 600 Z"
-        fill={isSnow ? '#cbd5e3' : '#7e9369'}
+        d="M 60 600 L 60 410 Q 130 378 210 342 Q 280 306 340 264 Q 380 222 412 180 Q 432 138 454 110 Q 474 92 490 108 Q 508 148 524 198 Q 548 258 580 308 Q 620 338 660 356 L 660 600 Z"
+        fill={isSnow ? '#c8d3e1' : '#7a9166'}
       />
-      {/* warm highlight band catching sun */}
+
+      {/* warm golden highlight band catching sun (non-snow) */}
       {!isSnow && (
         <path
-          d="M 80 426 Q 170 400 250 382 Q 320 364 380 350 Q 425 334 460 310 Q 482 290 498 270"
-          fill="none" stroke="#c8d684" strokeWidth="20" opacity="0.3" strokeLinejoin="round" strokeLinecap="round"
+          d="M 100 402 Q 210 358 320 300 Q 380 260 420 220 Q 448 170 470 125"
+          fill="none" stroke="#d4dc8e" strokeWidth="24" opacity="0.28" strokeLinejoin="round" strokeLinecap="round"
         />
       )}
-      {/* snow blanket on main mountain */}
+
+      {/* snow blanket along main ridgeline */}
       {isSnow && (
         <path
-          d="M 60 428 Q 150 406 230 392 Q 300 380 360 364 Q 410 348 450 322 Q 475 296 495 268 Q 514 252 530 272 Q 558 308 592 338 Q 622 354 660 364"
-          fill="none" stroke="#ffffff" strokeWidth="12" opacity="0.9" strokeLinejoin="round" strokeLinecap="round"
+          d="M 60 410 Q 130 378 210 342 Q 280 306 340 264 Q 380 222 412 180 Q 432 138 454 110 Q 474 92 490 108 Q 508 148 524 198 Q 548 258 580 308 Q 620 338 660 356"
+          fill="none" stroke="#ffffff" strokeWidth="14" opacity="0.92" strokeLinejoin="round" strokeLinecap="round"
         />
       )}
-      {/* ridge-line rock shading on mountain */}
-      <g opacity={isSnow ? 0.25 : 0.38}>
-        <path d="M 495 268 Q 506 300 512 338" stroke={isSnow ? '#6a7282' : '#4a5a38'} strokeWidth="1.2" fill="none" opacity="0.7" />
-        <path d="M 460 320 Q 472 360 470 400" stroke={isSnow ? '#6a7282' : '#4a5a38'} strokeWidth="0.9" fill="none" opacity="0.55" />
+
+      {/* ========== TERRACED CONTOUR PATHS across the hillside (iconic Malvern walks) ========== */}
+      {!isSnow ? (
+        <g>
+          <path d="M 80 408 Q 180 372 300 320 Q 370 282 420 240" stroke="#b4c270" strokeWidth="2.4" fill="none" strokeLinecap="round" opacity="0.55" />
+          <path d="M 80 408 Q 180 372 300 320 Q 370 282 420 240" stroke="#6a7a3a" strokeWidth="0.5" fill="none" opacity="0.55" />
+          <path d="M 120 440 Q 230 404 340 370 Q 408 348 456 322" stroke="#b4c270" strokeWidth="1.8" fill="none" strokeLinecap="round" opacity="0.5" />
+          <path d="M 462 172 Q 500 230 530 280 Q 560 320 590 348" stroke="#b4c270" strokeWidth="1.4" fill="none" strokeLinecap="round" opacity="0.45" />
+        </g>
+      ) : (
+        <g>
+          <path d="M 80 408 Q 180 372 300 320 Q 370 282 420 240" stroke="#ffffff" strokeWidth="1.6" fill="none" strokeLinecap="round" opacity="0.6" />
+          <path d="M 120 440 Q 230 404 340 370 Q 408 348 456 322" stroke="#ffffff" strokeWidth="1.2" fill="none" strokeLinecap="round" opacity="0.45" />
+        </g>
+      )}
+
+      {/* ridge-line rock shading */}
+      <g opacity={isSnow ? 0.25 : 0.35}>
+        <path d="M 470 120 Q 490 170 502 226" stroke={isSnow ? '#6a7282' : '#4a5a38'} strokeWidth="1.2" fill="none" opacity="0.65" />
+        <path d="M 440 200 Q 462 252 468 310" stroke={isSnow ? '#6a7282' : '#4a5a38'} strokeWidth="0.9" fill="none" opacity="0.55" />
       </g>
 
-      {/* ========== NEAR MEADOW / FOREGROUND HILLSIDE ========== */}
+      {/* ========== MONUMENT / OBELISK on the distant secondary peak (iconic Malvern flavour) ========== */}
+      <g opacity={isSnow ? 0.82 : 0.9}>
+        <rect x="495" y="122" width="2.6" height="13" fill={isSnow ? '#f4f7fa' : '#3a3a42'} />
+        <path d="M 493.8 122 L 496.3 116 L 498.8 122 Z" fill={isSnow ? '#f4f7fa' : '#3a3a42'} />
+        <rect x="493.5" y="135" width="5.6" height="1.6" fill={isSnow ? '#d4dae2' : '#2a2a30'} />
+      </g>
+
+      {/* ========== NEAR HILL / FOOTHILLS (where the village sits) ========== */}
       <path
-        d="M 60 600 L 60 472 Q 170 454 280 448 Q 380 444 460 436 Q 540 430 660 424 L 660 600 Z"
-        fill={isSnow ? '#e4eaf2' : '#b1a96a'}
+        d="M 60 600 L 60 430 Q 160 418 260 412 Q 330 408 390 406 Q 470 402 540 398 Q 610 396 660 394 L 660 600 Z"
+        fill={isSnow ? '#d8dfe8' : '#8b9e5c'}
       />
-      {/* warm grass highlight band */}
+      {/* foothill highlight */}
       {!isSnow && (
         <path
-          d="M 60 482 Q 200 460 360 452 Q 520 444 660 438"
-          fill="none" stroke="#d8c672" strokeWidth="28" opacity="0.32" strokeLinecap="round" strokeLinejoin="round"
-        />
-      )}
-      {/* hedgerow divider (non-snow) */}
-      {!isSnow && (
-        <path
-          d="M 60 514 Q 200 502 360 504 Q 520 506 660 502"
-          fill="none" stroke="#6a7a3a" strokeWidth="1.5" opacity="0.45"
+          d="M 60 438 Q 200 422 360 416 Q 520 412 660 410"
+          fill="none" stroke="#b8c472" strokeWidth="14" opacity="0.3" strokeLinecap="round" strokeLinejoin="round"
         />
       )}
 
-      {/* ========== DARK FIR TREES on right mountain slope ========== */}
+      {/* ========== NEAR MEADOW — foreground strip, reduced so scene breathes ========== */}
+      <path
+        d="M 60 600 L 60 494 Q 170 484 280 480 Q 380 478 460 476 Q 540 474 660 472 L 660 600 Z"
+        fill={isSnow ? '#e9eff6' : '#b2a96a'}
+      />
+      {!isSnow && (
+        <path
+          d="M 60 508 Q 200 494 360 492 Q 520 490 660 488"
+          fill="none" stroke="#d8c672" strokeWidth="20" opacity="0.3" strokeLinecap="round" strokeLinejoin="round"
+        />
+      )}
+
+      {/* ========== DARK FIR TREES on the secondary-peak slopes ========== */}
       <g>
         {[
-          { x: 446, y: 328, s: 0.95 }, { x: 466, y: 342, s: 0.82 },
-          { x: 496, y: 308, s: 0.9 },  { x: 518, y: 318, s: 0.78 },
-          { x: 540, y: 340, s: 0.92 }, { x: 560, y: 354, s: 0.82 },
-          { x: 578, y: 362, s: 0.78 }, { x: 600, y: 370, s: 0.88 },
-          { x: 622, y: 376, s: 0.78 }, { x: 640, y: 380, s: 0.7 },
-          { x: 512, y: 374, s: 0.78 }, { x: 534, y: 386, s: 0.73 },
-          { x: 558, y: 398, s: 0.78 }, { x: 582, y: 406, s: 0.7 },
+          { x: 444, y: 258, s: 0.8 },  { x: 464, y: 276, s: 0.72 },
+          { x: 484, y: 232, s: 0.82 }, { x: 506, y: 248, s: 0.78 },
+          { x: 528, y: 282, s: 0.88 }, { x: 550, y: 302, s: 0.8 },
+          { x: 570, y: 318, s: 0.76 }, { x: 592, y: 330, s: 0.86 },
+          { x: 614, y: 340, s: 0.8 },  { x: 634, y: 348, s: 0.74 },
+          { x: 518, y: 332, s: 0.8 },  { x: 542, y: 348, s: 0.75 },
+          { x: 566, y: 358, s: 0.78 }, { x: 594, y: 370, s: 0.74 },
+          { x: 614, y: 380, s: 0.74 }, { x: 634, y: 388, s: 0.7 },
         ].map((t, i) => (
           <FirTree key={`fr${i}`} x={t.x} y={t.y} s={t.s} snow={isSnow} />
         ))}
       </g>
 
-      {/* ========== TREES on LEFT slope (edges of village) ========== */}
+      {/* ========== DARK FIR TREES above and beyond the village ========== */}
       <g>
         {[
-          { x: 80, y: 432, s: 0.92 }, { x: 102, y: 442, s: 0.82 },
-          { x: 122, y: 450, s: 0.74 }, { x: 308, y: 440, s: 0.78 },
-          { x: 328, y: 446, s: 0.72 }, { x: 348, y: 452, s: 0.68 },
+          { x: 70, y: 372, s: 0.86 },   { x: 92, y: 384, s: 0.78 },
+          { x: 114, y: 392, s: 0.72 },  { x: 136, y: 398, s: 0.66 },
+          { x: 310, y: 388, s: 0.78 },  { x: 334, y: 394, s: 0.72 },
+          { x: 358, y: 400, s: 0.68 },  { x: 382, y: 398, s: 0.7 },
+          { x: 408, y: 394, s: 0.72 },  { x: 430, y: 390, s: 0.7 },
         ].map((t, i) => (
           <FirTree key={`fl${i}`} x={t.x} y={t.y} s={t.s} snow={isSnow} />
         ))}
       </g>
 
-      {/* ========== VILLAGE WITH GOTHIC CHURCH ========== */}
+      {/* ========== VILLAGE — Priory church + Victorian villas ========== */}
       <VillageMalvern glow={glow} snow={isSnow} />
 
-      {/* ========== WINDING ROAD up into the hills ========== */}
+      {/* ========== WINDING ROAD (wider, S-curve from foreground into the hills) ========== */}
       <g>
-        {/* road base */}
         <path
-          d="M 640 600 Q 582 578 522 552 Q 464 534 424 516 Q 384 500 344 490 Q 304 482 264 474"
+          d="M 652 590 Q 560 560 490 530 Q 430 500 380 478 Q 330 460 290 454 Q 250 450 222 452"
           stroke={isSnow ? '#b0b8c8' : '#8e714c'}
-          strokeWidth="22" fill="none" strokeLinecap="round" opacity="0.95"
+          strokeWidth="28" fill="none" strokeLinecap="round" opacity="0.96"
         />
-        {/* road centre lighter */}
         <path
-          d="M 640 600 Q 582 578 522 552 Q 464 534 424 516 Q 384 500 344 490 Q 304 482 264 474"
-          stroke={isSnow ? '#e4ebf4' : '#ba9862'}
-          strokeWidth="8" fill="none" strokeLinecap="round" opacity="0.85"
+          d="M 652 590 Q 560 560 490 530 Q 430 500 380 478 Q 330 460 290 454 Q 250 450 222 452"
+          stroke={isSnow ? '#e6ecf5' : '#ba9862'}
+          strokeWidth="11" fill="none" strokeLinecap="round" opacity="0.85"
         />
-        {/* dashed wheel tracks */}
         <path
-          d="M 640 600 Q 582 578 522 552 Q 464 534 424 516 Q 384 500 344 490 Q 304 482 264 474"
+          d="M 652 590 Q 560 560 490 530 Q 430 500 380 478 Q 330 460 290 454 Q 250 450 222 452"
           stroke={isSnow ? '#c8d0dc' : '#9c7a46'}
-          strokeWidth="1.2" fill="none" opacity="0.45"
-          strokeDasharray="7 9"
+          strokeWidth="1.3" fill="none" opacity="0.45"
+          strokeDasharray="8 10"
         />
       </g>
 
-      {/* ========== TINY COTTAGE along the road (middle distance) ========== */}
-      <g transform="translate(434 504)">
-        <rect x="0" y="0" width="14" height="10" fill={isSnow ? '#c8cfdc' : '#d4c8a0'} />
-        <path d="M -1 0 L 7 -7 L 15 0 Z" fill={isSnow ? '#edf2f7' : '#7a3c2a'} />
-        {isSnow && <path d="M -1 0 L 7 -7 L 15 0" fill="none" stroke="#fff" strokeWidth="2" strokeLinejoin="round" opacity="0.95" />}
-        <rect x="3" y="3" width="2" height="2.5" fill="#fce4a8" opacity={glow} />
-        <rect x="9" y="3" width="2" height="2.5" fill="#fce4a8" opacity={glow} />
-        <rect x="6" y="6" width="2.5" height="4" fill="#3a2418" />
-      </g>
+      {/* ========== COTTAGES along the road ========== */}
+      <Cottage x={548} y={524} s={1.0} snow={isSnow} glow={glow} roofColor="#7a3c2a" />
+      <Cottage x={442} y={488} s={0.84} snow={isSnow} glow={glow} roofColor="#6a2e22" />
+      <Cottage x={356} y={462} s={0.7} snow={isSnow} glow={glow} roofColor="#7a3c2a" />
 
-      {/* ========== LAMP POSTS along the road (foreground to distance) ========== */}
+      {/* ========== LAMP POSTS along the road ========== */}
       <g>
         {[
-          { x: 618, y: 596, s: 1.25 },
-          { x: 534, y: 556, s: 1.1 },
-          { x: 456, y: 524, s: 0.95 },
-          { x: 390, y: 502, s: 0.85 },
-          { x: 332, y: 488, s: 0.76 },
-          { x: 284, y: 476, s: 0.68 },
+          { x: 630, y: 584, s: 1.35 },
+          { x: 554, y: 554, s: 1.2 },
+          { x: 478, y: 524, s: 1.05 },
+          { x: 416, y: 500, s: 0.92 },
+          { x: 356, y: 478, s: 0.82 },
+          { x: 306, y: 464, s: 0.74 },
         ].map((l, i) => (
           <LampPost key={`lp${i}`} x={l.x} y={l.y} s={l.s} lit={cottageGlow > 0.3} />
         ))}
-        {/* village lamps */}
-        <LampPost x={214} y={458} s={0.7} lit={cottageGlow > 0.3} />
-        <LampPost x={316} y={456} s={0.64} lit={cottageGlow > 0.3} />
+        {/* village square lamps */}
+        <LampPost x={210} y={462} s={0.78} lit={cottageGlow > 0.3} />
+        <LampPost x={306} y={458} s={0.7} lit={cottageGlow > 0.3} />
       </g>
 
-      {/* ========== SHEEP on the meadow ========== */}
+      {/* ========== SHEEP dotted on the meadow ========== */}
       {Array.from({ length: sheep }).map((_, i) => (
-        <g key={i} transform={`translate(${364 + i * 30} ${452 - (i % 2) * 4})`}>
-          <ellipse cx="0" cy="0" rx="2.8" ry="1.9" fill={isSnow ? '#fafcff' : '#f4ead8'} opacity="0.92" />
-          <circle cx="-2.1" cy="-0.5" r="1" fill="#3a2418" opacity="0.7" />
-          <line x1="-1.5" y1="1.6" x2="-1.5" y2="2.6" stroke="#3a2418" strokeWidth="0.4" />
-          <line x1="1.5" y1="1.6" x2="1.5" y2="2.6" stroke="#3a2418" strokeWidth="0.4" />
+        <g key={i} transform={`translate(${390 + i * 28} ${458 - (i % 2) * 3})`}>
+          <ellipse cx="0" cy="0" rx="2.6" ry="1.8" fill={isSnow ? '#fafcff' : '#f4ead8'} opacity="0.92" />
+          <circle cx="-2" cy="-0.4" r="0.9" fill="#3a2418" opacity="0.7" />
+          <line x1="-1.4" y1="1.5" x2="-1.4" y2="2.4" stroke="#3a2418" strokeWidth="0.4" />
+          <line x1="1.4" y1="1.5" x2="1.4" y2="2.4" stroke="#3a2418" strokeWidth="0.4" />
         </g>
       ))}
 
       {/* ========== FOREGROUND GRASS TUFTS or SNOW DRIFTS ========== */}
       {!isSnow ? (
         <g opacity="0.55">
-          {Array.from({ length: 30 }).map((_, i) => {
-            const x = 60 + i * 20 + ((i * 11) % 7);
-            const y = 564 + ((i * 13) % 30);
+          {Array.from({ length: 28 }).map((_, i) => {
+            const x = 60 + i * 22 + ((i * 11) % 7);
+            const y = 540 + ((i * 13) % 20);
             return <line key={i} x1={x} y1={y} x2={x - 1 + (i % 3)} y2={y - 5} stroke="#8a824a" strokeWidth="0.7" />;
           })}
         </g>
@@ -706,7 +726,7 @@ function MalvernHills({ seed, cottageGlow = 0.7, weather = 'sunshine' }: { seed:
         <g opacity="0.85" pointerEvents="none">
           {Array.from({ length: 14 }).map((_, i) => {
             const x = 70 + i * 42 + ((i * 13) % 11);
-            const y = 568 + ((i * 7) % 20);
+            const y = 552 + ((i * 7) % 12);
             return <ellipse key={i} cx={x} cy={y} rx="14" ry="2.4" fill="#ffffff" opacity="0.65" />;
           })}
         </g>
@@ -729,6 +749,33 @@ function FirTree({ x, y, s, snow }: { x: number; y: number; s: number; snow?: bo
           <path d="M 0 -6 L -5 1 L 5 1 Z" fill="#f4f7fa" opacity="0.45" />
         </>
       )}
+    </g>
+  );
+}
+
+function Cottage({ x, y, s, snow, glow, roofColor = '#7a3c2a' }: { x: number; y: number; s: number; snow?: boolean; glow: number; roofColor?: string }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      {/* shadow under cottage */}
+      <ellipse cx="11" cy="23" rx="17" ry="1.6" fill="#1a0e08" opacity="0.28" />
+      {/* body */}
+      <rect x="0" y="5" width="22" height="18" fill={snow ? '#d4dce8' : '#e6d8b4'} />
+      <rect x="0" y="5" width="22" height="18" fill="none" stroke="#7a6a4a" strokeWidth="0.35" opacity="0.6" />
+      {/* roof */}
+      <path d="M -2 5 L 11 -6 L 24 5 Z" fill={snow ? '#edf2f7' : roofColor} />
+      {snow && <path d="M -2 5 L 11 -6 L 24 5" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinejoin="round" strokeLinecap="round" opacity="0.95" />}
+      {/* chimney */}
+      <rect x="16" y="-3" width="2.6" height="7" fill={snow ? '#aab3c0' : '#6a4038'} />
+      {/* door */}
+      <rect x="9" y="15" width="4" height="8" fill="#3a2418" />
+      <circle cx="12" cy="19" r="0.4" fill="#fcd092" />
+      {/* windows */}
+      <rect x="2" y="9" width="3.6" height="3.6" fill="#fce4a8" opacity={glow} />
+      <rect x="2" y="9" width="3.6" height="3.6" fill="none" stroke="#3a2418" strokeWidth="0.25" />
+      <line x1="3.8" y1="9" x2="3.8" y2="12.6" stroke="#3a2418" strokeWidth="0.2" />
+      <rect x="16.4" y="9" width="3.6" height="3.6" fill="#fce4a8" opacity={glow} />
+      <rect x="16.4" y="9" width="3.6" height="3.6" fill="none" stroke="#3a2418" strokeWidth="0.25" />
+      <line x1="18.2" y1="9" x2="18.2" y2="12.6" stroke="#3a2418" strokeWidth="0.2" />
     </g>
   );
 }
@@ -759,134 +806,251 @@ function LampPost({ x, y, s, lit }: { x: number; y: number; s: number; lit: bool
 }
 
 function VillageMalvern({ glow, snow }: { glow: number; snow: boolean }) {
-  const wallCol = snow ? '#cdd4e0' : '#d8ccac';
-  const wallShadow = snow ? '#adb5c4' : '#b4a684';
+  const stoneCol  = snow ? '#9aa2b2' : '#4e5054';
+  const stoneShade = snow ? '#7d8597' : '#34363a';
+  const wallCream = snow ? '#d6dde8' : '#ecdfba';
+  const wallSand  = snow ? '#cad1de' : '#d4be90';
+  const wallStucco = snow ? '#c1c8d6' : '#bca582';
+  // Helper — recolour a roof to white when snowing
+  const roof = (col: string) => snow ? '#edf2f7' : col;
   return (
-    <g transform="translate(140 382)">
-      {/* ground shadow beneath village */}
-      <ellipse cx="90" cy="84" rx="112" ry="4" fill="#1a0e08" opacity="0.22" />
+    <g transform="translate(90 380)">
+      {/* ground shadow beneath the whole village */}
+      <ellipse cx="140" cy="92" rx="160" ry="4.5" fill="#1a0e08" opacity="0.22" />
 
-      {/* ================ GOTHIC CHURCH ================ */}
+      {/* ================================================
+          PRIORY CHURCH — square tower + tall spire + nave + side aisle
+          Drawn LEFT-CENTRE so the spire is the visual anchor
+          ================================================ */}
       <g>
-        {/* nave body */}
-        <rect x="52" y="48" width="42" height="30" fill={snow ? '#a8afbe' : '#5a5c60'} />
-        <rect x="52" y="48" width="42" height="30" fill="none" stroke="#1a1a1f" strokeWidth="0.4" opacity="0.55" />
-        {/* stone-block course lines */}
-        <g stroke={snow ? '#8a92a2' : '#3e4044'} strokeWidth="0.3" opacity="0.55">
-          <line x1="52" y1="56" x2="94" y2="56" />
-          <line x1="52" y1="62" x2="94" y2="62" />
-          <line x1="52" y1="68" x2="94" y2="68" />
-          <line x1="52" y1="74" x2="94" y2="74" />
+        {/* === MAIN NAVE BODY (right of tower) === */}
+        <rect x="90" y="44" width="78" height="46" fill={stoneCol} />
+        <rect x="90" y="44" width="78" height="46" fill="none" stroke="#1a1a1f" strokeWidth="0.4" opacity="0.55" />
+        {/* stone-block course lines on nave */}
+        <g stroke={stoneShade} strokeWidth="0.3" opacity="0.55">
+          <line x1="90" y1="54" x2="168" y2="54" />
+          <line x1="90" y1="62" x2="168" y2="62" />
+          <line x1="90" y1="70" x2="168" y2="70" />
+          <line x1="90" y1="78" x2="168" y2="78" />
         </g>
-        {/* side-aisle lean-to roof (lower) */}
-        <rect x="78" y="64" width="26" height="14" fill={snow ? '#b8bfce' : '#505258'} />
-        <path d="M 78 64 L 91 58 L 104 64 Z" fill={snow ? '#edf2f7' : '#3e3e42'} />
-        {snow && <path d="M 78 64 L 91 58 L 104 64" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round" opacity="0.95" />}
-        <rect x="82" y="68" width="2.5" height="3.5" fill="#fce4a8" opacity={glow * 0.9} />
-        <rect x="89" y="68" width="2.5" height="3.5" fill="#fce4a8" opacity={glow * 0.9} />
-        <rect x="96" y="68" width="2.5" height="3.5" fill="#fce4a8" opacity={glow * 0.9} />
-        {/* main nave pitched roof */}
-        <path d="M 50 48 L 73 28 L 96 48 Z" fill={snow ? '#edf2f7' : '#3e3e42'} />
-        <line x1="50" y1="48" x2="96" y2="48" stroke={snow ? '#bdc4d0' : '#2a2a2e'} strokeWidth="0.5" opacity="0.7" />
-        {snow && <path d="M 50 48 L 73 28 L 96 48" fill="none" stroke="#ffffff" strokeWidth="2.6" strokeLinejoin="round" strokeLinecap="round" opacity="0.95" />}
+        {/* === SIDE AISLE — lower lean-to attached to right end of nave === */}
+        <rect x="158" y="64" width="34" height="26" fill={snow ? '#b2bac8' : '#48494d'} />
+        <path d="M 158 64 L 175 56 L 192 64 Z" fill={roof('#36383c')} />
+        {snow && <path d="M 158 64 L 175 56 L 192 64" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round" opacity="0.95" />}
+        {/* aisle windows */}
+        <rect x="162" y="68" width="2.6" height="3.4" fill="#fce4a8" opacity={glow * 0.85} />
+        <rect x="170" y="68" width="2.6" height="3.4" fill="#fce4a8" opacity={glow * 0.85} />
+        <rect x="178" y="68" width="2.6" height="3.4" fill="#fce4a8" opacity={glow * 0.85} />
+        <rect x="186" y="68" width="2.6" height="3.4" fill="#fce4a8" opacity={glow * 0.85} />
 
-        {/* TOWER + SPIRE (left end) */}
-        <rect x="34" y="20" width="22" height="28" fill={snow ? '#9da5b4' : '#4a4c50'} />
-        <rect x="34" y="20" width="22" height="28" fill="none" stroke="#1a1a1f" strokeWidth="0.45" opacity="0.55" />
-        {/* crenellation / cornice ledge */}
-        <rect x="33" y="20" width="24" height="2" fill={snow ? '#8088a0' : '#2a2c30'} />
-        {/* tower stone courses */}
-        <g stroke={snow ? '#7e869a' : '#35373a'} strokeWidth="0.3" opacity="0.5">
-          <line x1="34" y1="28" x2="56" y2="28" />
-          <line x1="34" y1="34" x2="56" y2="34" />
-          <line x1="34" y1="40" x2="56" y2="40" />
+        {/* === MAIN NAVE PITCHED ROOF === */}
+        <path d="M 88 44 L 129 22 L 170 44 Z" fill={roof('#3a3a3e')} />
+        <line x1="88" y1="44" x2="170" y2="44" stroke={snow ? '#bdc4d0' : '#28282c'} strokeWidth="0.6" opacity="0.7" />
+        {/* slate course lines */}
+        {!snow && (
+          <g stroke="#1a1a1e" strokeWidth="0.3" opacity="0.4">
+            <line x1="92" y1="38" x2="166" y2="38" />
+            <line x1="100" y1="32" x2="158" y2="32" />
+            <line x1="110" y1="26" x2="148" y2="26" />
+          </g>
+        )}
+        {snow && <path d="M 88 44 L 129 22 L 170 44" fill="none" stroke="#ffffff" strokeWidth="2.8" strokeLinejoin="round" strokeLinecap="round" opacity="0.95" />}
+
+        {/* === SQUARE TOWER (Norman base for the spire) === */}
+        <rect x="50" y="-2" width="40" height="92" fill={snow ? '#929aaa' : '#46484c'} />
+        <rect x="50" y="-2" width="40" height="92" fill="none" stroke="#1a1a1f" strokeWidth="0.5" opacity="0.55" />
+        {/* tower string courses */}
+        <g stroke={snow ? '#74798a' : '#2e3034'} strokeWidth="0.4" opacity="0.55">
+          <line x1="50" y1="14" x2="90" y2="14" />
+          <line x1="50" y1="40" x2="90" y2="40" />
+          <line x1="50" y1="62" x2="90" y2="62" />
         </g>
-        {/* louvred belfry openings */}
-        <rect x="39" y="26" width="3" height="7" fill="#1a1a20" opacity="0.85" />
-        <rect x="48" y="26" width="3" height="7" fill="#1a1a20" opacity="0.85" />
-        {/* lancet window on tower */}
-        <path d="M 44 38 Q 44 34 45 34 Q 46 34 46 38 L 46 44 L 44 44 Z" fill="#fce4a8" opacity={glow} />
-        <path d="M 44 38 Q 44 34 45 34 Q 46 34 46 38 L 46 44 L 44 44 Z" fill="none" stroke="#1a1a1f" strokeWidth="0.35" />
-
-        {/* SPIRE - tall tapered */}
-        <path d="M 34 20 L 45 -20 L 56 20 Z" fill={snow ? '#b4bccb' : '#3c3e42'} />
-        <path d="M 39 20 L 45 -20 L 45 20 Z" fill={snow ? '#9da5b4' : '#2e3034'} opacity="0.55" />
-        {snow && <path d="M 34 20 L 45 -20 L 56 20" fill="none" stroke="#ffffff" strokeWidth="1.8" strokeLinejoin="round" strokeLinecap="round" opacity="0.8" />}
-        {/* spire cross */}
-        <line x1="45" y1="-20" x2="45" y2="-26" stroke="#1a1a20" strokeWidth="0.9" />
-        <line x1="42.5" y1="-23.5" x2="47.5" y2="-23.5" stroke="#1a1a20" strokeWidth="0.7" />
-        <circle cx="45" cy="-20.5" r="0.7" fill="#1a1a20" />
-
-        {/* corner pinnacles at tower top */}
-        <path d="M 34 20 L 34 15 L 32.5 15 L 32.5 20 Z" fill="#2a2c30" />
-        <path d="M 56 20 L 56 15 L 57.5 15 L 57.5 20 Z" fill="#2a2c30" />
-
-        {/* NAVE windows - gothic lancets */}
-        {[58, 66, 82, 90].map((x) => (
-          <g key={x}>
-            <path d={`M ${x} 60 L ${x} 74 L ${x + 4} 74 L ${x + 4} 60 Q ${x + 4} 56 ${x + 2} 56 Q ${x} 56 ${x} 60 Z`} fill="#fce4a8" opacity={glow * 0.85} />
-            <path d={`M ${x} 60 L ${x} 74 L ${x + 4} 74 L ${x + 4} 60 Q ${x + 4} 56 ${x + 2} 56 Q ${x} 56 ${x} 60 Z`} fill="none" stroke="#1a1a1f" strokeWidth="0.3" />
+        {/* belfry crenellated cornice */}
+        <rect x="48" y="-2" width="44" height="3" fill={snow ? '#7c8294' : '#2c2e32'} />
+        {/* belfry louvres (bell openings) */}
+        <rect x="56" y="6" width="4" height="9" fill="#15161a" />
+        <rect x="80" y="6" width="4" height="9" fill="#15161a" />
+        {/* louvre slats */}
+        {[2, 5, 8].map(dy => (
+          <g key={dy}>
+            <line x1="56.5" y1={7 + dy} x2="59.5" y2={7 + dy} stroke="#3a3c40" strokeWidth="0.4" />
+            <line x1="80.5" y1={7 + dy} x2="83.5" y2={7 + dy} stroke="#3a3c40" strokeWidth="0.4" />
           </g>
         ))}
+        {/* big lancet window on tower */}
+        <path d="M 64 24 L 64 36 L 76 36 L 76 24 Q 76 18 70 18 Q 64 18 64 24 Z" fill="#fce4a8" opacity={glow * 0.95} />
+        <path d="M 64 24 L 64 36 L 76 36 L 76 24 Q 76 18 70 18 Q 64 18 64 24 Z" fill="none" stroke="#1a1a1f" strokeWidth="0.4" />
+        <line x1="70" y1="18" x2="70" y2="36" stroke="#1a1a1f" strokeWidth="0.3" />
+        {/* rose window roundel */}
+        <circle cx="70" cy="48" r="3.4" fill="#fce4a8" opacity={glow * 0.85} />
+        <circle cx="70" cy="48" r="3.4" fill="none" stroke="#1a1a1f" strokeWidth="0.35" />
+        <circle cx="70" cy="48" r="1.2" fill="none" stroke="#1a1a1f" strokeWidth="0.3" />
+        {[0, 60, 120, 180, 240, 300].map(deg => (
+          <line key={deg} x1="70" y1="48" x2={70 + 3.4 * Math.cos((deg * Math.PI) / 180)} y2={48 + 3.4 * Math.sin((deg * Math.PI) / 180)} stroke="#1a1a1f" strokeWidth="0.25" />
+        ))}
+        {/* clock face on tower (subtle) */}
+        <circle cx="70" cy="74" r="3.2" fill={snow ? '#e6ebf2' : '#d8c896'} opacity="0.9" />
+        <circle cx="70" cy="74" r="3.2" fill="none" stroke="#1a1a1f" strokeWidth="0.35" />
+        <line x1="70" y1="74" x2="70" y2="71.5" stroke="#1a1a1f" strokeWidth="0.45" />
+        <line x1="70" y1="74" x2="71.6" y2="74" stroke="#1a1a1f" strokeWidth="0.4" />
 
-        {/* rose window / arched door on nave */}
-        <path d="M 70 70 L 70 78 L 78 78 L 78 70 Q 78 66 74 66 Q 70 66 70 70 Z" fill="#2a1810" />
-        <path d="M 70 70 L 70 78 L 78 78 L 78 70 Q 78 66 74 66 Q 70 66 70 70 Z" fill="none" stroke="#8a7a6a" strokeWidth="0.3" opacity="0.65" />
+        {/* tower corner pinnacles (4 visible at tower top) */}
+        <path d="M 50 -2 L 50 -8 L 47.5 -8 L 47.5 -2 Z" fill={snow ? '#aab2c0' : '#2c2e32'} />
+        <path d="M 90 -2 L 90 -8 L 92.5 -8 L 92.5 -2 Z" fill={snow ? '#aab2c0' : '#2c2e32'} />
+        <path d="M 60 -2 L 60 -7 L 58 -7 L 58 -2 Z" fill={snow ? '#aab2c0' : '#2c2e32'} />
+        <path d="M 80 -2 L 80 -7 L 82 -7 L 82 -2 Z" fill={snow ? '#aab2c0' : '#2c2e32'} />
+
+        {/* === TALL SPIRE — tapered octagonal feel === */}
+        <path d="M 50 -2 L 70 -82 L 90 -2 Z" fill={snow ? '#a8b0bf' : '#3c3e42'} />
+        {/* darker rear face for octagonal feel */}
+        <path d="M 70 -82 L 90 -2 L 70 -2 Z" fill={snow ? '#838ba0' : '#2c2e32'} opacity="0.6" />
+        {/* spire stone bands */}
+        <line x1="58" y1="-30" x2="82" y2="-30" stroke={snow ? '#7c8398' : '#22242a'} strokeWidth="0.4" opacity="0.6" />
+        <line x1="62" y1="-46" x2="78" y2="-46" stroke={snow ? '#7c8398' : '#22242a'} strokeWidth="0.4" opacity="0.6" />
+        <line x1="66" y1="-62" x2="74" y2="-62" stroke={snow ? '#7c8398' : '#22242a'} strokeWidth="0.4" opacity="0.6" />
+        {snow && <path d="M 50 -2 L 70 -82 L 90 -2" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" opacity="0.85" />}
+        {/* spire cross */}
+        <line x1="70" y1="-82" x2="70" y2="-92" stroke="#1a1a20" strokeWidth="1.1" />
+        <line x1="66.5" y1="-88" x2="73.5" y2="-88" stroke="#1a1a20" strokeWidth="0.85" />
+        <circle cx="70" cy="-82.8" r="0.9" fill="#1a1a20" />
+
+        {/* === NAVE WINDOWS — gothic lancets along nave === */}
+        {[96, 106, 116, 138, 148].map((x) => (
+          <g key={x}>
+            <path d={`M ${x} 60 L ${x} 80 L ${x + 5} 80 L ${x + 5} 60 Q ${x + 5} 54 ${x + 2.5} 54 Q ${x} 54 ${x} 60 Z`} fill="#fce4a8" opacity={glow * 0.85} />
+            <path d={`M ${x} 60 L ${x} 80 L ${x + 5} 80 L ${x + 5} 60 Q ${x + 5} 54 ${x + 2.5} 54 Q ${x} 54 ${x} 60 Z`} fill="none" stroke="#1a1a1f" strokeWidth="0.32" />
+            <line x1={x + 2.5} y1="54" x2={x + 2.5} y2="80" stroke="#1a1a1f" strokeWidth="0.22" />
+          </g>
+        ))}
+        {/* central PORCH with arched door on the front of the nave */}
+        <rect x="124" y="74" width="12" height="16" fill={snow ? '#9aa2b2' : '#3a3c40'} />
+        <path d="M 124 74 L 130 68 L 136 74 Z" fill={roof('#28282c')} />
+        {snow && <path d="M 124 74 L 130 68 L 136 74" fill="none" stroke="#ffffff" strokeWidth="1.8" strokeLinejoin="round" strokeLinecap="round" opacity="0.92" />}
+        <path d="M 126 80 L 126 90 L 134 90 L 134 80 Q 134 76 130 76 Q 126 76 126 80 Z" fill="#241410" />
+        <path d="M 126 80 L 126 90 L 134 90 L 134 80 Q 134 76 130 76 Q 126 76 126 80 Z" fill="none" stroke="#82724a" strokeWidth="0.3" opacity="0.65" />
       </g>
 
-      {/* ================ HOUSES LEFT ================ */}
+      {/* ================================================
+          VICTORIAN VILLAS — left of the tower
+          ================================================ */}
       <g>
-        {/* house L1 — wide */}
-        <rect x="-2" y="60" width="22" height="18" fill={wallCol} />
-        <path d="M -4 60 L 9 48 L 22 60 Z" fill={snow ? '#edf2f7' : '#803024'} />
-        {snow && <path d="M -4 60 L 9 48 L 22 60" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinejoin="round" opacity="0.95" />}
-        <rect x="2" y="65" width="3" height="3.5" fill="#fce4a8" opacity={glow} />
-        <rect x="13" y="65" width="3" height="3.5" fill="#fce4a8" opacity={glow} />
-        <rect x="7" y="71" width="3.5" height="7" fill="#3a2418" />
-        <rect x="13" y="50" width="2" height="4" fill="#5a4038" />
+        {/* villa L1 — tall narrow with steep gable, far left */}
+        <rect x="-4" y="40" width="22" height="50" fill={wallCream} />
+        <rect x="-4" y="40" width="22" height="50" fill="none" stroke="#7a6a4a" strokeWidth="0.3" opacity="0.5" />
+        <path d="M -7 40 L 7 24 L 21 40 Z" fill={roof('#7a3326')} />
+        {snow && <path d="M -7 40 L 7 24 L 21 40" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinejoin="round" opacity="0.95" />}
+        {/* attic/gable window */}
+        <rect x="5" y="32" width="3.5" height="4" fill="#fce4a8" opacity={glow} />
+        <rect x="5" y="32" width="3.5" height="4" fill="none" stroke="#3a2418" strokeWidth="0.25" />
+        {/* upper windows */}
+        <rect x="0" y="46" width="3.5" height="6" fill="#fce4a8" opacity={glow} />
+        <rect x="0" y="46" width="3.5" height="6" fill="none" stroke="#3a2418" strokeWidth="0.25" />
+        <line x1="0" y1="49" x2="3.5" y2="49" stroke="#3a2418" strokeWidth="0.18" />
+        <rect x="10.5" y="46" width="3.5" height="6" fill="#fce4a8" opacity={glow} />
+        <rect x="10.5" y="46" width="3.5" height="6" fill="none" stroke="#3a2418" strokeWidth="0.25" />
+        <line x1="10.5" y1="49" x2="14" y2="49" stroke="#3a2418" strokeWidth="0.18" />
+        {/* lower windows + door */}
+        <rect x="0" y="62" width="3.5" height="6" fill="#fce4a8" opacity={glow} />
+        <rect x="0" y="62" width="3.5" height="6" fill="none" stroke="#3a2418" strokeWidth="0.25" />
+        <rect x="10.5" y="62" width="3.5" height="6" fill="#fce4a8" opacity={glow} />
+        <rect x="10.5" y="62" width="3.5" height="6" fill="none" stroke="#3a2418" strokeWidth="0.25" />
+        <rect x="6" y="78" width="4" height="12" fill="#3a2418" />
+        <circle cx="9.5" cy="84" r="0.4" fill="#fcd092" />
+        {/* chimney */}
+        <rect x="14" y="22" width="3" height="6" fill={snow ? '#9ea7b6' : '#5a4038'} />
 
-        {/* house L2 — taller */}
-        <rect x="20" y="56" width="16" height="22" fill={wallShadow} />
-        <path d="M 18 56 L 28 44 L 38 56 Z" fill={snow ? '#edf2f7' : '#5a281e'} />
-        {snow && <path d="M 18 56 L 28 44 L 38 56" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinejoin="round" opacity="0.95" />}
-        <rect x="23" y="60" width="2.5" height="3" fill="#fce4a8" opacity={glow} />
-        <rect x="30" y="60" width="2.5" height="3" fill="#fce4a8" opacity={glow} />
-        <rect x="23" y="66" width="2.5" height="3" fill="#fce4a8" opacity={glow} />
-        <rect x="30" y="66" width="2.5" height="3" fill="#fce4a8" opacity={glow} />
-        <rect x="26" y="71" width="3" height="7" fill="#3a2418" />
+        {/* villa L2 — slightly shorter, beside L1 */}
+        <rect x="20" y="50" width="24" height="40" fill={wallStucco} />
+        <rect x="20" y="50" width="24" height="40" fill="none" stroke="#7a6a4a" strokeWidth="0.3" opacity="0.5" />
+        <path d="M 17 50 L 32 36 L 47 50 Z" fill={roof('#5e2a20')} />
+        {snow && <path d="M 17 50 L 32 36 L 47 50" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinejoin="round" opacity="0.95" />}
+        <rect x="29" y="42" width="3.5" height="4" fill="#fce4a8" opacity={glow} />
+        <rect x="29" y="42" width="3.5" height="4" fill="none" stroke="#3a2418" strokeWidth="0.25" />
+        {/* upper bay window */}
+        <rect x="23" y="56" width="4" height="6" fill="#fce4a8" opacity={glow} />
+        <rect x="23" y="56" width="4" height="6" fill="none" stroke="#3a2418" strokeWidth="0.25" />
+        <rect x="36" y="56" width="4" height="6" fill="#fce4a8" opacity={glow} />
+        <rect x="36" y="56" width="4" height="6" fill="none" stroke="#3a2418" strokeWidth="0.25" />
+        {/* lower windows */}
+        <rect x="22" y="68" width="5" height="6" fill="#fce4a8" opacity={glow} />
+        <rect x="22" y="68" width="5" height="6" fill="none" stroke="#3a2418" strokeWidth="0.25" />
+        <line x1="24.5" y1="68" x2="24.5" y2="74" stroke="#3a2418" strokeWidth="0.18" />
+        <rect x="36" y="68" width="5" height="6" fill="#fce4a8" opacity={glow} />
+        <rect x="36" y="68" width="5" height="6" fill="none" stroke="#3a2418" strokeWidth="0.25" />
+        <line x1="38.5" y1="68" x2="38.5" y2="74" stroke="#3a2418" strokeWidth="0.18" />
+        <rect x="29" y="80" width="5" height="10" fill="#3a2418" />
+        <rect x="40" y="34" width="3" height="6" fill={snow ? '#9ea7b6' : '#5a4038'} />
       </g>
 
-      {/* ================ HOUSES RIGHT ================ */}
+      {/* ================================================
+          VICTORIAN VILLAS — right of the side aisle
+          ================================================ */}
       <g>
-        <rect x="100" y="58" width="22" height="20" fill={wallCol} />
-        <path d="M 98 58 L 111 46 L 124 58 Z" fill={snow ? '#edf2f7' : '#7a3a2a'} />
-        {snow && <path d="M 98 58 L 111 46 L 124 58" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinejoin="round" opacity="0.95" />}
-        <rect x="104" y="64" width="3" height="3.5" fill="#fce4a8" opacity={glow} />
-        <rect x="115" y="64" width="3" height="3.5" fill="#fce4a8" opacity={glow} />
-        <rect x="108" y="70" width="3" height="8" fill="#3a2418" />
-        <rect x="116" y="48" width="2" height="4" fill="#5a4038" />
+        {/* villa R1 — wide, hipped */}
+        <rect x="194" y="58" width="26" height="32" fill={wallSand} />
+        <rect x="194" y="58" width="26" height="32" fill="none" stroke="#7a6a4a" strokeWidth="0.3" opacity="0.5" />
+        <path d="M 191 58 L 207 44 L 223 58 Z" fill={roof('#7a3a2a')} />
+        {snow && <path d="M 191 58 L 207 44 L 223 58" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinejoin="round" opacity="0.95" />}
+        <rect x="204" y="48" width="3.5" height="4" fill="#fce4a8" opacity={glow} />
+        <rect x="204" y="48" width="3.5" height="4" fill="none" stroke="#3a2418" strokeWidth="0.25" />
+        <rect x="198" y="64" width="4" height="5" fill="#fce4a8" opacity={glow} />
+        <rect x="198" y="64" width="4" height="5" fill="none" stroke="#3a2418" strokeWidth="0.25" />
+        <rect x="212" y="64" width="4" height="5" fill="#fce4a8" opacity={glow} />
+        <rect x="212" y="64" width="4" height="5" fill="none" stroke="#3a2418" strokeWidth="0.25" />
+        <rect x="198" y="74" width="4" height="5" fill="#fce4a8" opacity={glow} />
+        <rect x="198" y="74" width="4" height="5" fill="none" stroke="#3a2418" strokeWidth="0.25" />
+        <rect x="212" y="74" width="4" height="5" fill="#fce4a8" opacity={glow} />
+        <rect x="212" y="74" width="4" height="5" fill="none" stroke="#3a2418" strokeWidth="0.25" />
+        <rect x="205" y="83" width="4" height="7" fill="#3a2418" />
+        <rect x="216" y="42" width="3" height="6" fill={snow ? '#9ea7b6' : '#5a4038'} />
 
-        <rect x="122" y="62" width="14" height="16" fill={wallShadow} />
-        <path d="M 120 62 L 129 52 L 138 62 Z" fill={snow ? '#edf2f7' : '#5c281e'} />
-        {snow && <path d="M 120 62 L 129 52 L 138 62" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinejoin="round" opacity="0.95" />}
-        <rect x="125" y="66" width="2.5" height="3" fill="#fce4a8" opacity={glow} />
-        <rect x="132" y="66" width="2.5" height="3" fill="#fce4a8" opacity={glow} />
-        <rect x="127" y="72" width="3" height="6" fill="#3a2418" />
+        {/* villa R2 — tall narrow with bay window */}
+        <rect x="222" y="50" width="20" height="40" fill={wallCream} />
+        <rect x="222" y="50" width="20" height="40" fill="none" stroke="#7a6a4a" strokeWidth="0.3" opacity="0.5" />
+        <path d="M 219 50 L 232 36 L 245 50 Z" fill={roof('#823322')} />
+        {snow && <path d="M 219 50 L 232 36 L 245 50" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinejoin="round" opacity="0.95" />}
+        <rect x="229" y="42" width="3" height="4" fill="#fce4a8" opacity={glow} />
+        <rect x="229" y="42" width="3" height="4" fill="none" stroke="#3a2418" strokeWidth="0.25" />
+        <rect x="225" y="56" width="4" height="6" fill="#fce4a8" opacity={glow} />
+        <rect x="225" y="56" width="4" height="6" fill="none" stroke="#3a2418" strokeWidth="0.25" />
+        <line x1="227" y1="56" x2="227" y2="62" stroke="#3a2418" strokeWidth="0.18" />
+        <rect x="234" y="56" width="4" height="6" fill="#fce4a8" opacity={glow} />
+        <rect x="234" y="56" width="4" height="6" fill="none" stroke="#3a2418" strokeWidth="0.25" />
+        {/* bay window protrusion */}
+        <rect x="223" y="66" width="16" height="9" fill={wallCream} />
+        <rect x="223" y="66" width="16" height="9" fill="none" stroke="#7a6a4a" strokeWidth="0.25" opacity="0.5" />
+        <rect x="225" y="68" width="3.5" height="6" fill="#fce4a8" opacity={glow} />
+        <rect x="225" y="68" width="3.5" height="6" fill="none" stroke="#3a2418" strokeWidth="0.22" />
+        <rect x="229.5" y="68" width="3.5" height="6" fill="#fce4a8" opacity={glow} />
+        <rect x="229.5" y="68" width="3.5" height="6" fill="none" stroke="#3a2418" strokeWidth="0.22" />
+        <rect x="234" y="68" width="3.5" height="6" fill="#fce4a8" opacity={glow} />
+        <rect x="234" y="68" width="3.5" height="6" fill="none" stroke="#3a2418" strokeWidth="0.22" />
+        <rect x="229" y="80" width="4" height="10" fill="#3a2418" />
+        <rect x="240" y="32" width="2.6" height="6" fill={snow ? '#9ea7b6' : '#5a4038'} />
 
-        <rect x="136" y="65" width="18" height="13" fill={wallCol} />
-        <path d="M 134 65 L 145 55 L 156 65 Z" fill={snow ? '#edf2f7' : '#783c28'} />
-        {snow && <path d="M 134 65 L 145 55 L 156 65" fill="none" stroke="#fff" strokeWidth="2" strokeLinejoin="round" opacity="0.95" />}
-        <rect x="140" y="69" width="2.5" height="2.8" fill="#fce4a8" opacity={glow} />
-        <rect x="148" y="69" width="2.5" height="2.8" fill="#fce4a8" opacity={glow} />
+        {/* villa R3 — small stocky cottage at the right edge */}
+        <rect x="244" y="62" width="20" height="28" fill={wallStucco} />
+        <rect x="244" y="62" width="20" height="28" fill="none" stroke="#7a6a4a" strokeWidth="0.3" opacity="0.5" />
+        <path d="M 241 62 L 254 50 L 267 62 Z" fill={roof('#5e2a22')} />
+        {snow && <path d="M 241 62 L 254 50 L 267 62" fill="none" stroke="#fff" strokeWidth="2" strokeLinejoin="round" opacity="0.95" />}
+        <rect x="251" y="55" width="3" height="3.5" fill="#fce4a8" opacity={glow} />
+        <rect x="247" y="68" width="3.5" height="5" fill="#fce4a8" opacity={glow} />
+        <rect x="247" y="68" width="3.5" height="5" fill="none" stroke="#3a2418" strokeWidth="0.22" />
+        <rect x="257" y="68" width="3.5" height="5" fill="#fce4a8" opacity={glow} />
+        <rect x="257" y="68" width="3.5" height="5" fill="none" stroke="#3a2418" strokeWidth="0.22" />
+        <rect x="252" y="78" width="4" height="12" fill="#3a2418" />
+        <rect x="261" y="48" width="2.4" height="5" fill={snow ? '#9ea7b6' : '#5a4038'} />
       </g>
 
       {/* chimney smoke (only when not snowing) */}
       {!snow && (
         <>
-          <path className="steam-wisp" d="M 14 50 q -2 -8 0 -14" stroke="#a8a098" strokeWidth="1.1" fill="none" strokeLinecap="round" opacity="0.55"
+          <path className="steam-wisp" d="M 16 22 q -2 -8 0 -14" stroke="#a8a098" strokeWidth="1.1" fill="none" strokeLinecap="round" opacity="0.55"
             style={{ animation: 'steamRise 7s ease-out infinite' }} />
-          <path className="steam-wisp" d="M 117 48 q 2 -8 0 -12" stroke="#a8a098" strokeWidth="1.1" fill="none" strokeLinecap="round" opacity="0.55"
+          <path className="steam-wisp" d="M 42 34 q 2 -8 0 -12" stroke="#a8a098" strokeWidth="1.1" fill="none" strokeLinecap="round" opacity="0.55"
             style={{ animation: 'steamRise2 8s ease-out infinite' }} />
+          <path className="steam-wisp" d="M 218 42 q -2 -8 0 -12" stroke="#a8a098" strokeWidth="1.1" fill="none" strokeLinecap="round" opacity="0.55"
+            style={{ animation: 'steamRise 9s ease-out infinite' }} />
         </>
       )}
     </g>

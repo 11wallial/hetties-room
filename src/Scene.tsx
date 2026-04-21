@@ -173,6 +173,11 @@ export function Scene({ now, weather = 'sunshine', daysRemaining = 0, daysSince 
           <stop offset="40%" stopColor="#ffc878" stopOpacity="0.55" />
           <stop offset="100%" stopColor="#ff9a4a" stopOpacity="0" />
         </radialGradient>
+        <radialGradient id="lampPostGlow" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0%" stopColor="#fff4c8" stopOpacity="1" />
+          <stop offset="45%" stopColor="#ffce8a" stopOpacity="0.55" />
+          <stop offset="100%" stopColor="#ffae6a" stopOpacity="0" />
+        </radialGradient>
         <linearGradient id="lampCone" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#fff4c8" stopOpacity="0.7" />
           <stop offset="100%" stopColor="#ffae6a" stopOpacity="0.05" />
@@ -298,14 +303,21 @@ export function Scene({ now, weather = 'sunshine', daysRemaining = 0, daysSince 
           </g>
         )}
 
-        {/* MALVERN HILLS */}
-        <MalvernHills seed={seed} cottageGlow={palette.cottageGlow} />
+        {/* RAINBOW — drawn BEHIND hills so feet tuck into the distant ridge.
+            Shown on clear-ish weathers only (never on snowy, rainy, foggy). */}
+        {(weather === 'rainbow' || weather === 'sunshine' || weather === 'sunrise') && (
+          <Rainbow
+            opacity={
+              weather === 'rainbow' ? 1 :
+              weather === 'sunshine' ? 0.95 :
+              0.8
+            }
+          />
+        )}
 
-        {/* SNOW CAPS on hill tops */}
-        {weather === 'snowy' && <SnowCaps />}
-
-        {/* RAINBOW arc — only in rainbow weather, drawn over the hills */}
-        {weather === 'rainbow' && <Rainbow />}
+        {/* MALVERN SCENE — mountains, gothic church village, winding road, lamp posts.
+            Snow treatment is applied inline when weather === 'snowy'. */}
+        <MalvernHills seed={seed} cottageGlow={palette.cottageGlow} weather={weather} />
 
         {/* HILL FADE — extra mist/snow over hills to push them back in distance */}
         {palette.hillFade > 0 && (
@@ -522,559 +534,361 @@ function ShootingStar({ seed }: { seed: number }) {
   );
 }
 
-function MalvernHills({ seed, cottageGlow = 0.7 }: { seed: number; cottageGlow?: number }) {
-  const sheep = (seed % 3) + 3;
+function MalvernHills({ seed, cottageGlow = 0.7, weather = 'sunshine' }: { seed: number; cottageGlow?: number; weather?: Weather }) {
+  const isSnow = weather === 'snowy';
+  const sheep = (seed % 3) + 2;
+  const glow = Math.min(1, 0.45 + cottageGlow * 0.6);
   return (
     <g transform="translate(0 30)">
-      {/* DEEP DISTANT ridge — barely visible, hazy */}
+      {/* ========== DISTANT FAR RIDGE — hazy sweep with prominent peak ========== */}
       <path
-        d="M 60 410 L 60 320 L 100 312 L 140 304 L 180 296 L 230 286 L 280 274 L 330 262 L 380 254 L 430 250 L 480 254 L 530 262 L 580 274 L 620 286 L 660 296 L 660 410 Z"
-        fill="url(#hillFar)" opacity="0.45"
+        d="M 60 600 L 60 360 Q 140 336 220 322 Q 290 308 350 296 Q 400 282 440 270 Q 470 254 490 232 L 510 218 Q 530 234 560 266 Q 600 288 660 302 L 660 600 Z"
+        fill={isSnow ? '#b8c2d2' : '#7c8da0'}
+        opacity={isSnow ? 0.95 : 0.78}
       />
+      {isSnow && (
+        <path
+          d="M 60 360 Q 140 336 220 322 Q 290 308 350 296 Q 400 282 440 270 Q 470 254 490 232 L 510 218 Q 530 234 560 266 Q 600 288 660 302"
+          fill="none" stroke="#f4f7fa" strokeWidth="14" opacity="0.92" strokeLinejoin="round" strokeLinecap="round"
+        />
+      )}
+      {!isSnow && (
+        <path
+          d="M 60 360 Q 140 336 220 322 Q 290 308 350 296 Q 400 282 440 270 Q 470 254 490 232 L 510 218 Q 530 234 560 266 Q 600 288 660 302"
+          fill="none" stroke="#bcced9" strokeWidth="1.8" opacity="0.55" strokeLinejoin="round" strokeLinecap="round"
+        />
+      )}
 
-      {/* Far ridge — Worcestershire Beacon profile */}
+      {/* ========== MAIN MOUNTAIN — dominant peak on right ========== */}
       <path
-        d="M 60 460 L 60 360 L 110 340 L 160 326 L 200 320 L 240 308 L 280 286 L 320 264 L 360 242 L 390 226 L 420 230 L 450 246 L 480 262 L 520 278 L 560 294 L 600 310 L 640 330 L 660 344 L 660 460 Z"
-        fill="url(#hillFar)" opacity="0.78"
+        d="M 60 600 L 60 428 Q 150 406 230 392 Q 300 380 360 364 Q 410 348 450 322 Q 475 296 495 268 Q 514 252 530 272 Q 558 308 592 338 Q 622 354 660 364 L 660 600 Z"
+        fill={isSnow ? '#cbd5e3' : '#7e9369'}
       />
-
-      {/* DISTANT VILLAGE — Great Malvern silhouette with church spire */}
-      <g opacity="0.65">
-        {/* houses cluster */}
-        <g transform="translate(160 410)">
-          <rect x="0" y="0" width="14" height="18" fill="#3a4e3a" />
-          <path d="M -2 0 L 7 -8 L 16 0 Z" fill="#2a3a2a" />
-          <rect x="14" y="4" width="10" height="14" fill="#3a4858" />
-          <path d="M 13 4 L 19 -2 L 25 4 Z" fill="#2a3a48" />
-          <rect x="24" y="-2" width="12" height="20" fill="#5a4040" />
-          <path d="M 23 -2 L 30 -10 L 37 -2 Z" fill="#3a2828" />
-          {/* CHURCH with spire */}
-          <rect x="40" y="-4" width="12" height="22" fill="#5a5040" />
-          <path d="M 39 -4 L 46 -16 L 53 -4 Z" fill="#3a3328" />
-          <path d="M 44 -4 L 46 -28 L 48 -4 Z" fill="#3a3328" />
-          <path d="M 46 -28 L 47 -32 L 45 -32 Z" fill="#3a3328" />
-          {/* row continues */}
-          <rect x="56" y="2" width="10" height="16" fill="#4a3438" />
-          <path d="M 55 2 L 61 -4 L 67 2 Z" fill="#2a1d24" />
-          <rect x="66" y="-1" width="14" height="19" fill="#3a4858" />
-          <path d="M 65 -1 L 73 -8 L 81 -1 Z" fill="#2a3340" />
-        </g>
-        {/* tiny lit windows — brighter when weather is moody */}
-        <g fill="#ffe8a8" opacity={Math.min(1, 0.45 + cottageGlow * 0.55)}>
-          <rect x="164" y="416" width="1.6" height="2" />
-          <rect x="170" y="416" width="1.6" height="2" />
-          <rect x="178" y="416" width="1.4" height="2" />
-          <rect x="186" y="412" width="1.6" height="2" />
-          <rect x="200" y="408" width="1.4" height="2" />
-          <rect x="218" y="416" width="1.4" height="2" />
-          <rect x="232" y="412" width="1.6" height="2" />
-        </g>
-        {/* chimney smoke */}
-        <path className="steam-wisp" d="M 188 392 q -2 -8 0 -16 q 3 -8 -1 -14" stroke="#9a8a78" strokeWidth="1.4" fill="none" strokeLinecap="round" opacity="0.55"
-          style={{ animation: 'steamRise 7s ease-out infinite' }} />
+      {/* warm highlight band catching sun */}
+      {!isSnow && (
+        <path
+          d="M 80 426 Q 170 400 250 382 Q 320 364 380 350 Q 425 334 460 310 Q 482 290 498 270"
+          fill="none" stroke="#c8d684" strokeWidth="20" opacity="0.3" strokeLinejoin="round" strokeLinecap="round"
+        />
+      )}
+      {/* snow blanket on main mountain */}
+      {isSnow && (
+        <path
+          d="M 60 428 Q 150 406 230 392 Q 300 380 360 364 Q 410 348 450 322 Q 475 296 495 268 Q 514 252 530 272 Q 558 308 592 338 Q 622 354 660 364"
+          fill="none" stroke="#ffffff" strokeWidth="12" opacity="0.9" strokeLinejoin="round" strokeLinecap="round"
+        />
+      )}
+      {/* ridge-line rock shading on mountain */}
+      <g opacity={isSnow ? 0.25 : 0.38}>
+        <path d="M 495 268 Q 506 300 512 338" stroke={isSnow ? '#6a7282' : '#4a5a38'} strokeWidth="1.2" fill="none" opacity="0.7" />
+        <path d="M 460 320 Q 472 360 470 400" stroke={isSnow ? '#6a7282' : '#4a5a38'} strokeWidth="0.9" fill="none" opacity="0.55" />
       </g>
 
-      {/* Mid ridge */}
+      {/* ========== NEAR MEADOW / FOREGROUND HILLSIDE ========== */}
       <path
-        d="M 60 490 L 60 388 L 100 376 L 140 362 L 180 348 L 230 336 L 270 328 L 310 318 L 350 306 L 390 296 L 430 304 L 470 318 L 510 338 L 550 358 L 590 376 L 630 392 L 660 404 L 660 490 Z"
-        fill="url(#hillMid)"
+        d="M 60 600 L 60 472 Q 170 454 280 448 Q 380 444 460 436 Q 540 430 660 424 L 660 600 Z"
+        fill={isSnow ? '#e4eaf2' : '#b1a96a'}
       />
+      {/* warm grass highlight band */}
+      {!isSnow && (
+        <path
+          d="M 60 482 Q 200 460 360 452 Q 520 444 660 438"
+          fill="none" stroke="#d8c672" strokeWidth="28" opacity="0.32" strokeLinecap="round" strokeLinejoin="round"
+        />
+      )}
+      {/* hedgerow divider (non-snow) */}
+      {!isSnow && (
+        <path
+          d="M 60 514 Q 200 502 360 504 Q 520 506 660 502"
+          fill="none" stroke="#6a7a3a" strokeWidth="1.5" opacity="0.45"
+        />
+      )}
 
-      {/* Mist rolling across mid hills */}
-      <g opacity="0.32">
-        <ellipse cx="200" cy="430" rx="120" ry="16" fill="#fff8e0" />
-        <ellipse cx="450" cy="450" rx="140" ry="14" fill="#fff8e0" />
-        <ellipse cx="320" cy="468" rx="180" ry="10" fill="#fff8e0" />
-      </g>
-
-      {/* Near hill */}
-      <path
-        d="M 60 580 L 60 440 L 110 430 L 160 422 L 210 418 L 260 410 L 310 402 L 360 390 L 400 382 L 430 388 L 470 402 L 510 420 L 550 438 L 590 452 L 630 464 L 660 472 L 660 580 Z"
-        fill="url(#hillNear)"
-      />
-
-      {/* Hedgerow line */}
-      <path
-        d="M 60 510 Q 120 502 180 508 Q 260 514 340 508 Q 420 502 500 510 Q 580 518 660 512"
-        fill="none" stroke="#2a3a22" strokeWidth="3" opacity="0.45"
-      />
-
-      {/* WINDING COBBLE LANE — leads up to the cottage from the foreground */}
-      <g opacity="0.85">
-        {/* base path — warm earthy stone */}
-        <path d="M 280 580 Q 320 560 380 540 Q 420 520 440 510 L 458 510 Q 444 522 408 542 Q 350 562 308 580 Z"
-          fill="#b89878" />
-        <path d="M 280 580 Q 320 560 380 540 Q 420 520 440 510"
-          stroke="#a07a5a" strokeWidth="0.5" fill="none" opacity="0.7" />
-        {/* cobble texture — small scattered ovals */}
-        {Array.from({ length: 18 }).map((_, i) => {
-          const t = (i + 0.5) / 18;
-          const x = 290 + (380 - 290) * t + 60 * t * t + ((i * 3) % 4 - 2);
-          const y = 578 - (578 - 512) * t + ((i * 7) % 3 - 1);
-          return <ellipse key={i} cx={x} cy={y} rx="2.2" ry="1.2" fill="#9a7858" opacity="0.55" />;
-        })}
-      </g>
-
-      {/* DRYSTONE WALL — winding through the mid-ground, breaks where the path crosses it */}
-      <g opacity="0.85">
-        {/* left segment */}
-        <path d="M 60 528 Q 160 522 240 528 L 240 542 Q 160 532 60 540 Z" fill="#a8a098" />
-        <path d="M 60 528 Q 160 522 240 528" stroke="#c8c0b8" strokeWidth="1" fill="none" opacity="0.65" />
-        {/* right segment */}
-        <path d="M 320 532 Q 460 528 660 532 L 660 542 Q 460 538 320 542 Z" fill="#a8a098" />
-        <path d="M 320 532 Q 460 528 660 532" stroke="#c8c0b8" strokeWidth="1" fill="none" opacity="0.65" />
-        {/* mortar ticks across both segments */}
-        {Array.from({ length: 36 }).map((_, i) => {
-          const x = 64 + i * 17 + ((i * 7) % 5);
-          // skip the gap where the path crosses
-          if (x > 240 && x < 320) return null;
-          return (
-            <line key={i} x1={x} y1={530 + (i % 3)} x2={x} y2={540 + (i % 3)}
-              stroke="#5a5048" strokeWidth="0.5" opacity="0.65" />
-          );
-        })}
-        {/* moss patches */}
-        {Array.from({ length: 8 }).map((_, i) => {
-          const x = 90 + i * 75 + ((i * 3) % 12);
-          if (x > 240 && x < 320) return null;
-          return <ellipse key={i} cx={x} cy="535" rx="3.5" ry="1.4" fill="#7a8a4a" opacity="0.5" />;
-        })}
-      </g>
-
-      {/* SMALL POND on the left — reflective with reeds */}
-      <g opacity="0.92">
-        {/* reflection ellipse */}
-        <ellipse cx="160" cy="552" rx="46" ry="11" fill="#3a4250" opacity="0.55" />
-        <ellipse cx="160" cy="550" rx="42" ry="9"  fill="#5a6878" opacity="0.55" />
-        <ellipse cx="160" cy="548" rx="36" ry="7"  fill="#7a92a8" opacity="0.45" />
-        {/* sky reflection highlight */}
-        <ellipse cx="160" cy="546" rx="22" ry="2.5" fill="#cfe0ec" opacity="0.55" />
-        <ellipse cx="172" cy="549" rx="8"  ry="1.4" fill="#fff8e8" opacity="0.4" />
-        {/* lily pads */}
-        <ellipse cx="138" cy="552" rx="3.5" ry="1.4" fill="#4a6a38" opacity="0.85" />
-        <ellipse cx="178" cy="554" rx="4"   ry="1.6" fill="#3a5230" opacity="0.85" />
-        <circle  cx="140" cy="551" r="0.9" fill="#e8809a" />
-        {/* reeds at edges */}
-        {[
-          { x: 116, y: 546 }, { x: 119, y: 544 }, { x: 122, y: 547 },
-          { x: 198, y: 546 }, { x: 201, y: 543 }, { x: 204, y: 547 },
-          { x: 152, y: 542 }, { x: 168, y: 540 },
-        ].map((r, i) => (
-          <line key={i} x1={r.x} y1={r.y + 6} x2={r.x + (i % 2 ? 1 : -1)} y2={r.y - 6}
-            stroke="#5a7242" strokeWidth="0.7" />
-        ))}
-      </g>
-
-      {/* SMALL STONE BARN — left of cottage, slate-roofed outbuilding */}
-      <g transform="translate(316 488)" opacity="0.95">
-        {/* shadow */}
-        <ellipse cx="14" cy="34" rx="22" ry="2.2" fill="#1a0e08" opacity="0.4" />
-        {/* body */}
-        <rect x="0" y="10" width="28" height="24" fill="#a89078" />
-        {/* stone texture */}
-        <g stroke="#7a624a" strokeWidth="0.35" opacity="0.55" fill="none">
-          <line x1="0" y1="18" x2="28" y2="18" />
-          <line x1="0" y1="26" x2="28" y2="26" />
-          <line x1="6" y1="10" x2="6" y2="18" />
-          <line x1="14" y1="18" x2="14" y2="26" />
-          <line x1="22" y1="10" x2="22" y2="18" />
-          <line x1="10" y1="26" x2="10" y2="34" />
-        </g>
-        {/* steep slate roof */}
-        <path d="M -3 10 L 14 -3 L 31 10 Z" fill="#4a4e58" />
-        <line x1="-3" y1="10" x2="31" y2="10" stroke="#5a5e6e" strokeWidth="0.5" opacity="0.6" />
-        {/* big barn door (closed) */}
-        <rect x="9" y="20" width="10" height="14" fill="#5a3424" />
-        <line x1="9" y1="20" x2="9" y2="34" stroke="#3a2418" strokeWidth="0.4" />
-        <line x1="14" y1="20" x2="14" y2="34" stroke="#3a2418" strokeWidth="0.5" />
-        <line x1="19" y1="20" x2="19" y2="34" stroke="#3a2418" strokeWidth="0.4" />
-        <line x1="9" y1="27" x2="19" y2="27" stroke="#3a2418" strokeWidth="0.4" />
-        {/* tiny round window in gable */}
-        <circle cx="14" cy="6" r="2" fill="#fce4a8" opacity={Math.min(1, 0.45 + cottageGlow * 0.55)} />
-        <circle cx="14" cy="6" r="2" fill="none" stroke="#3a2418" strokeWidth="0.4" />
-      </g>
-
-      {/* MALVERN-STONE COTTAGE — bigger, two-storey with dormer */}
-      <g transform="translate(404 458)" opacity="0.95">
-        {/* shadow */}
-        <ellipse cx="30" cy="76" rx="42" ry="3.5" fill="#1a0e08" opacity="0.45" />
-
-        {/* main cottage body — warm sandstone, two storeys */}
-        <rect x="0" y="22" width="60" height="56" fill="#c89878" />
-        {/* stone texture (irregular ashlar feel) */}
-        <g stroke="#8a6a52" strokeWidth="0.4" opacity="0.55" fill="none">
-          <line x1="0" y1="32" x2="60" y2="32" />
-          <line x1="0" y1="42" x2="60" y2="42" />
-          <line x1="0" y1="52" x2="60" y2="52" />
-          <line x1="0" y1="62" x2="60" y2="62" />
-          <line x1="0" y1="70" x2="60" y2="70" />
-          {[8, 22, 38, 52].map((x, i) => (
-            <line key={`v1-${i}`} x1={x} y1="22" x2={x} y2="32" />
-          ))}
-          {[14, 30, 46].map((x, i) => (
-            <line key={`v2-${i}`} x1={x} y1="32" x2={x} y2="42" />
-          ))}
-          {[10, 24, 40, 56].map((x, i) => (
-            <line key={`v3-${i}`} x1={x} y1="52" x2={x} y2="62" />
-          ))}
-          {[8, 28, 44].map((x, i) => (
-            <line key={`v4-${i}`} x1={x} y1="62" x2={x} y2="70" />
-          ))}
-        </g>
-        {/* corner quoins (lighter dressed stone at the corners) */}
-        <g fill="#d8a888">
-          <rect x="0" y="22" width="3" height="6" />
-          <rect x="0" y="34" width="3" height="6" />
-          <rect x="0" y="46" width="3" height="6" />
-          <rect x="0" y="58" width="3" height="6" />
-          <rect x="57" y="22" width="3" height="6" />
-          <rect x="57" y="34" width="3" height="6" />
-          <rect x="57" y="46" width="3" height="6" />
-          <rect x="57" y="58" width="3" height="6" />
-        </g>
-
-        {/* slate roof — main */}
-        <path d="M -4 22 L 30 -2 L 64 22 Z" fill="#3e4252" />
-        <line x1="-4" y1="22" x2="64" y2="22" stroke="#5a5e6e" strokeWidth="0.7" opacity="0.7" />
-        {/* slate horizontal courses */}
-        <line x1="0" y1="18" x2="60" y2="18" stroke="#2a2e3a" strokeWidth="0.4" opacity="0.5" />
-        <line x1="6" y1="13" x2="54" y2="13" stroke="#2a2e3a" strokeWidth="0.4" opacity="0.5" />
-        <line x1="12" y1="8" x2="48" y2="8" stroke="#2a2e3a" strokeWidth="0.4" opacity="0.5" />
-        <line x1="20" y1="3" x2="40" y2="3" stroke="#2a2e3a" strokeWidth="0.4" opacity="0.5" />
-        {/* DORMER window in roof */}
-        <g>
-          <path d="M 22 12 L 22 4 L 38 4 L 38 12 Z" fill="#c89878" />
-          <path d="M 20 5 L 30 -2 L 40 5 Z" fill="#3e4252" />
-          <rect x="24" y="5" width="12" height="7" fill="#fce4a8" opacity={Math.min(1, 0.45 + cottageGlow * 0.55)} />
-          <rect x="24" y="5" width="12" height="7" fill="none" stroke="#3a2418" strokeWidth="0.35" />
-          <line x1="30" y1="5" x2="30" y2="12" stroke="#3a2418" strokeWidth="0.3" />
-        </g>
-
-        {/* CHIMNEY with chimney pot */}
-        <rect x="44" y="-7" width="6" height="14" fill="#9a7a62" />
-        <rect x="43.5" y="-8" width="7" height="2" fill="#7a5a42" />
-        {/* chimney pot — terracotta cylinder */}
-        <rect x="44.5" y="-12" width="2.2" height="5" fill="#a85040" />
-        <rect x="47.3" y="-12" width="2.2" height="5" fill="#a85040" />
-        <ellipse cx="45.6" cy="-12" rx="1.1" ry="0.6" fill="#7a3828" />
-        <ellipse cx="48.4" cy="-12" rx="1.1" ry="0.6" fill="#7a3828" />
-        <path className="steam-wisp" d="M 47 -12 q -3 -10 0 -18 q 3 -8 0 -12" stroke="#bcb4ac" strokeWidth="1.6" fill="none" strokeLinecap="round" opacity="0.6"
-          style={{ animation: 'steamRise 7s ease-out infinite' }} />
-
-        {/* GROUND FLOOR — central PORCH + DOOR */}
-        {/* porch overhang */}
-        <rect x="22" y="56" width="16" height="3" fill="#5a3424" />
-        <path d="M 21 56 L 30 50 L 39 56 Z" fill="#7a4a30" />
-        {/* door */}
-        <rect x="25" y="59" width="10" height="19" fill="#7a3a28" />
-        <rect x="25" y="59" width="10" height="19" fill="none" stroke="#3a1810" strokeWidth="0.5" />
-        <line x1="25" y1="68" x2="35" y2="68" stroke="#3a1810" strokeWidth="0.4" />
-        <circle cx="33" cy="69" r="0.5" fill="#fcd092" />
-        {/* fanlight above door */}
-        <path d="M 25 59 Q 30 55 35 59 Z" fill="#fce4a8" opacity={Math.min(1, 0.5 + cottageGlow * 0.5)} />
-        <path d="M 25 59 Q 30 55 35 59" stroke="#3a1810" strokeWidth="0.35" fill="none" />
-        {/* threshold stone */}
-        <rect x="22" y="78" width="16" height="2" fill="#7a6a58" />
-
-        {/* GROUND FLOOR WINDOWS — left + right with WINDOW BOXES of geraniums */}
-        {[6, 42].map((x, i) => (
-          <g key={`gw${i}`}>
-            <rect x={x} y={56} width="12" height="14" fill="#fce4a8" opacity={Math.min(1, 0.5 + cottageGlow * 0.5)} />
-            <rect x={x} y={56} width="12" height="14" fill="none" stroke="#3a2418" strokeWidth="0.5" />
-            <line x1={x + 6} y1={56} x2={x + 6} y2={70} stroke="#3a2418" strokeWidth="0.35" />
-            <line x1={x} y1={63} x2={x + 12} y2={63} stroke="#3a2418" strokeWidth="0.35" />
-            {/* sill */}
-            <rect x={x - 1} y={70} width="14" height="1.4" fill="#8a7a6a" />
-            {/* window box */}
-            <rect x={x - 0.5} y={71.4} width="13" height="3.5" fill="#5a3424" />
-            {/* geraniums (red dots) + leaves */}
-            {[2, 5, 8, 11].map((dx, di) => (
-              <g key={di}>
-                <circle cx={x - 0.5 + dx} cy={70.5} r="1.4" fill={di % 2 ? '#e85060' : '#d83848'} />
-                <ellipse cx={x - 0.5 + dx + 0.6} cy={71.6} rx="1.4" ry="0.8" fill="#4a6a38" opacity="0.7" />
-              </g>
-            ))}
-          </g>
-        ))}
-
-        {/* UPPER FLOOR WINDOWS — three smaller */}
-        {[6, 25, 44].map((x, i) => (
-          <g key={`uw${i}`}>
-            <rect x={x} y={32} width="10" height="11" fill="#fce4a8" opacity={Math.min(1, 0.45 + cottageGlow * 0.55)} />
-            <rect x={x} y={32} width="10" height="11" fill="none" stroke="#3a2418" strokeWidth="0.4" />
-            <line x1={x + 5} y1={32} x2={x + 5} y2={43} stroke="#3a2418" strokeWidth="0.3" />
-            <line x1={x} y1={37.5} x2={x + 10} y2={37.5} stroke="#3a2418" strokeWidth="0.3" />
-            <rect x={x - 1} y={43} width="12" height="1" fill="#8a7a6a" />
-          </g>
-        ))}
-
-        {/* CLIMBING ROSE — taller stem + more blooms going up the right side */}
-        <g>
-          <path d="M 56 78 Q 58 60 55 42 Q 58 28 56 14" stroke="#4a6a38" strokeWidth="0.7" fill="none" />
-          {[
-            { x: 55, y: 74, c: '#7aa860' }, { x: 57, y: 70, c: '#e8809a' }, { x: 54, y: 66, c: '#e8a0b4' },
-            { x: 56, y: 62, c: '#7aa860' }, { x: 58, y: 58, c: '#d86878' }, { x: 55, y: 54, c: '#7aa860' },
-            { x: 57, y: 50, c: '#e8809a' }, { x: 54, y: 46, c: '#7aa860' }, { x: 56, y: 42, c: '#d86878' },
-            { x: 58, y: 38, c: '#7aa860' }, { x: 55, y: 34, c: '#e8a0b4' }, { x: 57, y: 28, c: '#d86878' },
-            { x: 56, y: 22, c: '#e8809a' }, { x: 58, y: 16, c: '#7aa860' },
-          ].map((p, i) => (
-            <circle key={i} cx={p.x} cy={p.y} r={p.c.startsWith('#7') ? 1.2 : 1.7} fill={p.c} opacity="0.9" />
-          ))}
-        </g>
-
-        {/* HOUSE NAME PLAQUE next to door */}
-        <rect x="14" y="63" width="7" height="3" fill="#fff8e0" opacity="0.9" />
-        <text x="17.5" y="65.5" textAnchor="middle" fontSize="2.2" fill="#3a2418" fontFamily="serif">malvern</text>
-      </g>
-
-      {/* COTTAGE GARDEN — much fuller now: lavender border, hollyhocks, sunflowers,
-          foxgloves, daisies, leaf carpet */}
-      <g opacity="0.95">
-        {/* leaf carpet under everything */}
-        <path d="M 380 552 Q 430 558 480 550 Q 510 548 530 552" stroke="#4a6a38" strokeWidth="3" fill="none" opacity="0.55" />
-        {/* SUNFLOWER on the right edge of garden */}
-        <g>
-          <line x1="494" y1="554" x2="494" y2="520" stroke="#4a6a38" strokeWidth="0.9" />
-          <ellipse cx="490" cy="540" rx="3" ry="1.6" fill="#4a6a38" transform="rotate(-30 490 540)" />
-          <ellipse cx="498" cy="534" rx="3" ry="1.6" fill="#4a6a38" transform="rotate(30 498 534)" />
-          {/* petals */}
-          <g transform="translate(494 518)">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <ellipse key={i} cx="0" cy="-3" rx="1.6" ry="3" fill="#fcd048"
-                transform={`rotate(${i * 36})`} />
-            ))}
-            <circle cx="0" cy="0" r="2" fill="#5a3424" />
-          </g>
-        </g>
-        {/* SECOND sunflower — slightly shorter */}
-        <g>
-          <line x1="478" y1="554" x2="478" y2="528" stroke="#4a6a38" strokeWidth="0.8" />
-          <g transform="translate(478 526)">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <ellipse key={i} cx="0" cy="-2.4" rx="1.4" ry="2.4" fill="#fcd048"
-                transform={`rotate(${i * 36})`} />
-            ))}
-            <circle cx="0" cy="0" r="1.6" fill="#5a3424" />
-          </g>
-        </g>
-        {/* HOLLYHOCKS — three stalks */}
-        {[
-          { x: 446, y: 514, h: 24, c: '#d86878' },
-          { x: 450, y: 516, h: 20, c: '#e8809a' },
-          { x: 454, y: 518, h: 18, c: '#a85070' },
-        ].map((h, i) => (
-          <g key={`h${i}`}>
-            <line x1={h.x} y1={h.y + h.h} x2={h.x} y2={h.y} stroke="#4a6a38" strokeWidth="0.7" />
-            <circle cx={h.x} cy={h.y} r="2.2" fill={h.c} />
-            <circle cx={h.x - 1.2} cy={h.y + 4} r="2" fill={h.c} opacity="0.85" />
-            <circle cx={h.x + 1.2} cy={h.y + 8} r="1.8" fill={h.c} opacity="0.7" />
-            <circle cx={h.x - 1} cy={h.y + 12} r="1.6" fill={h.c} opacity="0.55" />
-          </g>
-        ))}
-        {/* FOXGLOVES — purple bell stalks */}
-        {[
-          { x: 468, y: 516 }, { x: 472, y: 520 },
-        ].map((f, i) => (
-          <g key={`fox${i}`}>
-            <line x1={f.x} y1={f.y + 22} x2={f.x} y2={f.y} stroke="#4a6a38" strokeWidth="0.6" />
-            {[0, 4, 8, 12, 16].map((dy, j) => (
-              <ellipse key={j} cx={f.x + (j % 2 ? 1.2 : -1.2)} cy={f.y + dy} rx="1.4" ry="2"
-                fill="#a878c6" opacity={0.9 - j * 0.1} />
-            ))}
-          </g>
-        ))}
-        {/* LAVENDER border across the front of the garden */}
-        {Array.from({ length: 22 }).map((_, i) => {
-          const x = 388 + i * 5;
-          return (
-            <ellipse key={`l${i}`} cx={x} cy={544 + (i % 2)} rx="2.2" ry="3.4"
-              fill={i % 3 === 0 ? '#8a72b0' : i % 3 === 1 ? '#a892c6' : '#9a82c6'} />
-          );
-        })}
-        {/* DAISIES + small white flowers scattered */}
-        {[
-          { x: 392, y: 552 }, { x: 412, y: 554 }, { x: 428, y: 552 },
-          { x: 460, y: 554 }, { x: 484, y: 552 }, { x: 504, y: 555 },
-        ].map((f, i) => (
-          <g key={`d${i}`}>
-            <circle cx={f.x} cy={f.y} r="0.8" fill="#fcd048" />
-            {Array.from({ length: 8 }).map((_, j) => (
-              <ellipse key={j} cx={f.x} cy={f.y - 1.2} rx="0.7" ry="1"
-                fill="#fff8e0" transform={`rotate(${j * 45} ${f.x} ${f.y})`} />
-            ))}
-          </g>
-        ))}
-      </g>
-
-      {/* PICKET FENCE in front of the cottage garden */}
-      <g opacity="0.92">
-        {/* horizontal rails */}
-        <line x1="378" y1="558" x2="540" y2="558" stroke="#fdf4e0" strokeWidth="1.2" />
-        <line x1="378" y1="563" x2="540" y2="563" stroke="#fdf4e0" strokeWidth="1.2" />
-        {/* picket posts (with pointed tops) */}
-        {Array.from({ length: 22 }).map((_, i) => {
-          const x = 380 + i * 7.5;
-          if (x > 540) return null;
-          return (
-            <g key={i}>
-              <rect x={x} y={555} width="2" height="12" fill="#fdf4e0" />
-              <path d={`M ${x - 0.3} ${555} L ${x + 1} ${552} L ${x + 2.3} ${555} Z`} fill="#fdf4e0" />
-              <line x1={x + 1} y1={555} x2={x + 1} y2={567} stroke="#d8c4a4" strokeWidth="0.3" />
-            </g>
-          );
-        })}
-        {/* GARDEN GATE — central, open slightly */}
-        <g transform="translate(440 555)">
-          <rect x="0" y="0" width="14" height="16" fill="none" stroke="#fdf4e0" strokeWidth="1.4" />
-          <line x1="0" y1="4" x2="14" y2="4" stroke="#fdf4e0" strokeWidth="1" />
-          <line x1="0" y1="12" x2="14" y2="12" stroke="#fdf4e0" strokeWidth="1" />
-          <line x1="0" y1="16" x2="14" y2="0" stroke="#fdf4e0" strokeWidth="1" opacity="0.85" />
-          {/* hinge dots */}
-          <circle cx="0" cy="2" r="0.6" fill="#5a3424" />
-          <circle cx="0" cy="14" r="0.6" fill="#5a3424" />
-        </g>
-      </g>
-
-      {/* WASHING LINE — sheets between cottage and a tree */}
-      <g opacity="0.9">
-        <path d="M 466 470 Q 510 472 550 478" stroke="#3a2418" strokeWidth="0.5" fill="none" />
-        {/* sheet 1 — gentle sway via animation */}
-        <g style={{ transformOrigin: '486px 470px', animation: 'leafSwayA 8s ease-in-out infinite' }}>
-          <path d="M 482 472 Q 484 484 488 484 Q 492 484 494 472 Q 488 470 482 472 Z" fill="#fdf4e0" />
-          <line x1="482" y1="472" x2="494" y2="472" stroke="#3a2418" strokeWidth="0.3" />
-        </g>
-        {/* sheet 2 — tea towel */}
-        <g style={{ transformOrigin: '518px 472px', animation: 'leafSwayB 10s ease-in-out infinite' }}>
-          <path d="M 514 474 Q 516 484 520 484 Q 524 484 526 474 Q 520 472 514 474 Z" fill="#a8c8d8" opacity="0.9" />
-          {/* stripes */}
-          <line x1="515" y1="476" x2="525" y2="476" stroke="#5a8aa0" strokeWidth="0.4" />
-          <line x1="515" y1="479" x2="525" y2="479" stroke="#5a8aa0" strokeWidth="0.4" />
-        </g>
-        {/* small pegs */}
-        <circle cx="484" cy="472" r="0.5" fill="#7a4828" />
-        <circle cx="492" cy="472" r="0.5" fill="#7a4828" />
-        <circle cx="516" cy="474" r="0.5" fill="#7a4828" />
-        <circle cx="524" cy="474" r="0.5" fill="#7a4828" />
-      </g>
-
-      {/* PICNIC BENCH under the oak — wooden, two seats + table */}
-      <g transform="translate(208 552)" opacity="0.95">
-        <ellipse cx="22" cy="20" rx="26" ry="2" fill="#1a0e08" opacity="0.4" />
-        {/* table top */}
-        <rect x="0" y="6" width="44" height="3" fill="#7a4828" />
-        <rect x="0" y="6" width="44" height="3" fill="none" stroke="#3a1810" strokeWidth="0.4" />
-        {/* table legs */}
-        <line x1="4" y1="9" x2="2" y2="20" stroke="#5a3018" strokeWidth="1.4" />
-        <line x1="40" y1="9" x2="42" y2="20" stroke="#5a3018" strokeWidth="1.4" />
-        {/* seats */}
-        <rect x="-2" y="14" width="14" height="2" fill="#8a5430" />
-        <rect x="32" y="14" width="14" height="2" fill="#8a5430" />
-        {/* seat legs */}
-        <line x1="0" y1="16" x2="0" y2="20" stroke="#5a3018" strokeWidth="1" />
-        <line x1="10" y1="16" x2="10" y2="20" stroke="#5a3018" strokeWidth="1" />
-        <line x1="34" y1="16" x2="34" y2="20" stroke="#5a3018" strokeWidth="1" />
-        <line x1="44" y1="16" x2="44" y2="20" stroke="#5a3018" strokeWidth="1" />
-      </g>
-
-      {/* BEES + BUTTERFLIES near the garden — small ambient life */}
-      <g pointerEvents="none">
-        <g style={{ animation: 'beeBuzz 14s ease-in-out infinite' }}>
-          <ellipse cx="0" cy="0" rx="1.6" ry="1" fill="#fcd048" />
-          <ellipse cx="0" cy="0" rx="1.6" ry="1" fill="none" stroke="#1a1408" strokeWidth="0.4" />
-          {/* tiny wing blur */}
-          <ellipse cx="0" cy="-1" rx="1.4" ry="0.6" fill="#dde2e8" opacity="0.55" />
-        </g>
-      </g>
-
-      {/* Foreground TREES — silhouettes for depth */}
+      {/* ========== DARK FIR TREES on right mountain slope ========== */}
       <g>
-        {/* big oak left */}
-        <g transform="translate(110 540)">
-          <path d="M -2 0 Q -3 30 0 50" stroke="#1a1408" strokeWidth="3" fill="none" />
-          <ellipse cx="-2" cy="-12" rx="22" ry="20" fill="#1a2818" />
-          <ellipse cx="-12" cy="-18" rx="14" ry="14" fill="#1a2818" />
-          <ellipse cx="8" cy="-22" rx="14" ry="14" fill="#1a2818" />
-          <ellipse cx="0" cy="-30" rx="12" ry="10" fill="#22321e" opacity="0.85" />
-        </g>
-        {/* tall pine right */}
-        <g transform="translate(620 540)">
-          <path d="M 0 0 L 0 50" stroke="#1a1408" strokeWidth="3" fill="none" />
-          <path d="M 0 -32 L -10 -8 L 10 -8 Z" fill="#1a2818" />
-          <path d="M 0 -22 L -14 8 L 14 8 Z" fill="#1a2818" />
-          <path d="M 0 -10 L -12 18 L 12 18 Z" fill="#1a2818" />
-        </g>
-        {/* small bushes */}
-        <ellipse cx="280" cy="572" rx="14" ry="6" fill="#1a2818" opacity="0.85" />
-        <ellipse cx="380" cy="572" rx="11" ry="5" fill="#22321e" opacity="0.85" />
-        <ellipse cx="490" cy="572" rx="13" ry="5" fill="#1a2818" opacity="0.85" />
-      </g>
-
-      {/* fence posts in mid-distance */}
-      <g opacity="0.45">
-        {[180, 240, 300, 380, 440, 500].map((x, i) => (
-          <g key={i}>
-            <line x1={x} y1="510" x2={x} y2="530" stroke="#3a2418" strokeWidth="1.2" />
-          </g>
-        ))}
-        <line x1="180" y1="518" x2="500" y2="518" stroke="#3a2418" strokeWidth="0.8" />
-        <line x1="180" y1="524" x2="500" y2="524" stroke="#3a2418" strokeWidth="0.8" />
-      </g>
-
-      {/* Trees on ridge */}
-      {[120, 180, 260, 340, 420, 500, 580, 640].map((x, i) => (
-        <g key={i} transform={`translate(${x + (i % 2) * 4} ${488 + (i % 3) * 4})`}>
-          <ellipse cx="0" cy="-4" rx="3" ry="6" fill="#2a3a22" opacity="0.7" />
-          <ellipse cx="0" cy="-2" rx="2" ry="4" fill="#3a4e2a" opacity="0.85" />
-        </g>
-      ))}
-
-      {/* TREE CLUSTER — small grove on mid ridge for depth */}
-      <g opacity="0.92">
         {[
-          { x: 290, y: 470, w: 7,  h: 12, c: '#2e3e26' },
-          { x: 298, y: 472, w: 9,  h: 14, c: '#3a5230' },
-          { x: 308, y: 474, w: 6,  h: 11, c: '#2a3a22' },
-          { x: 316, y: 476, w: 8,  h: 13, c: '#36482c' },
-          { x: 324, y: 472, w: 7,  h: 12, c: '#3a5230' },
-          { x: 332, y: 474, w: 5,  h: 10, c: '#2e3e26' },
+          { x: 446, y: 328, s: 0.95 }, { x: 466, y: 342, s: 0.82 },
+          { x: 496, y: 308, s: 0.9 },  { x: 518, y: 318, s: 0.78 },
+          { x: 540, y: 340, s: 0.92 }, { x: 560, y: 354, s: 0.82 },
+          { x: 578, y: 362, s: 0.78 }, { x: 600, y: 370, s: 0.88 },
+          { x: 622, y: 376, s: 0.78 }, { x: 640, y: 380, s: 0.7 },
+          { x: 512, y: 374, s: 0.78 }, { x: 534, y: 386, s: 0.73 },
+          { x: 558, y: 398, s: 0.78 }, { x: 582, y: 406, s: 0.7 },
         ].map((t, i) => (
-          <g key={`tc${i}`}>
-            {/* trunk hint */}
-            <line x1={t.x} y1={t.y + t.h - 1} x2={t.x} y2={t.y + t.h + 4} stroke="#1a1408" strokeWidth="1" opacity="0.7" />
-            {/* canopy — lozenge */}
-            <ellipse cx={t.x} cy={t.y + t.h / 2} rx={t.w / 2} ry={t.h / 2} fill={t.c} />
-            {/* highlight */}
-            <ellipse cx={t.x - t.w * 0.2} cy={t.y + t.h * 0.3} rx={t.w * 0.2} ry={t.h * 0.3} fill="#5a7242" opacity="0.4" />
-          </g>
+          <FirTree key={`fr${i}`} x={t.x} y={t.y} s={t.s} snow={isSnow} />
         ))}
       </g>
 
-      {/* Sheep */}
+      {/* ========== TREES on LEFT slope (edges of village) ========== */}
+      <g>
+        {[
+          { x: 80, y: 432, s: 0.92 }, { x: 102, y: 442, s: 0.82 },
+          { x: 122, y: 450, s: 0.74 }, { x: 308, y: 440, s: 0.78 },
+          { x: 328, y: 446, s: 0.72 }, { x: 348, y: 452, s: 0.68 },
+        ].map((t, i) => (
+          <FirTree key={`fl${i}`} x={t.x} y={t.y} s={t.s} snow={isSnow} />
+        ))}
+      </g>
+
+      {/* ========== VILLAGE WITH GOTHIC CHURCH ========== */}
+      <VillageMalvern glow={glow} snow={isSnow} />
+
+      {/* ========== WINDING ROAD up into the hills ========== */}
+      <g>
+        {/* road base */}
+        <path
+          d="M 640 600 Q 582 578 522 552 Q 464 534 424 516 Q 384 500 344 490 Q 304 482 264 474"
+          stroke={isSnow ? '#b0b8c8' : '#8e714c'}
+          strokeWidth="22" fill="none" strokeLinecap="round" opacity="0.95"
+        />
+        {/* road centre lighter */}
+        <path
+          d="M 640 600 Q 582 578 522 552 Q 464 534 424 516 Q 384 500 344 490 Q 304 482 264 474"
+          stroke={isSnow ? '#e4ebf4' : '#ba9862'}
+          strokeWidth="8" fill="none" strokeLinecap="round" opacity="0.85"
+        />
+        {/* dashed wheel tracks */}
+        <path
+          d="M 640 600 Q 582 578 522 552 Q 464 534 424 516 Q 384 500 344 490 Q 304 482 264 474"
+          stroke={isSnow ? '#c8d0dc' : '#9c7a46'}
+          strokeWidth="1.2" fill="none" opacity="0.45"
+          strokeDasharray="7 9"
+        />
+      </g>
+
+      {/* ========== TINY COTTAGE along the road (middle distance) ========== */}
+      <g transform="translate(434 504)">
+        <rect x="0" y="0" width="14" height="10" fill={isSnow ? '#c8cfdc' : '#d4c8a0'} />
+        <path d="M -1 0 L 7 -7 L 15 0 Z" fill={isSnow ? '#edf2f7' : '#7a3c2a'} />
+        {isSnow && <path d="M -1 0 L 7 -7 L 15 0" fill="none" stroke="#fff" strokeWidth="2" strokeLinejoin="round" opacity="0.95" />}
+        <rect x="3" y="3" width="2" height="2.5" fill="#fce4a8" opacity={glow} />
+        <rect x="9" y="3" width="2" height="2.5" fill="#fce4a8" opacity={glow} />
+        <rect x="6" y="6" width="2.5" height="4" fill="#3a2418" />
+      </g>
+
+      {/* ========== LAMP POSTS along the road (foreground to distance) ========== */}
+      <g>
+        {[
+          { x: 618, y: 596, s: 1.25 },
+          { x: 534, y: 556, s: 1.1 },
+          { x: 456, y: 524, s: 0.95 },
+          { x: 390, y: 502, s: 0.85 },
+          { x: 332, y: 488, s: 0.76 },
+          { x: 284, y: 476, s: 0.68 },
+        ].map((l, i) => (
+          <LampPost key={`lp${i}`} x={l.x} y={l.y} s={l.s} lit={cottageGlow > 0.3} />
+        ))}
+        {/* village lamps */}
+        <LampPost x={214} y={458} s={0.7} lit={cottageGlow > 0.3} />
+        <LampPost x={316} y={456} s={0.64} lit={cottageGlow > 0.3} />
+      </g>
+
+      {/* ========== SHEEP on the meadow ========== */}
       {Array.from({ length: sheep }).map((_, i) => (
-        <g key={i} transform={`translate(${200 + i * 70} ${478 - (i % 2) * 8})`}>
-          <ellipse cx="0" cy="0" rx="3.5" ry="2.4" fill="#f4ead8" opacity="0.9" />
-          <circle cx="-2.6" cy="-0.6" r="1.2" fill="#3a2418" opacity="0.7" />
-          <line x1="-2" y1="2" x2="-2" y2="3.5" stroke="#3a2418" strokeWidth="0.5" />
-          <line x1="2" y1="2" x2="2" y2="3.5" stroke="#3a2418" strokeWidth="0.5" />
+        <g key={i} transform={`translate(${364 + i * 30} ${452 - (i % 2) * 4})`}>
+          <ellipse cx="0" cy="0" rx="2.8" ry="1.9" fill={isSnow ? '#fafcff' : '#f4ead8'} opacity="0.92" />
+          <circle cx="-2.1" cy="-0.5" r="1" fill="#3a2418" opacity="0.7" />
+          <line x1="-1.5" y1="1.6" x2="-1.5" y2="2.6" stroke="#3a2418" strokeWidth="0.4" />
+          <line x1="1.5" y1="1.6" x2="1.5" y2="2.6" stroke="#3a2418" strokeWidth="0.4" />
         </g>
       ))}
 
-      {/* Path winding */}
-      <path d="M 320 580 Q 360 530 380 480 Q 400 430 380 400" stroke="#c89c70" strokeWidth="3" fill="none" opacity="0.4" />
-      <path d="M 320 580 Q 360 530 380 480 Q 400 430 380 400" stroke="#fde0b8" strokeWidth="1.4" fill="none" opacity="0.3" />
-      {/* tiny walker on the path */}
-      <g transform="translate(370 470)">
-        <ellipse cx="0" cy="2" rx="1.6" ry="0.6" fill="#1a0a06" opacity="0.55" />
-        <rect x="-1" y="-3" width="2" height="4" fill="#5a3424" opacity="0.85" />
-        <circle cx="0" cy="-5" r="1.2" fill="#c08a72" opacity="0.85" />
+      {/* ========== FOREGROUND GRASS TUFTS or SNOW DRIFTS ========== */}
+      {!isSnow ? (
+        <g opacity="0.55">
+          {Array.from({ length: 30 }).map((_, i) => {
+            const x = 60 + i * 20 + ((i * 11) % 7);
+            const y = 564 + ((i * 13) % 30);
+            return <line key={i} x1={x} y1={y} x2={x - 1 + (i % 3)} y2={y - 5} stroke="#8a824a" strokeWidth="0.7" />;
+          })}
+        </g>
+      ) : (
+        <g opacity="0.85" pointerEvents="none">
+          {Array.from({ length: 14 }).map((_, i) => {
+            const x = 70 + i * 42 + ((i * 13) % 11);
+            const y = 568 + ((i * 7) % 20);
+            return <ellipse key={i} cx={x} cy={y} rx="14" ry="2.4" fill="#ffffff" opacity="0.65" />;
+          })}
+        </g>
+      )}
+    </g>
+  );
+}
+
+function FirTree({ x, y, s, snow }: { x: number; y: number; s: number; snow?: boolean }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      <rect x="-0.8" y="-2" width="1.6" height="7" fill="#1a1408" opacity="0.9" />
+      <path d="M 0 -20 L -6 -8 L 6 -8 Z" fill={snow ? '#4a5a60' : '#283e22'} />
+      <path d="M 0 -13 L -8 -1 L 8 -1 Z" fill={snow ? '#445560' : '#22351e'} />
+      <path d="M 0 -6 L -10 6 L 10 6 Z" fill={snow ? '#3e4e58' : '#1c2f19'} />
+      {snow && (
+        <>
+          <path d="M 0 -20 L -3 -13 L 3 -13 Z" fill="#f4f7fa" opacity="0.92" />
+          <path d="M 0 -13 L -4 -6 L 4 -6 Z" fill="#f4f7fa" opacity="0.68" />
+          <path d="M 0 -6 L -5 1 L 5 1 Z" fill="#f4f7fa" opacity="0.45" />
+        </>
+      )}
+    </g>
+  );
+}
+
+function LampPost({ x, y, s, lit }: { x: number; y: number; s: number; lit: boolean }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      {/* soft warm glow halo */}
+      {lit && <circle cx="0" cy="-26" r="11" fill="url(#lampPostGlow)" opacity="0.85" />}
+      {/* base pedestal */}
+      <rect x="-2.4" y="-2" width="4.8" height="2.6" fill="#1a1410" />
+      <rect x="-1.9" y="-3.5" width="3.8" height="1.5" fill="#1a1410" />
+      {/* vertical post */}
+      <line x1="0" y1="-3" x2="0" y2="-24" stroke="#1a1410" strokeWidth="1.5" />
+      {/* decorative curls at top */}
+      <path d="M 0 -22 Q -3 -24 -2.4 -27" stroke="#1a1410" strokeWidth="0.9" fill="none" />
+      <path d="M 0 -22 Q 3 -24 2.4 -27" stroke="#1a1410" strokeWidth="0.9" fill="none" />
+      {/* lantern housing */}
+      <rect x="-2.8" y="-31" width="5.6" height="5.6" fill={lit ? '#ffe8a8' : '#2a2418'} />
+      <rect x="-2.8" y="-31" width="5.6" height="5.6" fill="none" stroke="#1a1410" strokeWidth="0.55" />
+      {/* flame/bulb highlight */}
+      {lit && <ellipse cx="0" cy="-28.2" rx="1.3" ry="2.2" fill="#fff4c8" opacity="0.95" />}
+      {/* cap */}
+      <path d="M -3.2 -31 L 0 -34.4 L 3.2 -31 Z" fill="#1a1410" />
+      <circle cx="0" cy="-35" r="0.55" fill="#1a1410" />
+    </g>
+  );
+}
+
+function VillageMalvern({ glow, snow }: { glow: number; snow: boolean }) {
+  const wallCol = snow ? '#cdd4e0' : '#d8ccac';
+  const wallShadow = snow ? '#adb5c4' : '#b4a684';
+  return (
+    <g transform="translate(140 382)">
+      {/* ground shadow beneath village */}
+      <ellipse cx="90" cy="84" rx="112" ry="4" fill="#1a0e08" opacity="0.22" />
+
+      {/* ================ GOTHIC CHURCH ================ */}
+      <g>
+        {/* nave body */}
+        <rect x="52" y="48" width="42" height="30" fill={snow ? '#a8afbe' : '#5a5c60'} />
+        <rect x="52" y="48" width="42" height="30" fill="none" stroke="#1a1a1f" strokeWidth="0.4" opacity="0.55" />
+        {/* stone-block course lines */}
+        <g stroke={snow ? '#8a92a2' : '#3e4044'} strokeWidth="0.3" opacity="0.55">
+          <line x1="52" y1="56" x2="94" y2="56" />
+          <line x1="52" y1="62" x2="94" y2="62" />
+          <line x1="52" y1="68" x2="94" y2="68" />
+          <line x1="52" y1="74" x2="94" y2="74" />
+        </g>
+        {/* side-aisle lean-to roof (lower) */}
+        <rect x="78" y="64" width="26" height="14" fill={snow ? '#b8bfce' : '#505258'} />
+        <path d="M 78 64 L 91 58 L 104 64 Z" fill={snow ? '#edf2f7' : '#3e3e42'} />
+        {snow && <path d="M 78 64 L 91 58 L 104 64" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round" opacity="0.95" />}
+        <rect x="82" y="68" width="2.5" height="3.5" fill="#fce4a8" opacity={glow * 0.9} />
+        <rect x="89" y="68" width="2.5" height="3.5" fill="#fce4a8" opacity={glow * 0.9} />
+        <rect x="96" y="68" width="2.5" height="3.5" fill="#fce4a8" opacity={glow * 0.9} />
+        {/* main nave pitched roof */}
+        <path d="M 50 48 L 73 28 L 96 48 Z" fill={snow ? '#edf2f7' : '#3e3e42'} />
+        <line x1="50" y1="48" x2="96" y2="48" stroke={snow ? '#bdc4d0' : '#2a2a2e'} strokeWidth="0.5" opacity="0.7" />
+        {snow && <path d="M 50 48 L 73 28 L 96 48" fill="none" stroke="#ffffff" strokeWidth="2.6" strokeLinejoin="round" strokeLinecap="round" opacity="0.95" />}
+
+        {/* TOWER + SPIRE (left end) */}
+        <rect x="34" y="20" width="22" height="28" fill={snow ? '#9da5b4' : '#4a4c50'} />
+        <rect x="34" y="20" width="22" height="28" fill="none" stroke="#1a1a1f" strokeWidth="0.45" opacity="0.55" />
+        {/* crenellation / cornice ledge */}
+        <rect x="33" y="20" width="24" height="2" fill={snow ? '#8088a0' : '#2a2c30'} />
+        {/* tower stone courses */}
+        <g stroke={snow ? '#7e869a' : '#35373a'} strokeWidth="0.3" opacity="0.5">
+          <line x1="34" y1="28" x2="56" y2="28" />
+          <line x1="34" y1="34" x2="56" y2="34" />
+          <line x1="34" y1="40" x2="56" y2="40" />
+        </g>
+        {/* louvred belfry openings */}
+        <rect x="39" y="26" width="3" height="7" fill="#1a1a20" opacity="0.85" />
+        <rect x="48" y="26" width="3" height="7" fill="#1a1a20" opacity="0.85" />
+        {/* lancet window on tower */}
+        <path d="M 44 38 Q 44 34 45 34 Q 46 34 46 38 L 46 44 L 44 44 Z" fill="#fce4a8" opacity={glow} />
+        <path d="M 44 38 Q 44 34 45 34 Q 46 34 46 38 L 46 44 L 44 44 Z" fill="none" stroke="#1a1a1f" strokeWidth="0.35" />
+
+        {/* SPIRE - tall tapered */}
+        <path d="M 34 20 L 45 -20 L 56 20 Z" fill={snow ? '#b4bccb' : '#3c3e42'} />
+        <path d="M 39 20 L 45 -20 L 45 20 Z" fill={snow ? '#9da5b4' : '#2e3034'} opacity="0.55" />
+        {snow && <path d="M 34 20 L 45 -20 L 56 20" fill="none" stroke="#ffffff" strokeWidth="1.8" strokeLinejoin="round" strokeLinecap="round" opacity="0.8" />}
+        {/* spire cross */}
+        <line x1="45" y1="-20" x2="45" y2="-26" stroke="#1a1a20" strokeWidth="0.9" />
+        <line x1="42.5" y1="-23.5" x2="47.5" y2="-23.5" stroke="#1a1a20" strokeWidth="0.7" />
+        <circle cx="45" cy="-20.5" r="0.7" fill="#1a1a20" />
+
+        {/* corner pinnacles at tower top */}
+        <path d="M 34 20 L 34 15 L 32.5 15 L 32.5 20 Z" fill="#2a2c30" />
+        <path d="M 56 20 L 56 15 L 57.5 15 L 57.5 20 Z" fill="#2a2c30" />
+
+        {/* NAVE windows - gothic lancets */}
+        {[58, 66, 82, 90].map((x) => (
+          <g key={x}>
+            <path d={`M ${x} 60 L ${x} 74 L ${x + 4} 74 L ${x + 4} 60 Q ${x + 4} 56 ${x + 2} 56 Q ${x} 56 ${x} 60 Z`} fill="#fce4a8" opacity={glow * 0.85} />
+            <path d={`M ${x} 60 L ${x} 74 L ${x + 4} 74 L ${x + 4} 60 Q ${x + 4} 56 ${x + 2} 56 Q ${x} 56 ${x} 60 Z`} fill="none" stroke="#1a1a1f" strokeWidth="0.3" />
+          </g>
+        ))}
+
+        {/* rose window / arched door on nave */}
+        <path d="M 70 70 L 70 78 L 78 78 L 78 70 Q 78 66 74 66 Q 70 66 70 70 Z" fill="#2a1810" />
+        <path d="M 70 70 L 70 78 L 78 78 L 78 70 Q 78 66 74 66 Q 70 66 70 70 Z" fill="none" stroke="#8a7a6a" strokeWidth="0.3" opacity="0.65" />
       </g>
 
-      {/* Dry stone wall */}
-      <path d="M 60 532 Q 130 538 200 535 Q 280 530 360 540" stroke="#8a8678" strokeWidth="2" fill="none" opacity="0.4" />
+      {/* ================ HOUSES LEFT ================ */}
+      <g>
+        {/* house L1 — wide */}
+        <rect x="-2" y="60" width="22" height="18" fill={wallCol} />
+        <path d="M -4 60 L 9 48 L 22 60 Z" fill={snow ? '#edf2f7' : '#803024'} />
+        {snow && <path d="M -4 60 L 9 48 L 22 60" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinejoin="round" opacity="0.95" />}
+        <rect x="2" y="65" width="3" height="3.5" fill="#fce4a8" opacity={glow} />
+        <rect x="13" y="65" width="3" height="3.5" fill="#fce4a8" opacity={glow} />
+        <rect x="7" y="71" width="3.5" height="7" fill="#3a2418" />
+        <rect x="13" y="50" width="2" height="4" fill="#5a4038" />
 
-      {/* Reservoir glint (small lake) */}
-      <ellipse cx="540" cy="500" rx="36" ry="4" fill="#a8c0d8" opacity="0.55" />
-      <path d="M 510 500 q 6 -2 12 0 q 6 -2 12 0" stroke="#fff8e0" strokeWidth="0.4" fill="none" opacity="0.6" />
+        {/* house L2 — taller */}
+        <rect x="20" y="56" width="16" height="22" fill={wallShadow} />
+        <path d="M 18 56 L 28 44 L 38 56 Z" fill={snow ? '#edf2f7' : '#5a281e'} />
+        {snow && <path d="M 18 56 L 28 44 L 38 56" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinejoin="round" opacity="0.95" />}
+        <rect x="23" y="60" width="2.5" height="3" fill="#fce4a8" opacity={glow} />
+        <rect x="30" y="60" width="2.5" height="3" fill="#fce4a8" opacity={glow} />
+        <rect x="23" y="66" width="2.5" height="3" fill="#fce4a8" opacity={glow} />
+        <rect x="30" y="66" width="2.5" height="3" fill="#fce4a8" opacity={glow} />
+        <rect x="26" y="71" width="3" height="7" fill="#3a2418" />
+      </g>
+
+      {/* ================ HOUSES RIGHT ================ */}
+      <g>
+        <rect x="100" y="58" width="22" height="20" fill={wallCol} />
+        <path d="M 98 58 L 111 46 L 124 58 Z" fill={snow ? '#edf2f7' : '#7a3a2a'} />
+        {snow && <path d="M 98 58 L 111 46 L 124 58" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinejoin="round" opacity="0.95" />}
+        <rect x="104" y="64" width="3" height="3.5" fill="#fce4a8" opacity={glow} />
+        <rect x="115" y="64" width="3" height="3.5" fill="#fce4a8" opacity={glow} />
+        <rect x="108" y="70" width="3" height="8" fill="#3a2418" />
+        <rect x="116" y="48" width="2" height="4" fill="#5a4038" />
+
+        <rect x="122" y="62" width="14" height="16" fill={wallShadow} />
+        <path d="M 120 62 L 129 52 L 138 62 Z" fill={snow ? '#edf2f7' : '#5c281e'} />
+        {snow && <path d="M 120 62 L 129 52 L 138 62" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinejoin="round" opacity="0.95" />}
+        <rect x="125" y="66" width="2.5" height="3" fill="#fce4a8" opacity={glow} />
+        <rect x="132" y="66" width="2.5" height="3" fill="#fce4a8" opacity={glow} />
+        <rect x="127" y="72" width="3" height="6" fill="#3a2418" />
+
+        <rect x="136" y="65" width="18" height="13" fill={wallCol} />
+        <path d="M 134 65 L 145 55 L 156 65 Z" fill={snow ? '#edf2f7' : '#783c28'} />
+        {snow && <path d="M 134 65 L 145 55 L 156 65" fill="none" stroke="#fff" strokeWidth="2" strokeLinejoin="round" opacity="0.95" />}
+        <rect x="140" y="69" width="2.5" height="2.8" fill="#fce4a8" opacity={glow} />
+        <rect x="148" y="69" width="2.5" height="2.8" fill="#fce4a8" opacity={glow} />
+      </g>
+
+      {/* chimney smoke (only when not snowing) */}
+      {!snow && (
+        <>
+          <path className="steam-wisp" d="M 14 50 q -2 -8 0 -14" stroke="#a8a098" strokeWidth="1.1" fill="none" strokeLinecap="round" opacity="0.55"
+            style={{ animation: 'steamRise 7s ease-out infinite' }} />
+          <path className="steam-wisp" d="M 117 48 q 2 -8 0 -12" stroke="#a8a098" strokeWidth="1.1" fill="none" strokeLinecap="round" opacity="0.55"
+            style={{ animation: 'steamRise2 8s ease-out infinite' }} />
+        </>
+      )}
     </g>
   );
 }
@@ -1240,31 +1054,6 @@ function Snow() {
   );
 }
 
-/* Snow caps — soft white stroke that traces the TOP edge of each existing
-   ridge. Wrapped in the same translate(0 30) the hills live in so it lines
-   up exactly. */
-function SnowCaps() {
-  return (
-    <g transform="translate(0 30)" pointerEvents="none">
-      {/* Far ridge top — Worcestershire Beacon profile */}
-      <path
-        d="M 60 360 L 110 340 L 160 326 L 200 320 L 240 308 L 280 286 L 320 264 L 360 242 L 390 226 L 420 230 L 450 246 L 480 262 L 520 278 L 560 294 L 600 310 L 640 330 L 660 344"
-        fill="none" stroke="#fafcff" strokeWidth="9" opacity="0.7" strokeLinejoin="round" strokeLinecap="round"
-      />
-      {/* sparkle highlight along the very crest */}
-      <path
-        d="M 60 360 L 110 340 L 160 326 L 200 320 L 240 308 L 280 286 L 320 264 L 360 242 L 390 226 L 420 230 L 450 246 L 480 262 L 520 278 L 560 294 L 600 310 L 640 330 L 660 344"
-        fill="none" stroke="#ffffff" strokeWidth="2" opacity="0.9" strokeLinejoin="round" strokeLinecap="round"
-      />
-      {/* Mid ridge top — thinner, fades into the snowy haze below */}
-      <path
-        d="M 60 388 L 100 376 L 140 362 L 180 348 L 230 336 L 270 328 L 310 318 L 350 306 L 390 296 L 430 304 L 470 318 L 510 338 L 550 358 L 590 376 L 630 392 L 660 404"
-        fill="none" stroke="#eef2f7" strokeWidth="6" opacity="0.55" strokeLinejoin="round" strokeLinecap="round"
-      />
-    </g>
-  );
-}
-
 /* Fog — soft horizontal veils that drift slowly across, layered for depth. */
 function Fog() {
   return (
@@ -1289,35 +1078,35 @@ function Fog() {
   );
 }
 
-/* Rainbow — half-arc spectrum lifting off the hills, mostly tucked behind
-   the countdown card. Both feet land on the distant hills. */
-function Rainbow() {
-  const cx = 360, cy = 460;
+/* Rainbow — large arc spanning the window, feet tucking behind the far hills.
+   Rendered BEFORE the hills so MalvernHills paints over the lower portion. */
+function Rainbow({ opacity = 1 }: { opacity?: number }) {
+  const cx = 360, cy = 470;
   const bands = [
-    { r: 240, color: '#e58a8a' }, // red
-    { r: 232, color: '#e8a878' }, // orange
-    { r: 224, color: '#f0d090' }, // yellow
-    { r: 216, color: '#9ad08a' }, // green
-    { r: 208, color: '#8ab4d8' }, // blue
-    { r: 200, color: '#a892c6' }, // violet
+    { r: 340, color: '#f09a8a' }, // red
+    { r: 328, color: '#f4b68a' }, // orange
+    { r: 316, color: '#fcd088' }, // yellow
+    { r: 304, color: '#b0d888' }, // green
+    { r: 292, color: '#8abcd8' }, // blue
+    { r: 280, color: '#b096c8' }, // violet
   ];
   return (
-    <g pointerEvents="none">
+    <g pointerEvents="none" opacity={opacity}>
       {/* outer soft halo */}
       <path
-        d={`M ${cx - 252} ${cy} A 252 252 0 0 1 ${cx + 252} ${cy}`}
-        fill="none" stroke="#fff8e8" strokeWidth="18" opacity="0.18" strokeLinecap="round"
+        d={`M ${cx - 352} ${cy} A 352 352 0 0 1 ${cx + 352} ${cy}`}
+        fill="none" stroke="#fff8e8" strokeWidth="22" opacity="0.18" strokeLinecap="round"
       />
       {bands.map((b, i) => (
         <path key={i}
           d={`M ${cx - b.r} ${cy} A ${b.r} ${b.r} 0 0 1 ${cx + b.r} ${cy}`}
-          fill="none" stroke={b.color} strokeWidth="8" opacity="0.7" strokeLinecap="round"
+          fill="none" stroke={b.color} strokeWidth="13" opacity="0.72" strokeLinecap="round"
         />
       ))}
       {/* inner shimmer */}
       <path
-        d={`M ${cx - 192} ${cy} A 192 192 0 0 1 ${cx + 192} ${cy}`}
-        fill="none" stroke="#fff8e8" strokeWidth="2" opacity="0.4" strokeLinecap="round"
+        d={`M ${cx - 268} ${cy} A 268 268 0 0 1 ${cx + 268} ${cy}`}
+        fill="none" stroke="#fff8e8" strokeWidth="2.4" opacity="0.35" strokeLinecap="round"
       />
     </g>
   );

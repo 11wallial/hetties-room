@@ -261,3 +261,24 @@
   97% { transform: translate(380px, 200px) scale(1); opacity: 0.85; }
   98% { transform: translate(580px, 280px) scale(0.6); opacity: 0; }
 }
+
+/* Combine harvester zig-zagging across the farm field.
+   Field roughly x=70-250, y=515-560.  Scale gives a crude 3D feel:
+   bigger when close to the viewer, smaller when driving away. */
+@keyframes combineHarvest {
+  0%   { transform: translate(92px, 552px) scale(0.9); }   /* start front-left */
+  3%   { transform: translate(92px, 552px) scale(0.9); }
+  12%  { transform: translate(102px, 520px) scale(0.55); } /* drive AWAY to back */
+  15%  { transform: translate(130px, 520px) scale(0.55); } /* turn right at top */
+  24%  { transform: translate(140px, 552px) scale(0.9); }  /* drive TOWARD front */
+  27%  { transform: translate(168px, 552px) scale(0.95); } /* turn right at bottom */
+  36%  { transform: translate(178px, 520px) scale(0.55); } /* AWAY */
+  39%  { transform: translate(206px, 520px) scale(0.55); } /* turn */
+  48%  { transform: translate(216px, 552px) scale(0.95); } /* TOWARD */
+  51%  { transform: translate(238px, 554px) scale(1); }    /* turn at the gate */
+  60%  { transform: translate(246px, 520px) scale(0.55); } /* AWAY last row */
+  70%  { transform: translate(246px, 520px) scale(0.55); } /* pause — unloading */
+  78%  { transform: translate(130px, 520px) scale(0.55); } /* slide back along the back edge */
+  92%  { transform: translate(92px, 552px) scale(0.9); }   /* slide down front-left to start */
+  100% { transform: translate(92px, 552px) scale(0.9); }
+}

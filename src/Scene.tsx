@@ -907,6 +907,9 @@ function MalvernHills({ seed, cottageGlow = 0.7, weather = 'sunshine' }: { seed:
         <LampPost x={306} y={458} s={0.7} lit={cottageGlow > 0.3} />
       </g>
 
+      {/* ========== WORKING FARM in the left foreground meadow ========== */}
+      <Farm weather={weather} glow={glow} />
+
       {/* ========== SHEEP dotted on the meadow ========== */}
       {Array.from({ length: sheep }).map((_, i) => (
         <g key={i} transform={`translate(${390 + i * 28} ${458 - (i % 2) * 3})`}>
@@ -1008,6 +1011,217 @@ function Bush({ x, y, s, snow }: { x: number; y: number; s: number; snow?: boole
       <ellipse cx="2" cy="-1.5" rx="3" ry="2.4" fill={snow ? '#d8dfea' : '#5e8040'} />
       <ellipse cx="-2" cy="-3" rx="2" ry="1.8" fill={snow ? '#e8ecf3' : '#6e924a'} opacity="0.85" />
       {snow && <ellipse cx="0" cy="-3.5" rx="3.8" ry="1" fill="#ffffff" opacity="0.85" />}
+    </g>
+  );
+}
+
+/* Working farm in the left foreground meadow.
+   - sunshine:       field + fence + barn + cows grazing + sheep flock
+   - sunrise/sunset: field + crop rows + combine harvester zig-zagging
+   - anything else:  closed (empty field, shuttered barn, no animals) */
+function Farm({ weather, glow }: { weather: Weather; glow: number }) {
+  const isOpen = weather === 'sunshine' || weather === 'sunrise';
+  const hasAnimals = weather === 'sunshine';
+  const hasCombine = weather === 'sunrise';
+  // Dim the farm a lot when closed so it reads as "shut".
+  const fieldOpacity = isOpen ? 0.92 : 0.55;
+
+  return (
+    <g opacity={weather === 'snowy' ? 0 : 1}>
+      {/* ==== field ground — warm stubble when open, muddy-dark when closed ==== */}
+      <g opacity={fieldOpacity}>
+        <path d="M 68 516 Q 160 512 256 516 L 262 568 L 62 566 Z"
+          fill={hasCombine ? '#d8b458' : isOpen ? '#c8b26a' : '#7a6e4a'} />
+        {/* furrow shadows — perspective converging toward the back */}
+        {Array.from({ length: 7 }).map((_, i) => {
+          const t = i / 7;
+          const xFront = 70 + t * 184;
+          const xBack  = 80 + t * 164;
+          return (
+            <line key={i} x1={xFront} y1="566" x2={xBack} y2="518"
+              stroke={hasCombine ? '#a88a38' : '#7a6638'} strokeWidth="0.6" opacity="0.5" />
+          );
+        })}
+        {/* crop rows (only when open) — little green tufts along each furrow */}
+        {isOpen && !hasCombine && Array.from({ length: 6 }).map((_, i) => {
+          const t = i / 6;
+          const x = 80 + t * 164;
+          return (
+            <g key={`crop${i}`}>
+              <circle cx={x} cy={560 - t * 4} r="1.4" fill="#6e8a3a" />
+              <circle cx={x + 6} cy={550 - t * 4} r="1.1" fill="#789a44" />
+              <circle cx={x + 12} cy={540 - t * 4} r="0.9" fill="#6e8a3a" />
+            </g>
+          );
+        })}
+        {/* stubble rows when harvesting (small dashes — cut crops) */}
+        {hasCombine && Array.from({ length: 14 }).map((_, i) => {
+          const x = 72 + (i * 13) + ((i * 7) % 5);
+          const y = 530 + ((i * 11) % 26);
+          return <line key={`stub${i}`} x1={x} y1={y} x2={x + 2} y2={y - 1} stroke="#8a6e30" strokeWidth="0.5" opacity="0.7" />;
+        })}
+      </g>
+
+      {/* ==== perimeter fence (posts + two rails) ==== */}
+      <g opacity={isOpen ? 0.95 : 0.7}>
+        {/* top rail (back fence line, with perspective) */}
+        <line x1="72" y1="518" x2="256" y2="518" stroke="#5a3a1e" strokeWidth="0.8" />
+        <line x1="72" y1="522" x2="256" y2="522" stroke="#5a3a1e" strokeWidth="0.5" opacity="0.7" />
+        {/* front rail (closer to viewer, wider) */}
+        <line x1="62" y1="566" x2="262" y2="568" stroke="#6a4420" strokeWidth="1" />
+        <line x1="62" y1="571" x2="262" y2="573" stroke="#6a4420" strokeWidth="0.6" opacity="0.7" />
+        {/* posts — back row (shorter) */}
+        {[72, 112, 152, 192, 232, 256].map((x, i) => (
+          <rect key={`pb${i}`} x={x - 0.6} y="515" width="1.2" height="6" fill="#4a2e16" />
+        ))}
+        {/* posts — front row (taller) */}
+        {[64, 104, 144, 184, 224, 262].map((x, i) => (
+          <rect key={`pf${i}`} x={x - 0.8} y="562" width="1.6" height="10" fill="#4a2e16" />
+        ))}
+        {/* gate on the right (open when active, closed otherwise) */}
+        <g transform="translate(238 562)">
+          {isOpen ? (
+            <>
+              <line x1="0" y1="0" x2="8" y2="-6" stroke="#6a4420" strokeWidth="1" />
+              <line x1="0" y1="4" x2="8" y2="-2" stroke="#6a4420" strokeWidth="0.8" />
+              <line x1="0" y1="8" x2="8" y2="2" stroke="#6a4420" strokeWidth="0.8" />
+            </>
+          ) : (
+            <>
+              <line x1="0" y1="0" x2="0" y2="10" stroke="#6a4420" strokeWidth="1" />
+              <line x1="0" y1="0" x2="10" y2="0" stroke="#6a4420" strokeWidth="0.9" />
+              <line x1="0" y1="10" x2="10" y2="10" stroke="#6a4420" strokeWidth="0.9" />
+              <line x1="0" y1="0" x2="10" y2="10" stroke="#6a4420" strokeWidth="0.7" opacity="0.8" />
+            </>
+          )}
+        </g>
+      </g>
+
+      {/* ==== small red barn on the back edge of the field ==== */}
+      <g transform="translate(72 494)" opacity={isOpen ? 1 : 0.78}>
+        <ellipse cx="13" cy="23" rx="14" ry="1.4" fill="#1a0e08" opacity="0.35" />
+        <rect x="0" y="8" width="26" height="16" fill={isOpen ? '#a8301e' : '#6a241a'} />
+        <path d="M -2 8 L 13 -3 L 28 8 Z" fill={isOpen ? '#5e1a14' : '#3e140f'} />
+        {/* barn door + windows */}
+        <rect x="10" y="14" width="6" height="10" fill="#2a1008" />
+        <line x1="13" y1="14" x2="13" y2="24" stroke="#fcd092" strokeWidth="0.3" opacity="0.6" />
+        <rect x="2" y="12" width="3" height="3" fill={isOpen ? '#fce4a8' : '#2a1810'} opacity={isOpen ? glow * 0.9 : 0.5} />
+        <rect x="21" y="12" width="3" height="3" fill={isOpen ? '#fce4a8' : '#2a1810'} opacity={isOpen ? glow * 0.9 : 0.5} />
+        {/* gable vent window */}
+        <rect x="11" y="1" width="4" height="3" fill={isOpen ? '#fce4a8' : '#2a1810'} opacity={isOpen ? glow : 0.4} />
+        {/* barn stripes (hex-mark style) */}
+        <line x1="0" y1="13" x2="26" y2="13" stroke="#6a1a10" strokeWidth="0.3" opacity="0.55" />
+        <line x1="0" y1="18" x2="26" y2="18" stroke="#6a1a10" strokeWidth="0.3" opacity="0.55" />
+      </g>
+
+      {/* ==== COWS grazing — only when sunshine ==== */}
+      {hasAnimals && (
+        <g>
+          <Cow x={100} y={548} />
+          <Cow x={138} y={552} flip />
+          <Cow x={172} y={546} />
+          <Cow x={210} y={554} flip />
+        </g>
+      )}
+
+      {/* ==== SHEEP flock in the corner ==== */}
+      {hasAnimals && (
+        <g>
+          {[
+            { x: 82, y: 560 }, { x: 88, y: 562 }, { x: 94, y: 560 },
+            { x: 90, y: 564 }, { x: 86, y: 565 },
+          ].map((s, i) => (
+            <g key={i} transform={`translate(${s.x} ${s.y})`}>
+              <ellipse cx="0" cy="0" rx="2.4" ry="1.6" fill="#fcf8ea" />
+              <circle cx="-1.6" cy="-0.4" r="0.8" fill="#2a1410" />
+              <line x1="-1" y1="1.3" x2="-1" y2="2.2" stroke="#2a1410" strokeWidth="0.35" />
+              <line x1="1" y1="1.3" x2="1" y2="2.2" stroke="#2a1410" strokeWidth="0.35" />
+            </g>
+          ))}
+        </g>
+      )}
+
+      {/* ==== COMBINE HARVESTER — zig-zags across the field during sunrise/sunset ==== */}
+      {hasCombine && (
+        <g style={{ animation: 'combineHarvest 48s linear infinite' }}>
+          <Combine />
+        </g>
+      )}
+
+      {/* ==== CLOSED chain on the gate + small sign when shut ==== */}
+      {!isOpen && (
+        <g transform="translate(236 558)" opacity="0.85">
+          <rect x="-6" y="-6" width="14" height="6" fill="#d8c89a" stroke="#5a3a1e" strokeWidth="0.3" />
+          <text x="1" y="-2" textAnchor="middle" fontSize="3.6" fill="#5a3a1e" fontFamily="serif">closed</text>
+        </g>
+      )}
+    </g>
+  );
+}
+
+/* Small black-and-white cow, ~12×8 units. `flip` reverses orientation. */
+function Cow({ x, y, flip = false }: { x: number; y: number; flip?: boolean }) {
+  return (
+    <g transform={`translate(${x} ${y}) ${flip ? 'scale(-1,1)' : ''}`}>
+      {/* shadow */}
+      <ellipse cx="0" cy="2.6" rx="5" ry="0.8" fill="#1a0e08" opacity="0.3" />
+      {/* body */}
+      <ellipse cx="0" cy="0" rx="4.6" ry="2.4" fill="#fbf6ec" />
+      {/* black spots */}
+      <ellipse cx="-1.2" cy="-0.6" rx="1.8" ry="1.2" fill="#2a1410" />
+      <ellipse cx="2" cy="0.4" rx="1" ry="0.8" fill="#2a1410" />
+      <ellipse cx="3.2" cy="-0.8" rx="0.7" ry="0.5" fill="#2a1410" />
+      {/* head */}
+      <ellipse cx="-4.6" cy="-0.8" rx="1.8" ry="1.4" fill="#fbf6ec" />
+      <ellipse cx="-5.2" cy="-1.2" rx="0.7" ry="0.5" fill="#2a1410" />
+      {/* ears */}
+      <ellipse cx="-5.2" cy="-2" rx="0.5" ry="0.9" fill="#2a1410" />
+      {/* eye */}
+      <circle cx="-5.6" cy="-1" r="0.25" fill="#0a0605" />
+      {/* legs */}
+      <line x1="-2.6" y1="2" x2="-2.6" y2="3.4" stroke="#2a1410" strokeWidth="0.5" />
+      <line x1="-1" y1="2" x2="-1" y2="3.4" stroke="#2a1410" strokeWidth="0.5" />
+      <line x1="1.6" y1="2" x2="1.6" y2="3.4" stroke="#2a1410" strokeWidth="0.5" />
+      <line x1="3.2" y1="2" x2="3.2" y2="3.4" stroke="#2a1410" strokeWidth="0.5" />
+      {/* tail */}
+      <line x1="4.6" y1="0" x2="5.6" y2="-0.8" stroke="#2a1410" strokeWidth="0.4" />
+    </g>
+  );
+}
+
+/* Red combine harvester — front cutting head, cab, grain tank, unloader pipe.
+   Rendered as a small 3/4 view sprite. Animated via combineHarvest keyframes. */
+function Combine() {
+  return (
+    <g>
+      {/* shadow */}
+      <ellipse cx="0" cy="6" rx="9" ry="1.2" fill="#1a0e08" opacity="0.4" />
+      {/* cutting header (toothed front) */}
+      <rect x="-10" y="-1" width="5" height="4" fill="#d4a838" />
+      <line x1="-10" y1="-1" x2="-5" y2="-1" stroke="#8a6020" strokeWidth="0.4" />
+      {/* reel bars on the header */}
+      {[0, 1.4, 2.8, 4.2].map(o => (
+        <line key={o} x1={-9.8 + o} y1="-1" x2={-9.8 + o} y2="3" stroke="#7a5018" strokeWidth="0.4" opacity="0.8" />
+      ))}
+      {/* main body */}
+      <rect x="-5" y="-4" width="9" height="8" fill="#c62a20" />
+      <rect x="-5" y="-4" width="9" height="2" fill="#8a1612" />
+      <line x1="-5" y1="1" x2="4" y2="1" stroke="#7a1010" strokeWidth="0.4" opacity="0.7" />
+      {/* grain tank (on top) */}
+      <rect x="-3" y="-7" width="6" height="3" fill="#9a2018" />
+      {/* cab with glass */}
+      <rect x="-1" y="-10" width="4" height="4" fill="#b8cde2" />
+      <rect x="-1" y="-10" width="4" height="4" fill="none" stroke="#3a4e62" strokeWidth="0.3" />
+      {/* unloader pipe (angled up-right) */}
+      <path d="M 4 -3 L 10 -6 L 12 -4 L 6 -1 Z" fill="#c62a20" />
+      {/* rear wheel */}
+      <circle cx="3" cy="4" r="2" fill="#1a1410" />
+      <circle cx="3" cy="4" r="1" fill="#4a3e38" />
+      {/* front wheel (smaller) */}
+      <circle cx="-3" cy="4.6" r="1.4" fill="#1a1410" />
+      {/* exhaust puff */}
+      <ellipse cx="2.6" cy="-10" rx="1" ry="0.8" fill="#c4c8cc" opacity="0.55"
+        style={{ animation: 'steamRise 3s ease-out infinite' }} />
     </g>
   );
 }
